@@ -1,0 +1,9 @@
+git+https://github.com/Kewton/jsonDB
+customtkinter>=5.2.0
+pillow>=9.0.0
+openai
+anthropic
+PathSpec
+google-genai
+google-generativeai
+beautifulsoup4

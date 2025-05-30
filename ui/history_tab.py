@@ -1,0 +1,423 @@
+"""
+StoryCodeWizard History Tab
+チャット履歴管理のUIコンポーネント
+"""
+import customtkinter as ctk
+import tkinter as tk
+from tkinter import messagebox, filedialog
+from ui.styles import AppStyles
+from ui.widgets.chat_message import ChatMessage
+from app.myjsondb.myProjectSettings import getAllProject
+from app.chat import (
+    format_history_data, 
+    get_user_content_from_messages, 
+    get_assistant_content_from_messages,
+    delete_history_item,
+    apply_to_project
+)
+from app.myjsondb.myHistories import getValOfPjByKey
+
+class HistoryTab:
+    """履歴管理タブのUIコンポーネント"""
+    
+    def __init__(self, parent):
+        self.parent = parent
+        self.current_history_data = []
+        self.selected_index = 0
+        self.current_messages = []
+        
+        # レイアウト設定
+        self.parent.grid_columnconfigure(0, weight=1)
+        self.parent.grid_columnconfigure(1, weight=2)
+        self.parent.grid_rowconfigure(0, weight=1)
+        
+        self.setup_ui()
+        self.load_initial_data()
+    
+    def setup_ui(self):
+        """UIコンポーネントをセットアップ"""
+        # 左側パネル（履歴一覧）
+        self.setup_left_panel()
+        
+        # 右側パネル（詳細表示）
+        self.setup_right_panel()
+    
+    def setup_left_panel(self):
+        """左側パネル（履歴一覧）をセットアップ"""
+        left_frame = ctk.CTkFrame(
+            self.parent,
+            **AppStyles.get_frame_style('default')
+        )
+        left_frame.grid(
+            row=0, 
+            column=0, 
+            padx=(0, AppStyles.SIZES['padding_medium']),
+            pady=0,
+            sticky="nsew"
+        )
+        left_frame.grid_columnconfigure(0, weight=1)
+        left_frame.grid_rowconfigure(2, weight=1)
+        
+        # タイトル
+        title_label = ctk.CTkLabel(
+            left_frame,
+            text="Chat History",
+            font=AppStyles.FONTS['heading']
+        )
+        title_label.grid(
+            row=0, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
+            sticky="w"
+        )
+        
+        # プロジェクト選択
+        self.setup_project_selection(left_frame, 1)
+        
+        # 履歴リスト
+        self.setup_history_list(left_frame, 2)
+    
+    def setup_project_selection(self, parent, row):
+        """プロジェクト選択UIをセットアップ"""
+        label = ctk.CTkLabel(parent, text="Project:", font=AppStyles.FONTS['default'])
+        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        
+        self.project_var = ctk.StringVar()
+        self.project_combo = ctk.CTkComboBox(
+            parent,
+            variable=self.project_var,
+            command=self.on_project_changed,
+            **AppStyles.get_entry_style()
+        )
+        self.project_combo.grid(
+            row=row+1, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(2, AppStyles.SIZES['padding_small']),
+            sticky="ew"
+        )
+    
+    def setup_history_list(self, parent, row):
+        """履歴リストをセットアップ"""
+        # リストボックスとスクロールバーのフレーム
+        list_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        list_frame.grid(
+            row=row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(0, AppStyles.SIZES['padding_medium']),
+            sticky="nsew"
+        )
+        list_frame.grid_columnconfigure(0, weight=1)
+        list_frame.grid_rowconfigure(0, weight=1)
+        
+        # 履歴リストボックス
+        self.history_listbox = tk.Listbox(
+            list_frame,
+            font=AppStyles.FONTS['small'],
+            bg=AppStyles.COLORS['surface'],
+            fg=AppStyles.COLORS['text'],
+            selectbackground=AppStyles.COLORS['primary'],
+            selectforeground=AppStyles.COLORS['text'],
+            borderwidth=0,
+            highlightthickness=0
+        )
+        self.history_listbox.grid(row=0, column=0, sticky="nsew")
+        self.history_listbox.bind('<<ListboxSelect>>', self.on_history_select)
+        
+        # スクロールバー
+        scrollbar = ctk.CTkScrollbar(list_frame, command=self.history_listbox.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        self.history_listbox.configure(yscrollcommand=scrollbar.set)
+    
+    def setup_right_panel(self):
+        """右側パネル（詳細表示）をセットアップ"""
+        right_frame = ctk.CTkFrame(
+            self.parent,
+            **AppStyles.get_frame_style('default')
+        )
+        right_frame.grid(
+            row=0, 
+            column=1, 
+            padx=0,
+            pady=0,
+            sticky="nsew"
+        )
+        right_frame.grid_columnconfigure(0, weight=1)
+        right_frame.grid_rowconfigure(2, weight=1)
+        
+        # タイトル
+        title_label = ctk.CTkLabel(
+            right_frame,
+            text="History Details",
+            font=AppStyles.FONTS['heading']
+        )
+        title_label.grid(
+            row=0, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
+            sticky="w"
+        )
+        
+        # アクションボタン
+        self.setup_action_buttons(right_frame, 1)
+        
+        # チャット詳細表示
+        self.setup_chat_detail(right_frame, 2)
+    
+    def setup_action_buttons(self, parent, row):
+        """アクションボタンをセットアップ"""
+        button_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        button_frame.grid(
+            row=row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(0, AppStyles.SIZES['padding_small']),
+            sticky="ew"
+        )
+        button_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        
+        # 削除ボタン
+        style = AppStyles.get_button_style('outline').copy()
+        # style 中の重複定義を排除
+        style.pop('text_color', None)
+        style.pop('hover_color', None)
+        style['text_color'] = AppStyles.COLORS['error']
+        style['hover_color'] = AppStyles.COLORS['error']
+        self.delete_button = ctk.CTkButton(
+            button_frame,
+            text="Delete History",
+            command=self.delete_history,
+            **style
+        )
+        self.delete_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
+        
+        # ユーザーコンテキストダウンロード
+        self.download_user_button = ctk.CTkButton(
+            button_frame,
+            text="Download Your Context",
+            command=self.download_user_context,
+            **AppStyles.get_button_style('secondary')
+        )
+        self.download_user_button.grid(row=0, column=1, padx=5, sticky="ew")
+        
+        # エージェントコンテキストダウンロード
+        self.download_agent_button = ctk.CTkButton(
+            button_frame,
+            text="Download Agent Context",
+            command=self.download_agent_context,
+            **AppStyles.get_button_style('secondary')
+        )
+        self.download_agent_button.grid(row=0, column=2, padx=5, sticky="ew")
+        
+        # プロジェクトに反映ボタン
+        self.apply_button = ctk.CTkButton(
+            button_frame,
+            text="プロジェクトに反映",
+            command=self.apply_to_project,
+            **AppStyles.get_button_style('primary')
+        )
+        self.apply_button.grid(row=0, column=3, padx=(5, 0), sticky="ew")
+    
+    def setup_chat_detail(self, parent, row):
+        """チャット詳細表示をセットアップ"""
+        self.detail_scrollable = ctk.CTkScrollableFrame(
+            parent,
+            **AppStyles.get_scrollable_frame_style()
+        )
+        self.detail_scrollable.grid(
+            row=row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(0, AppStyles.SIZES['padding_medium']),
+            sticky="nsew"
+        )
+        self.detail_scrollable.grid_columnconfigure(0, weight=1)
+    
+    def load_initial_data(self):
+        """初期データを読み込み"""
+        # プロジェクト一覧を読み込み
+        projects = getAllProject()
+        if projects and projects != [""]:
+            self.project_combo.configure(values=projects)
+            if projects:
+                self.project_var.set(projects[0])
+                self.load_history_data()
+    
+    def on_project_changed(self, value):
+        """プロジェクト変更時のハンドラ"""
+        self.load_history_data()
+    
+    def load_history_data(self):
+        """履歴データを読み込み"""
+        if not self.project_var.get():
+            return
+        
+        # 履歴データ取得
+        self.current_history_data = format_history_data(self.project_var.get())
+        self.update_history_list()
+        
+        # 最初の項目を選択
+        if self.current_history_data:
+            self.history_listbox.selection_set(0)
+            self.selected_index = 0
+            self.load_detail_display()
+        else:
+            self.clear_detail_display()
+    
+    def update_history_list(self):
+        """履歴リストを更新"""
+        self.history_listbox.delete(0, tk.END)
+        
+        for i, item in enumerate(self.current_history_data):
+            display_text = f"{item['registration_date']} | {item['gptmodel']} | {item['input'][:50]}..."
+            self.history_listbox.insert(tk.END, display_text)
+    
+    def on_history_select(self, event):
+        """履歴選択時のハンドラ"""
+        selection = self.history_listbox.curselection()
+        if selection:
+            self.selected_index = selection[0]
+            self.load_detail_display()
+    
+    def load_detail_display(self):
+        """詳細表示を読み込み"""
+        if not self.current_history_data or self.selected_index >= len(self.current_history_data):
+            return
+        
+        item = self.current_history_data[self.selected_index]
+        
+        # メッセージ取得
+        self.current_messages = getValOfPjByKey(
+            item['gptmodel'],
+            item['input'],
+            self.project_var.get()
+        )
+        
+        if not self.current_messages:
+            self.clear_detail_display()
+            return
+        
+        # 詳細表示更新
+        self.update_detail_display(self.current_messages)
+    
+    def update_detail_display(self, messages):
+        """詳細表示を更新"""
+        self.clear_detail_display()
+        
+        for i, message in enumerate(messages[1:], 1):  # システムメッセージをスキップ
+            speaker = "You" if message["role"] == "user" else "Agent"
+            chat_msg = ChatMessage(
+                self.detail_scrollable,
+                speaker=speaker,
+                content=message["content"],
+                is_user=(message["role"] == "user")
+            )
+            chat_msg.grid(
+                row=i-1, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=AppStyles.SIZES['padding_small'],
+                sticky="ew"
+            )
+    
+    def clear_detail_display(self):
+        """詳細表示をクリア"""
+        for widget in self.detail_scrollable.winfo_children():
+            widget.destroy()
+    
+    def delete_history(self):
+        """履歴削除"""
+        if not self.current_history_data or self.selected_index >= len(self.current_history_data):
+            messagebox.showwarning("Warning", "履歴項目が選択されていません。")
+            return
+        
+        # 確認ダイアログ
+        result = messagebox.askyesno(
+            "削除確認",
+            "この履歴項目を削除しますか？"
+        )
+        
+        if result:
+            item = self.current_history_data[self.selected_index]
+            success = delete_history_item(
+                item['gptmodel'],
+                item['input'],
+                item['registration_date'],
+                self.project_var.get()
+            )
+            
+            if success:
+                messagebox.showinfo("Success", "履歴項目を削除しました。")
+                self.load_history_data()
+            else:
+                messagebox.showerror("Error", "履歴項目の削除に失敗しました。")
+    
+    def download_user_context(self):
+        """ユーザーコンテキストをダウンロード"""
+        if not self.current_messages:
+            messagebox.showwarning("Warning", "ダウンロードするコンテンツがありません。")
+            return
+        
+        content = get_user_content_from_messages(self.current_messages)
+        if content:
+            self._save_file_dialog(content, "user")
+    
+    def download_agent_context(self):
+        """エージェントコンテキストをダウンロード"""
+        if not self.current_messages:
+            messagebox.showwarning("Warning", "ダウンロードするコンテンツがありません。")
+            return
+        
+        content = get_assistant_content_from_messages(self.current_messages)
+        if content:
+            self._save_file_dialog(content, "agent")
+    
+    def _save_file_dialog(self, content, context_type):
+        """ファイル保存ダイアログ"""
+        if not content:
+            messagebox.showwarning("Warning", "保存するコンテンツがありません。")
+            return
+        
+        item = self.current_history_data[self.selected_index]
+        filename = f"chat_history_{item['gptmodel']}_{item['registration_date']}_{context_type}.md"
+        
+        file_path = filedialog.asksaveasfilename(
+            initialfile=filename,  # initialname を initialfile に変更
+            defaultextension=".md",
+            filetypes=[("Markdown files", "*.md"), ("All files", "*.*")]
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+                messagebox.showinfo("Success", f"ファイルを保存しました: {file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"ファイル保存に失敗しました: {str(e)}")
+    
+    def apply_to_project(self):
+        """プロジェクトに反映"""
+        if not self.current_messages:
+            messagebox.showwarning("Warning", "反映するコンテンツがありません。")
+            return
+        
+        content = get_assistant_content_from_messages(self.current_messages)
+        if not content:
+            messagebox.showwarning("Warning", "エージェントのコンテンツがありません。")
+            return
+        
+        item = self.current_history_data[self.selected_index]
+        success, message = apply_to_project(
+            content,
+            self.project_var.get(),
+            item['gptmodel'],
+            item['registration_date']
+        )
+        
+        if success:
+            messagebox.showinfo("Success", message)
+        else:
+            messagebox.showerror("Error", message)

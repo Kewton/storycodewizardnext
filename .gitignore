@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+secret_keys.py
+mydb/
+myproject/
+old/
+escape/
+output.txt
+temp/
