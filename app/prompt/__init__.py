@@ -16,8 +16,8 @@ def createPromt(_systemrole_content, _input):
         return nextjstemplate2(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
     elif "fastAPItemplate" == _systemrole_content["prompt"]:
         return fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
-    elif "streamlit2CustomTkinter" == _systemrole_content["prompt"]:
-        return streamlit2CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
+    elif "CustomTkinter" == _systemrole_content["prompt"]:
+        return CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
     else:
         _content = f"""
 # 命令指示書
@@ -311,7 +311,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path, _i
     return _content
 
 
-def streamlit2CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist):
+def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist):
     _content = f"""
 # 命令指示書
 - 現在のソースコードと要求に対し前提条件と制約条件を満たす最高の成果物を生成してください。

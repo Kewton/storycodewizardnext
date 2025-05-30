@@ -65,13 +65,12 @@ class ChatMessage(ctk.CTkFrame):
         
         # 折りたたみボタン
         style = AppStyles.get_button_style('outline').copy()
-        style['font'] = AppStyles.FONTS['small'] # fontをスタイル辞書で指定
+        style['font'] = AppStyles.FONTS['small']
+        style['height'] = 25  # 標準の高さを上書き
         self.toggle_button = ctk.CTkButton(
             self,
             text="▶ Show Content",
             command=self.toggle_content,
-            height=25,
-            # font=AppStyles.FONTS['small'], # 直接指定を削除
             **style
         )
         self.toggle_button.grid(

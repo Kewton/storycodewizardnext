@@ -16,8 +16,9 @@ from app.chat import communicate_core, save_chat_history
 class ChatTab:
     """チャット機能タブのUIコンポーネント"""
     
-    def __init__(self, parent):
+    def __init__(self, parent, main_window=None):
         self.parent = parent
+        self.main_window = main_window
         self.current_messages = []
         self.current_file_data = ""
         
@@ -62,32 +63,41 @@ class ChatTab:
             row=0, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_large']),
             sticky="w"
         )
         
+        # 設定項目を縦に配置
+        current_row = 1
+        
         # プロジェクト選択
-        self.setup_project_selection(left_frame, 1)
+        current_row = self.setup_project_selection(left_frame, current_row)
         
         # モデル選択
-        self.setup_model_selection(left_frame, 2)
+        current_row = self.setup_model_selection(left_frame, current_row)
         
         # 言語選択
-        self.setup_language_selection(left_frame, 3)
+        current_row = self.setup_language_selection(left_frame, current_row)
         
         # ファイルアップロード
-        self.setup_file_upload(left_frame, 4)
+        current_row = self.setup_file_upload(left_frame, current_row)
         
         # 入力テキストエリア
-        self.setup_input_area(left_frame, 5)
+        current_row = self.setup_input_area(left_frame, current_row)
         
         # 実行ボタン
-        self.setup_execute_button(left_frame, 6)
+        self.setup_execute_button(left_frame, current_row)
     
-    def setup_project_selection(self, parent, row):
+    def setup_project_selection(self, parent, start_row):
         """プロジェクト選択UIをセットアップ"""
         label = ctk.CTkLabel(parent, text="Project:", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.project_var = ctk.StringVar()
         self.project_combo = ctk.CTkComboBox(
@@ -96,17 +106,25 @@ class ChatTab:
             **AppStyles.get_entry_style()
         )
         self.project_combo.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_model_selection(self, parent, row):
+    def setup_model_selection(self, parent, start_row):
         """モデル選択UIをセットアップ"""
         label = ctk.CTkLabel(parent, text="GPT Model:", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.model_var = ctk.StringVar()
         self.model_combo = ctk.CTkComboBox(
@@ -115,17 +133,25 @@ class ChatTab:
             **AppStyles.get_entry_style()
         )
         self.model_combo.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_language_selection(self, parent, row):
+    def setup_language_selection(self, parent, start_row):
         """プログラミング言語選択UIをセットアップ"""
         label = ctk.CTkLabel(parent, text="Programming Language:", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.language_var = ctk.StringVar()
         self.language_combo = ctk.CTkComboBox(
@@ -134,31 +160,47 @@ class ChatTab:
             **AppStyles.get_entry_style()
         )
         self.language_combo.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_file_upload(self, parent, row):
+    def setup_file_upload(self, parent, start_row):
         """ファイルアップロードUIをセットアップ"""
         label = ctk.CTkLabel(parent, text="File Upload (JPEG):", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.file_uploader = FileUploader(parent, self.on_file_selected)
         self.file_uploader.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_input_area(self, parent, row):
+    def setup_input_area(self, parent, start_row):
         """入力テキストエリアをセットアップ"""
         label = ctk.CTkLabel(parent, text="要求を入力してください:", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.input_text = ctk.CTkTextbox(
             parent,
@@ -167,26 +209,29 @@ class ChatTab:
             corner_radius=AppStyles.SIZES['corner_radius']
         )
         self.input_text.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_execute_button(self, parent, row):
+    def setup_execute_button(self, parent, start_row):
         """実行ボタンをセットアップ"""
         self.execute_button = ctk.CTkButton(
             parent,
             text="実行",
             command=self.execute_chat,
+            height=AppStyles.SIZES['button_height'],
             **AppStyles.get_button_style('primary')
         )
         self.execute_button.grid(
-            row=row, 
+            row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_large']),
             sticky="ew"
         )
     
@@ -236,25 +281,38 @@ class ChatTab:
     
     def load_initial_data(self):
         """初期データを読み込み"""
+        self.refresh_data()
+    
+    def refresh_data(self):
+        """データを更新"""
         # プロジェクト一覧を読み込み
         projects = getAllProject()
         if projects and projects != [""]:
+            current_project = self.project_var.get()
             self.project_combo.configure(values=projects)
-            if projects:
+            if current_project in projects:
+                self.project_var.set(current_project)
+            elif projects:
                 self.project_var.set(projects[0])
         
         # モデル一覧を読み込み
         models = getValueByFormnameAndKeyName("chat", "gpt", "gpt_model")
         if models:
+            current_model = self.model_var.get()
             self.model_combo.configure(values=models)
-            if models:
+            if current_model in models:
+                self.model_var.set(current_model)
+            elif models:
                 self.model_var.set(models[0])
         
         # プログラミング言語一覧を読み込み
         languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
         if languages:
+            current_language = self.language_var.get()
             self.language_combo.configure(values=languages)
-            if languages:
+            if current_language in languages:
+                self.language_var.set(current_language)
+            elif languages:
                 self.language_var.set(languages[0])
     
     def on_file_selected(self, file_path, file_data):
@@ -313,6 +371,10 @@ class ChatTab:
             
             # 入力欄をクリア
             self.parent.after(0, lambda: self.input_text.delete("1.0", "end"))
+            
+            # 全タブのデータを更新
+            if self.main_window:
+                self.parent.after(0, self.main_window.refresh_all_tabs)
             
         except Exception as e:
             error_msg = f"チャット実行中にエラーが発生しました: {str(e)}"

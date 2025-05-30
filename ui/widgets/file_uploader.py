@@ -60,13 +60,13 @@ class FileUploader(ctk.CTkFrame):
         style['text_color'] = AppStyles.COLORS['error']
         style['hover_color'] = AppStyles.COLORS['error']  # hover_colorもerrorに設定
         style['font'] = AppStyles.FONTS['small']  # fontをスタイル辞書で指定
+        # style['height'] = 25 # heightはAppStylesから取得するため削除
         self.clear_button = ctk.CTkButton(
             self,
             text="クリア",
             command=self.clear_file,
             width=60,
-            height=25,
-            # font=AppStyles.FONTS['small'],  # 直接指定を削除
+            # height=25, # 直接指定を削除
             **style
         )
     

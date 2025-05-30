@@ -52,23 +52,43 @@ class MainWindow(ctk.CTk):
         
         # タブ作成
         self.create_tabs()
+        
+        # タブ変更イベントを監視
+        self.tabview.configure(command=self.on_tab_changed)
     
     def create_tabs(self):
         """各タブを作成"""
         # Story2Code タブ
         chat_tab = self.tabview.add("Story2Code")
-        self.chat_component = ChatTab(chat_tab)
+        self.chat_component = ChatTab(chat_tab, main_window=self)
         
         # MyHistory タブ
         history_tab = self.tabview.add("MyHistory")
-        self.history_component = HistoryTab(history_tab)
+        self.history_component = HistoryTab(history_tab, main_window=self)
         
         # Project List タブ
         project_tab = self.tabview.add("Project List")
-        self.project_component = ProjectTab(project_tab)
+        self.project_component = ProjectTab(project_tab, main_window=self)
         
         # デフォルトタブを設定
         self.tabview.set("Story2Code")
+    
+    def on_tab_changed(self):
+        """タブ変更時のハンドラ - データの自動更新"""
+        current_tab = self.tabview.get()
+        
+        if current_tab == "Story2Code":
+            self.chat_component.refresh_data()
+        elif current_tab == "MyHistory":
+            self.history_component.refresh_data()
+        elif current_tab == "Project List":
+            self.project_component.refresh_data()
+    
+    def refresh_all_tabs(self):
+        """全タブのデータを更新"""
+        self.chat_component.refresh_data()
+        self.history_component.refresh_data()
+        self.project_component.refresh_data()
     
     def on_closing(self):
         """アプリケーション終了時の処理"""

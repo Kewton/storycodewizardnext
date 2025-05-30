@@ -35,15 +35,18 @@ class AppStyles:
         'code': ('Courier New', 12),
     }
     
-    # 共通サイズ
+    # 共通サイズ（レイアウト間隔を改善）
     SIZES = {
         'padding_small': 8,
         'padding_medium': 16,
         'padding_large': 24,
-        'button_height': 35,
+        'padding_extra_large': 32,
+        'button_height': 36,
         'input_height': 40,
         'corner_radius': 8,
         'border_width': 1,
+        'label_spacing': 4,  # ラベルと入力フィールド間の間隔
+        'section_spacing': 20,  # セクション間の間隔
     }
     
     @classmethod
@@ -116,3 +119,13 @@ class AppStyles:
             'corner_radius': cls.SIZES['corner_radius'],
             'fg_color': cls.COLORS['surface']
         }
+    
+    @classmethod
+    def get_label_spacing(cls):
+        """ラベルと入力フィールド間の適切な間隔を取得"""
+        return cls.SIZES['label_spacing']
+    
+    @classmethod
+    def get_section_spacing(cls):
+        """セクション間の適切な間隔を取得"""
+        return cls.SIZES['section_spacing']

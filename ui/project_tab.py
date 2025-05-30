@@ -14,8 +14,9 @@ from app.myjsondb.myProjectSettings import getPjdirByPjnm
 class ProjectTab:
     """プロジェクト管理タブのUIコンポーネント"""
     
-    def __init__(self, parent):
+    def __init__(self, parent, main_window=None):
         self.parent = parent
+        self.main_window = main_window
         
         # レイアウト設定
         self.parent.grid_columnconfigure(0, weight=1)
@@ -62,23 +63,26 @@ class ProjectTab:
             sticky="w"
         )
         
+        # 設定項目を縦に配置
+        current_row = 1
+        
         # プロジェクト名入力
-        self.setup_project_name_input(left_frame, 1)
+        current_row = self.setup_project_name_input(left_frame, current_row)
         
         # ディレクトリ選択
-        self.setup_directory_selection(left_frame, 2)
+        current_row = self.setup_directory_selection(left_frame, current_row)
         
         # 作成ボタン
-        self.setup_create_button(left_frame, 3)
+        self.setup_create_button(left_frame, current_row)
     
-    def setup_project_name_input(self, parent, row):
+    def setup_project_name_input(self, parent, start_row):
         """プロジェクト名入力をセットアップ"""
         label = ctk.CTkLabel(parent, text="プロジェクト名:", font=AppStyles.FONTS['default'])
         label.grid(
-            row=row, 
+            row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_small'], 2), 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
             sticky="w"
         )
         
@@ -88,31 +92,33 @@ class ProjectTab:
             **AppStyles.get_entry_style()
         )
         self.project_name_entry.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
+        
+        return start_row + 2
     
-    def setup_directory_selection(self, parent, row):
+    def setup_directory_selection(self, parent, start_row):
         """ディレクトリ選択をセットアップ"""
         label = ctk.CTkLabel(parent, text="ディレクトリのパス:", font=AppStyles.FONTS['default'])
         label.grid(
-            row=row, 
+            row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_small'], 2), 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
             sticky="w"
         )
         
         # ディレクトリ入力とボタンのフレーム
         dir_frame = ctk.CTkFrame(parent, fg_color="transparent")
         dir_frame.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
         dir_frame.grid_columnconfigure(0, weight=1)
@@ -122,30 +128,34 @@ class ProjectTab:
             placeholder_text="ディレクトリパスを選択...",
             **AppStyles.get_entry_style()
         )
-        self.directory_entry.grid(row=0, column=0, padx=(0, 5), sticky="ew")
+        self.directory_entry.grid(row=0, column=0, padx=(0, 8), sticky="ew")
         
         browse_button = ctk.CTkButton(
             dir_frame,
             text="参照",
             command=self.browse_directory,
             width=80,
+            height=AppStyles.SIZES['button_height'],
             **AppStyles.get_button_style('outline')
         )
         browse_button.grid(row=0, column=1, sticky="e")
+        
+        return start_row + 2
     
-    def setup_create_button(self, parent, row):
+    def setup_create_button(self, parent, start_row):
         """作成ボタンをセットアップ"""
         self.create_button = ctk.CTkButton(
             parent,
             text="プロジェクトを追加",
             command=self.create_project,
+            height=AppStyles.SIZES['button_height'],
             **AppStyles.get_button_style('primary')
         )
         self.create_button.grid(
-            row=row, 
+            row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_large'], AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
     
@@ -215,9 +225,17 @@ class ProjectTab:
             # プロジェクト一覧を更新
             self.load_projects()
             
+            # 全タブのデータを更新
+            if self.main_window:
+                self.main_window.refresh_all_tabs()
+            
             messagebox.showinfo("Success", message)
         else:
             messagebox.showerror("Error", message)
+    
+    def refresh_data(self):
+        """データを更新"""
+        self.load_projects()
     
     def load_projects(self):
         """プロジェクト一覧を読み込み"""
@@ -276,6 +294,9 @@ class ProjectTab:
             
             if success:
                 self.load_projects()
+                # 全タブのデータを更新
+                if self.main_window:
+                    self.main_window.refresh_all_tabs()
                 messagebox.showinfo("Success", message)
             else:
                 messagebox.showerror("Error", message)

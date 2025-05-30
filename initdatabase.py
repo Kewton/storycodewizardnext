@@ -22,7 +22,7 @@ def initdata():
         "chat",
         "systemrole",
         {
-            "プログラミング言語": ["Next.js_1", "FastAPI", "Next.js_2", "streamlit2CustomTkinter"],
+            "プログラミング言語": ["Next.js_1", "FastAPI", "Next.js_2", "CustomTkinter"],
             "Next.js_1": {
                 "srcdire": "src",
                 "libraryFileList": [
@@ -77,13 +77,13 @@ def initdata():
                 ],
                 "prompt": "fastAPItemplate"
             },
-            "streamlit2CustomTkinter": {
+            "CustomTkinter": {
                 "srcdire": "",
                 "libraryFileList": [
                     "requirements.txt"
                 ],
-                "prerequisites": "/ ディレクトリにてStreamlitのフロントエンドを開発しています。利用者に最高のチャット体験を提供します。",
-                "system_role": "あなたは優秀なPythonのフロントエンドエンジニアです。入力された情報を元にStreamlitで開発されたフロントエンドアプリケーションをCustomTkinterに変換します。",
+                "prerequisites": "/ ディレクトリにてCustomTkinterのクライアントアプリケーションを開発しています。利用者に最高のユーザー体験を提供します。",
+                "system_role": "あなたは優秀なPythonのCustomTkinterエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
                 "ignorelist": [
                     "__pycache__/",
                     ".venv/",
@@ -102,7 +102,7 @@ def initdata():
                     "temp/",
                     ".git/"
                 ],
-                "prompt": "streamlit2CustomTkinter"
+                "prompt": "CustomTkinter"
             }
         }
     )

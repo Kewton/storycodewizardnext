@@ -20,8 +20,9 @@ from app.myjsondb.myHistories import getValOfPjByKey
 class HistoryTab:
     """履歴管理タブのUIコンポーネント"""
     
-    def __init__(self, parent):
+    def __init__(self, parent, main_window=None):
         self.parent = parent
+        self.main_window = main_window
         self.current_history_data = []
         self.selected_index = 0
         self.current_messages = []
@@ -56,7 +57,7 @@ class HistoryTab:
             sticky="nsew"
         )
         left_frame.grid_columnconfigure(0, weight=1)
-        left_frame.grid_rowconfigure(2, weight=1)
+        left_frame.grid_rowconfigure(3, weight=1)
         
         # タイトル
         title_label = ctk.CTkLabel(
@@ -68,7 +69,7 @@ class HistoryTab:
             row=0, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_large']),
             sticky="w"
         )
         
@@ -76,12 +77,18 @@ class HistoryTab:
         self.setup_project_selection(left_frame, 1)
         
         # 履歴リスト
-        self.setup_history_list(left_frame, 2)
+        self.setup_history_list(left_frame, 3)
     
-    def setup_project_selection(self, parent, row):
+    def setup_project_selection(self, parent, start_row):
         """プロジェクト選択UIをセットアップ"""
         label = ctk.CTkLabel(parent, text="Project:", font=AppStyles.FONTS['default'])
-        label.grid(row=row, column=0, padx=AppStyles.SIZES['padding_medium'], pady=(AppStyles.SIZES['padding_small'], 2), sticky="w")
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
         
         self.project_var = ctk.StringVar()
         self.project_combo = ctk.CTkComboBox(
@@ -91,10 +98,10 @@ class HistoryTab:
             **AppStyles.get_entry_style()
         )
         self.project_combo.grid(
-            row=row+1, 
+            row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(2, AppStyles.SIZES['padding_small']),
+            pady=(4, AppStyles.SIZES['padding_large']),
             sticky="ew"
         )
     
@@ -174,18 +181,18 @@ class HistoryTab:
             row=row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(0, AppStyles.SIZES['padding_small']),
+            pady=(0, AppStyles.SIZES['padding_medium']),
             sticky="ew"
         )
         button_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
         
         # 削除ボタン
         style = AppStyles.get_button_style('outline').copy()
-        # style 中の重複定義を排除
         style.pop('text_color', None)
         style.pop('hover_color', None)
         style['text_color'] = AppStyles.COLORS['error']
         style['hover_color'] = AppStyles.COLORS['error']
+        style['height'] = AppStyles.SIZES['button_height']
         self.delete_button = ctk.CTkButton(
             button_frame,
             text="Delete History",
@@ -195,11 +202,13 @@ class HistoryTab:
         self.delete_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
         
         # ユーザーコンテキストダウンロード
+        button_style = AppStyles.get_button_style('secondary').copy()
+        button_style['height'] = AppStyles.SIZES['button_height']
         self.download_user_button = ctk.CTkButton(
             button_frame,
             text="Download Your Context",
             command=self.download_user_context,
-            **AppStyles.get_button_style('secondary')
+            **button_style
         )
         self.download_user_button.grid(row=0, column=1, padx=5, sticky="ew")
         
@@ -208,16 +217,18 @@ class HistoryTab:
             button_frame,
             text="Download Agent Context",
             command=self.download_agent_context,
-            **AppStyles.get_button_style('secondary')
+            **button_style
         )
         self.download_agent_button.grid(row=0, column=2, padx=5, sticky="ew")
         
         # プロジェクトに反映ボタン
+        primary_style = AppStyles.get_button_style('primary').copy()
+        primary_style['height'] = AppStyles.SIZES['button_height']
         self.apply_button = ctk.CTkButton(
             button_frame,
             text="プロジェクトに反映",
             command=self.apply_to_project,
-            **AppStyles.get_button_style('primary')
+            **primary_style
         )
         self.apply_button.grid(row=0, column=3, padx=(5, 0), sticky="ew")
     
@@ -238,11 +249,19 @@ class HistoryTab:
     
     def load_initial_data(self):
         """初期データを読み込み"""
+        self.refresh_data()
+    
+    def refresh_data(self):
+        """データを更新"""
         # プロジェクト一覧を読み込み
         projects = getAllProject()
         if projects and projects != [""]:
+            current_project = self.project_var.get()
             self.project_combo.configure(values=projects)
-            if projects:
+            if current_project in projects:
+                self.project_var.set(current_project)
+                self.load_history_data()
+            elif projects:
                 self.project_var.set(projects[0])
                 self.load_history_data()
     
@@ -352,6 +371,9 @@ class HistoryTab:
             if success:
                 messagebox.showinfo("Success", "履歴項目を削除しました。")
                 self.load_history_data()
+                # 全タブのデータを更新
+                if self.main_window:
+                    self.main_window.refresh_all_tabs()
             else:
                 messagebox.showerror("Error", "履歴項目の削除に失敗しました。")
     
@@ -385,7 +407,7 @@ class HistoryTab:
         filename = f"chat_history_{item['gptmodel']}_{item['registration_date']}_{context_type}.md"
         
         file_path = filedialog.asksaveasfilename(
-            initialfile=filename,  # initialname を initialfile に変更
+            initialfile=filename,
             defaultextension=".md",
             filetypes=[("Markdown files", "*.md"), ("All files", "*.*")]
         )
