@@ -7,3 +7,5 @@ PathSpec
 google-genai
 google-generativeai
 beautifulsoup4
+markdown>=3.4.0
+pygments>=2.14.0

@@ -5,6 +5,7 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 ## 機能概要
 - LLMとのチャット機能（GPT、Claude、Gemini対応）
 - リアルタイムストリーミング応答表示
+- **Markdown表示対応**（見出し、リスト、コードブロック、強調表示）
 - プロジェクト管理機能（説明付きプロジェクト管理、編集機能）
 - チャット履歴の保存・検索・ダウンロード
 - ファイルアップロード対応（JPEG）
@@ -51,13 +52,13 @@ python main.py
 - **位置**: `./ui/chat_tab.py`
 - **機能**: LLMとの対話インターフェース、ストリーミング応答表示
 - **コンポーネント**: プロジェクト選択、モデル選択、入力エリア、チャット表示
-- **改善点**: リアルタイムストリーミング表示、ラベルとドロップダウンの適切な間隔調整
+- **改善点**: リアルタイムストリーミング表示、ラベルとドロップダウンの適切な間隔調整、**Markdown表示対応**
 
 ### MyHistoryタブ (HistoryTab)
 - **位置**: `./ui/history_tab.py`
 - **機能**: 過去のチャット履歴管理
 - **コンポーネント**: 履歴リスト、詳細表示、削除・ダウンロード機能
-- **改善点**: 自動データ更新、フィルタリング機能強化、実行時刻とモデル名のみ表示（フォントサイズ拡大）
+- **改善点**: 自動データ更新、フィルタリング機能強化、実行時刻とモデル名のみ表示（フォントサイズ拡大）、**Markdown表示対応**
 
 ### Project Listタブ (ProjectTab)
 - **位置**: `./ui/project_tab.py`
@@ -66,11 +67,12 @@ python main.py
 - **改善点**: ラベルとフィールドの配置最適化、登録後の自動更新、プロジェクト説明管理
 
 ### カスタムウィジェット
-- **ChatMessage**: `./ui/widgets/chat_message.py` - チャットメッセージ表示用
+- **ChatMessage**: `./ui/widgets/chat_message.py` - チャットメッセージ表示用（**Markdown対応**）
 - **ProjectCard**: `./ui/widgets/project_card.py` - プロジェクト情報表示・編集用
 - **ProjectEditDialog**: `./ui/widgets/project_edit_dialog.py` - プロジェクト編集ダイアログ（名前編集不可、可変サイズ対応）
 - **FileUploader**: `./ui/widgets/file_uploader.py` - ファイルアップロード機能
-- **StreamingChatMessage**: `./ui/widgets/streaming_chat_message.py` - ストリーミング対応チャットメッセージ表示
+- **StreamingChatMessage**: `./ui/widgets/streaming_chat_message.py` - ストリーミング対応チャットメッセージ表示（**Markdown対応**）
+- **MarkdownRenderer**: `./ui/widgets/markdown_renderer.py` - **新規追加**: Markdown表示用ウィジェット
 
 ## アーキテクチャ
 
@@ -84,8 +86,9 @@ python main.py
 │   ├── project_tab.py        # プロジェクト管理タブ
 │   ├── styles.py             # UI共通スタイル定義
 │   └── widgets/              # カスタムウィジェット
-│       ├── chat_message.py   # チャットメッセージ表示
-│       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示
+│       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
+│       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
+│       ├── markdown_renderer.py # **新規**: Markdown表示ウィジェット
 │       ├── project_card.py   # プロジェクトカード
 │       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（強化版）
 │       └── file_uploader.py  # ファイルアップロード
@@ -94,7 +97,7 @@ python main.py
 │   ├── myjsondb/            # データベース処理
 │   ├── util/                # ユーティリティ
 │   └── prompt/              # プロンプト生成
-└── requirements.txt          # 依存関係
+└── requirements.txt          # 依存関係（Markdown処理ライブラリ追加）
 ```
 
 ## 技術仕様
@@ -102,6 +105,28 @@ python main.py
 - **Python**: 3.8+
 - **Database**: JSONベースローカルDB
 - **LLM API**: OpenAI, Anthropic, Google Gemini（ストリーミング対応）
+- **Markdown処理**: markdown、pygments（シンタックスハイライト）
+
+## 新機能: Markdown表示対応
+
+### サポートする記法
+- **見出し**: # ## ### #### ##### ######
+- **強調**: **太字** *斜体* ~~取り消し線~~
+- **リスト**: 箇条書き（-）、番号付きリスト（1.）
+- **コードブロック**: ```言語名 および `インラインコード`
+- **リンク**: [テキスト](URL)
+- **引用**: > 引用文
+- **水平線**: ---
+- **表**: Markdown表記法
+
+### 実装詳細
+- HTMLレンダリングによる高品質な表示
+- コードブロックのシンタックスハイライト
+- レスポンシブデザイン対応
+- ダークテーマ最適化
+
+### 使用方法
+LLMからの応答は自動的にMarkdown記法として解釈され、適切にレンダリングされます。従来のプレーンテキスト表示も引き続き利用可能です。
 
 ## 開発者向け情報
 
@@ -118,6 +143,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **レスポンシブ対応**: ウィンドウサイズ変更に対応した柔軟なレイアウト
 - **データ同期**: タブ間でのリアルタイムデータ更新
 - **ストリーミング対応**: LLM応答のリアルタイム表示
+- **Markdown対応**: 豊富な表現力を持つテキスト表示
 
 ### イベントハンドリング
 - 非同期LLM API呼び出し
@@ -125,6 +151,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - リアルタイムUI更新
 - ファイルドラッグ&ドロップ対応
 - 自動データリフレッシュ機能
+- Markdownリアルタイムレンダリング
 
 ## プロジェクト管理機能
 
@@ -146,6 +173,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **実行モデル**: 使用されたLLMモデル名
 - **フォント**: 視認性向上のため大きなフォントサイズを使用
 - **レイアウト**: シンプルで見やすい2項目表示
+- **Markdown表示**: 履歴の詳細表示でMarkdown記法対応
 
 ## LLMストリーミング機能
 
@@ -154,6 +182,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **リアルタイム更新**: 応答テキストがリアルタイムで表示される
 - **処理状態表示**: 実行中、完了状態の明確な表示
 - **応答保存**: ストリーミング完了後に履歴として保存
+- **Markdown対応**: ストリーミング中もMarkdown記法をリアルタイム解析・表示
 
 ## トラブルシューティング
 
@@ -163,6 +192,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 3. **UI表示問題**: CustomTkinterの最新版を確認
 4. **レイアウト崩れ**: ウィンドウサイズを調整し、最小サイズ以上で使用
 5. **ストリーミングエラー**: API接続とキー設定を確認
+6. **Markdown表示エラー**: markdown、pygmentsライブラリのインストールを確認
 
 ### ログ出力
 アプリケーションログは標準出力に表示されます。
@@ -173,6 +203,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **ネイティブデスクトップアプリ**: ブラウザ不要で直接実行
 - **レスポンシブUI**: より高速で滑らかな操作感
 - **ストリーミング対応**: リアルタイムLLM応答表示
+- **Markdown表示対応**: 豊富な表現力でリッチなテキスト表示
 - **カスタマイズ性向上**: テーマ・レイアウトの柔軟な調整
 - **ファイル管理**: ドラッグ&ドロップによる直感的なファイル操作
 - **リアルタイム更新**: データベース変更の即座な反映
@@ -189,4 +220,5 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 | st.file_uploader() | カスタムFileUploader |
 | st.dataframe() | Tkinter Listbox + カスタム表示 |
 | st.download_button() | ファイルダイアログ + 保存処理 |
-| st.write_stream() | StreamingChatMessage |
+| st.write_stream() | StreamingChatMessage (Markdown対応) |
+| st.markdown() | **新規**: MarkdownRenderer |
