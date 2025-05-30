@@ -19,18 +19,20 @@ class ProjectCard(ctk.CTkFrame):
         self.delete_callback = delete_callback
         self.edit_callback = edit_callback
         
-        # プロジェクト説明を取得
-        self.project_description = self.get_project_description()
+        # プロジェクト情報を取得
+        self.project_description, self.programming_type = self.get_project_info()
         
         self.setup_ui()
     
-    def get_project_description(self):
-        """プロジェクト説明を取得"""
+    def get_project_info(self):
+        """プロジェクト情報を取得"""
         try:
             value_data = getValueByPjnm(self.project_name)
-            return value_data.get('description', 'プロジェクトの説明がありません。')
+            description = value_data.get('description', 'プロジェクトの説明がありません。')
+            programming_type = value_data.get('programming_type', '未設定')
+            return description, programming_type
         except:
-            return 'プロジェクトの説明がありません。'
+            return 'プロジェクトの説明がありません。', '未設定'
     
     def setup_ui(self):
         """UIコンポーネントをセットアップ"""
@@ -52,6 +54,22 @@ class ProjectCard(ctk.CTkFrame):
             sticky="w"
         )
         
+        # Programming Type
+        programming_type_label = ctk.CTkLabel(
+            self,
+            text=f"Programming Type: {self.programming_type}",
+            font=AppStyles.FONTS['small'],
+            text_color=AppStyles.COLORS['accent']
+        )
+        programming_type_label.grid(
+            row=1, 
+            column=0, 
+            columnspan=3,
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(0, AppStyles.SIZES['padding_small']),
+            sticky="w"
+        )
+        
         # プロジェクトパス
         path_label = ctk.CTkLabel(
             self,
@@ -60,7 +78,7 @@ class ProjectCard(ctk.CTkFrame):
             text_color=AppStyles.COLORS['text_secondary']
         )
         path_label.grid(
-            row=1, 
+            row=2, 
             column=0, 
             columnspan=3,
             padx=AppStyles.SIZES['padding_medium'],
@@ -77,7 +95,7 @@ class ProjectCard(ctk.CTkFrame):
             wraplength=400
         )
         description_label.grid(
-            row=2, 
+            row=3, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
             pady=(0, AppStyles.SIZES['padding_medium']),
@@ -87,7 +105,7 @@ class ProjectCard(ctk.CTkFrame):
         # ボタンフレーム
         button_frame = ctk.CTkFrame(self, fg_color="transparent")
         button_frame.grid(
-            row=2,
+            row=3,
             column=1,
             columnspan=2,
             padx=AppStyles.SIZES['padding_medium'],
@@ -132,6 +150,7 @@ class ProjectCard(ctk.CTkFrame):
             project_name=self.project_name,
             project_path=self.project_path,
             project_description=self.project_description,
+            programming_type=self.programming_type,
             save_callback=self.on_project_updated
         )
         dialog.grab_set()  # モーダルダイアログにする
@@ -141,11 +160,12 @@ class ProjectCard(ctk.CTkFrame):
         if self.delete_callback:
             self.delete_callback(self.project_name)
     
-    def on_project_updated(self, new_name, new_path, new_description):
+    def on_project_updated(self, new_name, new_path, new_description, new_programming_type):
         """プロジェクト更新後のコールバック"""
         self.project_name = new_name
         self.project_path = new_path
         self.project_description = new_description
+        self.programming_type = new_programming_type
         
         # UI更新のため、親にコールバック
         if self.edit_callback:

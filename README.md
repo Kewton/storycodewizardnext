@@ -6,7 +6,7 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 - LLMとのチャット機能（GPT、Claude、Gemini対応）
 - リアルタイムストリーミング応答表示
 - **Markdown表示対応**（見出し、リスト、コードブロック、強調表示）
-- プロジェクト管理機能（説明付きプロジェクト管理、編集機能）
+- プロジェクト管理機能（説明付きプロジェクト管理、編集機能、Programming Type管理）
 - チャット履歴の保存・検索・ダウンロード
 - ファイルアップロード対応（JPEG）
 - コード自動生成とプロジェクトへの反映
@@ -17,27 +17,27 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 
 ### 1. 環境構築
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
-pip install -r requirements.txt
+    python3 -m venv .venv
+    source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
+    pip install -r requirements.txt
 ```
 
 ### 2. APIキー設定
 `secret_keys.py`ファイルを作成し、以下の内容を設定：
 ```python
-openai_api_key = "<your OpenAI API key>"
-claude_api_key = "<your Claude API key>"
-gemini_api_key = "<your Gemini API key>"
+    openai_api_key = "<your OpenAI API key>"
+    claude_api_key = "<your Claude API key>"
+    gemini_api_key = "<your Gemini API key>"
 ```
 
 ### 3. データベース初期化
 ```bash
-python initdatabase.py
+    python initdatabase.py
 ```
 
 ### 4. アプリケーション起動
 ```bash
-python main.py
+    python main.py
 ```
 
 ## UIコンポーネント構成
@@ -51,8 +51,8 @@ python main.py
 ### Story2Codeタブ (ChatTab)
 - **位置**: `./ui/chat_tab.py`
 - **機能**: LLMとの対話インターフェース、ストリーミング応答表示
-- **コンポーネント**: プロジェクト選択、モデル選択、入力エリア、チャット表示
-- **改善点**: リアルタイムストリーミング表示、ラベルとドロップダウンの適切な間隔調整、**Markdown表示対応**
+- **コンポーネント**: プロジェクト選択、モデル選択、Programming Type選択（プロジェクト連携）、入力エリア、チャット表示
+- **改善点**: リアルタイムストリーミング表示、スクロール可能な設定パネル、プロジェクト選択時の自動Programming Type設定、**Markdown表示対応**
 
 ### MyHistoryタブ (HistoryTab)
 - **位置**: `./ui/history_tab.py`
@@ -62,14 +62,14 @@ python main.py
 
 ### Project Listタブ (ProjectTab)
 - **位置**: `./ui/project_tab.py`
-- **機能**: プロジェクトの作成・管理・編集
-- **コンポーネント**: プロジェクト一覧、新規作成フォーム、プロジェクト編集機能
-- **改善点**: ラベルとフィールドの配置最適化、登録後の自動更新、プロジェクト説明管理
+- **機能**: プロジェクトの作成・管理・編集（Programming Type管理含む）
+- **コンポーネント**: プロジェクト一覧、新規作成フォーム（Programming Type選択付き）、プロジェクト編集機能
+- **改善点**: スクロール可能な設定パネル、Programming Type管理、ラベルとフィールドの配置最適化、登録後の自動更新、プロジェクト説明管理
 
 ### カスタムウィジェット
 - **ChatMessage**: `./ui/widgets/chat_message.py` - チャットメッセージ表示用（**Markdown対応**）
-- **ProjectCard**: `./ui/widgets/project_card.py` - プロジェクト情報表示・編集用
-- **ProjectEditDialog**: `./ui/widgets/project_edit_dialog.py` - プロジェクト編集ダイアログ（名前編集不可、可変サイズ対応）
+- **ProjectCard**: `./ui/widgets/project_card.py` - プロジェクト情報表示・編集用（Programming Type表示対応）
+- **ProjectEditDialog**: `./ui/widgets/project_edit_dialog.py` - プロジェクト編集ダイアログ（Programming Type編集対応、可変サイズ対応）
 - **FileUploader**: `./ui/widgets/file_uploader.py` - ファイルアップロード機能
 - **StreamingChatMessage**: `./ui/widgets/streaming_chat_message.py` - ストリーミング対応チャットメッセージ表示（**Markdown対応**）
 - **MarkdownRenderer**: `./ui/widgets/markdown_renderer.py` - **新規追加**: Markdown表示用ウィジェット
@@ -77,27 +77,27 @@ python main.py
 ## アーキテクチャ
 
 ```
-./
-├── main.py                    # アプリケーションエントリーポイント
-├── ui/                        # UIコンポーネント
-│   ├── main_window.py         # メインウィンドウ
-│   ├── chat_tab.py           # チャット機能タブ（ストリーミング対応）
-│   ├── history_tab.py        # 履歴管理タブ
-│   ├── project_tab.py        # プロジェクト管理タブ
-│   ├── styles.py             # UI共通スタイル定義
-│   └── widgets/              # カスタムウィジェット
-│       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
-│       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
-│       ├── markdown_renderer.py # **新規**: Markdown表示ウィジェット
-│       ├── project_card.py   # プロジェクトカード
-│       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（強化版）
-│       └── file_uploader.py  # ファイルアップロード
-├── app/                      # 既存のビジネスロジック
-│   ├── chat.py              # チャット処理（ストリーミング対応）
-│   ├── myjsondb/            # データベース処理
-│   ├── util/                # ユーティリティ
-│   └── prompt/              # プロンプト生成
-└── requirements.txt          # 依存関係（Markdown処理ライブラリ追加）
+    ./
+    ├── main.py                    # アプリケーションエントリーポイント
+    ├── ui/                        # UIコンポーネント
+    │   ├── main_window.py         # メインウィンドウ
+    │   ├── chat_tab.py           # チャット機能タブ（ストリーミング対応、Programming Type連携）
+    │   ├── history_tab.py        # 履歴管理タブ
+    │   ├── project_tab.py        # プロジェクト管理タブ（Programming Type管理対応）
+    │   ├── styles.py             # UI共通スタイル定義
+    │   └── widgets/              # カスタムウィジェット
+    │       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
+    │       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
+    │       ├── markdown_renderer.py # **新規**: Markdown表示ウィジェット
+    │       ├── project_card.py   # プロジェクトカード（Programming Type表示対応）
+    │       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（Programming Type編集対応）
+    │       └── file_uploader.py  # ファイルアップロード
+    ├── app/                      # 既存のビジネスロジック
+    │   ├── chat.py              # チャット処理（ストリーミング対応）
+    │   ├── myjsondb/            # データベース処理（Programming Type管理対応）
+    │   ├── util/                # ユーティリティ
+    │   └── prompt/              # プロンプト生成
+    └── requirements.txt          # 依存関係（Markdown処理ライブラリ追加）
 ```
 
 ## 技術仕様
@@ -141,6 +141,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **間隔統一**: 全てのコンポーネント間で一貫した間隔を使用
 - **視覚的階層**: ラベル、入力フィールド、ボタンの明確な配置
 - **レスポンシブ対応**: ウィンドウサイズ変更に対応した柔軟なレイアウト
+- **縦スクロール対応**: 設定パネルでの適切なスクロール機能
 - **データ同期**: タブ間でのリアルタイムデータ更新
 - **ストリーミング対応**: LLM応答のリアルタイム表示
 - **Markdown対応**: 豊富な表現力を持つテキスト表示
@@ -152,6 +153,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - ファイルドラッグ&ドロップ対応
 - 自動データリフレッシュ機能
 - Markdownリアルタイムレンダリング
+- プロジェクト選択時のProgramming Type自動設定
 
 ## プロジェクト管理機能
 
@@ -159,12 +161,18 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **プロジェクト名**: 識別用の名前（編集不可）
 - **プロジェクトパス**: ソースコードのディレクトリパス
 - **プロジェクト説明**: プロジェクトの詳細説明
+- **Programming Type**: プロジェクトで使用するプログラミング言語・フレームワーク（Next.js、FastAPI、CustomTkinter等）
 
 ### プロジェクト編集機能
 - プロジェクトカードから直接編集可能
-- プロジェクトパス、説明の編集（名前は編集不可）
+- プロジェクトパス、説明、Programming Typeの編集（名前は編集不可）
 - 可変サイズダイアログ対応
 - リアルタイム更新と全タブ同期
+
+### Programming Type連携機能
+- プロジェクト作成時にProgramming Typeを選択
+- Chat Configurationでプロジェクト選択時に自動的にProgramming Typeを設定
+- プロジェクトごとに最適なプロンプトテンプレートを自動選択
 
 ## チャット履歴機能
 
@@ -193,6 +201,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 4. **レイアウト崩れ**: ウィンドウサイズを調整し、最小サイズ以上で使用
 5. **ストリーミングエラー**: API接続とキー設定を確認
 6. **Markdown表示エラー**: markdown、pygmentsライブラリのインストールを確認
+7. **Programming Type連携エラー**: プロジェクト設定の整合性を確認
 
 ### ログ出力
 アプリケーションログは標準出力に表示されます。
@@ -207,8 +216,9 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **カスタマイズ性向上**: テーマ・レイアウトの柔軟な調整
 - **ファイル管理**: ドラッグ&ドロップによる直感的なファイル操作
 - **リアルタイム更新**: データベース変更の即座な反映
-- **プロジェクト管理強化**: 説明付きプロジェクト管理と編集機能
+- **プロジェクト管理強化**: Programming Type管理と連携機能
 - **履歴表示改善**: 見やすい実行時刻・モデル名表示
+- **縦スクロール対応**: 全画面表示でも快適な操作性
 
 ### 機能移行対応表
 | Streamlit機能 | CustomTkinter対応 |

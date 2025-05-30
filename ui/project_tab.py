@@ -10,6 +10,7 @@ from ui.widgets.project_card import ProjectCard
 from app.chat import create_new_project, delete_project
 from app.myjsondb.myHistories import getProjectList
 from app.myjsondb.myProjectSettings import getPjdirByPjnm
+from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 
 class ProjectTab:
     """プロジェクト管理タブのUIコンポーネント"""
@@ -28,30 +29,31 @@ class ProjectTab:
     
     def setup_ui(self):
         """UIコンポーネントをセットアップ"""
-        # 左側パネル（新規作成）
+        # 左側パネル（新規作成） - スクロール可能に変更
         self.setup_left_panel()
         
         # 右側パネル（プロジェクト一覧）
         self.setup_right_panel()
     
     def setup_left_panel(self):
-        """左側パネル（新規作成）をセットアップ"""
-        left_frame = ctk.CTkFrame(
+        """左側パネル（新規作成）をセットアップ（スクロール可能）"""
+        # スクロール可能フレーム
+        self.left_scrollable = ctk.CTkScrollableFrame(
             self.parent,
-            **AppStyles.get_frame_style('default')
+            **AppStyles.get_scrollable_frame_style()
         )
-        left_frame.grid(
+        self.left_scrollable.grid(
             row=0, 
             column=0, 
             padx=(0, AppStyles.SIZES['padding_medium']),
             pady=0,
             sticky="nsew"
         )
-        left_frame.grid_columnconfigure(0, weight=1)
+        self.left_scrollable.grid_columnconfigure(0, weight=1)
         
         # タイトル
         title_label = ctk.CTkLabel(
-            left_frame,
+            self.left_scrollable,
             text="新規プロジェクトの作成",
             font=AppStyles.FONTS['heading']
         )
@@ -63,20 +65,23 @@ class ProjectTab:
             sticky="w"
         )
         
-        # 設定項目を縦に配置
+        # 設定項目を縦に配置（間隔を調整）
         current_row = 1
         
         # プロジェクト名入力
-        current_row = self.setup_project_name_input(left_frame, current_row)
+        current_row = self.setup_project_name_input(self.left_scrollable, current_row)
         
         # ディレクトリ選択
-        current_row = self.setup_directory_selection(left_frame, current_row)
+        current_row = self.setup_directory_selection(self.left_scrollable, current_row)
+        
+        # Programming Type選択
+        current_row = self.setup_programming_type_selection(self.left_scrollable, current_row)
         
         # プロジェクト説明入力
-        current_row = self.setup_description_input(left_frame, current_row)
+        current_row = self.setup_description_input(self.left_scrollable, current_row)
         
         # 作成ボタン
-        self.setup_create_button(left_frame, current_row)
+        self.setup_create_button(self.left_scrollable, current_row)
     
     def setup_project_name_input(self, parent, start_row):
         """プロジェクト名入力をセットアップ"""
@@ -85,7 +90,7 @@ class ProjectTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -98,7 +103,7 @@ class ProjectTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -111,7 +116,7 @@ class ProjectTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -121,7 +126,7 @@ class ProjectTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         dir_frame.grid_columnconfigure(0, weight=1)
@@ -145,6 +150,36 @@ class ProjectTab:
         
         return start_row + 2
     
+    def setup_programming_type_selection(self, parent, start_row):
+        """Programming Type選択をセットアップ"""
+        label = ctk.CTkLabel(parent, text="Programming Type:", font=AppStyles.FONTS['default'])
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
+            sticky="w"
+        )
+        
+        self.programming_type_var = ctk.StringVar()
+        self.programming_type_combo = ctk.CTkComboBox(
+            parent,
+            variable=self.programming_type_var,
+            **AppStyles.get_entry_style()
+        )
+        self.programming_type_combo.grid(
+            row=start_row + 1, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(4, AppStyles.SIZES['padding_small']),
+            sticky="ew"
+        )
+        
+        # Programming Type一覧を読み込み
+        self.load_programming_types()
+        
+        return start_row + 2
+    
     def setup_description_input(self, parent, start_row):
         """プロジェクト説明入力をセットアップ"""
         label = ctk.CTkLabel(parent, text="プロジェクト説明:", font=AppStyles.FONTS['default'])
@@ -152,13 +187,13 @@ class ProjectTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
         self.description_text = ctk.CTkTextbox(
             parent,
-            height=100,
+            height=80,  # 高さを少し縮小
             font=AppStyles.FONTS['default'],
             corner_radius=AppStyles.SIZES['corner_radius']
         )
@@ -166,7 +201,7 @@ class ProjectTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -185,7 +220,7 @@ class ProjectTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(AppStyles.SIZES['padding_large'], AppStyles.SIZES['padding_medium']),
+            pady=(AppStyles.SIZES['padding_small'], AppStyles.SIZES['padding_large']),
             sticky="ew"
         )
     
@@ -233,6 +268,14 @@ class ProjectTab:
         )
         self.projects_scrollable.grid_columnconfigure(0, weight=1)
     
+    def load_programming_types(self):
+        """Programming Type一覧を読み込み"""
+        languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
+        if languages:
+            self.programming_type_combo.configure(values=languages)
+            if languages:
+                self.programming_type_var.set(languages[0])
+    
     def browse_directory(self):
         """ディレクトリ選択ダイアログ"""
         directory = filedialog.askdirectory()
@@ -244,10 +287,11 @@ class ProjectTab:
         """プロジェクト作成"""
         project_name = self.project_name_entry.get().strip()
         directory_path = self.directory_entry.get().strip()
+        programming_type = self.programming_type_var.get()
         description = self.description_text.get("1.0", "end-1c").strip()
         
-        success, message = self.create_new_project_with_description(
-            project_name, directory_path, description
+        success, message = self.create_new_project_with_all_data(
+            project_name, directory_path, programming_type, description
         )
         
         if success:
@@ -255,6 +299,10 @@ class ProjectTab:
             self.project_name_entry.delete(0, 'end')
             self.directory_entry.delete(0, 'end')
             self.description_text.delete("1.0", "end")
+            # Programming Typeは最初の選択肢にリセット
+            languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
+            if languages:
+                self.programming_type_var.set(languages[0])
             
             # プロジェクト一覧を更新
             self.load_projects()
@@ -267,8 +315,8 @@ class ProjectTab:
         else:
             messagebox.showerror("Error", message)
     
-    def create_new_project_with_description(self, project_name, directory_path, description):
-        """説明付きプロジェクト作成"""
+    def create_new_project_with_all_data(self, project_name, directory_path, programming_type, description):
+        """Programming Type対応のプロジェクト作成"""
         from app.myjsondb.myHistories import createProject, getAllProject
         from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getAllProject
         
@@ -282,6 +330,9 @@ class ProjectTab:
         if not os.path.isdir(directory_path):
             return False, "有効なディレクトリパスを入力してください。"
         
+        if not programming_type.strip():
+            return False, "Programming Typeを選択してください。"
+        
         # 既存プロジェクト名チェック
         existing_projects = getAllProject()
         if project_name in existing_projects:
@@ -291,7 +342,8 @@ class ProjectTab:
             createProject(project_name)
             value_data = {
                 "test": "sss",
-                "description": description if description else "プロジェクトの説明がありません。"
+                "description": description if description else "プロジェクトの説明がありません。",
+                "programming_type": programming_type
             }
             upsertPjdirAndValueByPjnm(project_name, directory_path, value_data)
             return True, f"プロジェクト '{project_name}' を追加しました。"
@@ -300,6 +352,7 @@ class ProjectTab:
     
     def refresh_data(self):
         """データを更新"""
+        self.load_programming_types()
         self.load_projects()
     
     def load_projects(self):

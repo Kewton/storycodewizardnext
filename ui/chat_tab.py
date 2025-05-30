@@ -11,7 +11,7 @@ from ui.widgets.chat_message import ChatMessage
 from ui.widgets.streaming_chat_message import StreamingChatMessage
 from ui.widgets.file_uploader import FileUploader
 from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
-from app.myjsondb.myProjectSettings import getAllProject
+from app.myjsondb.myProjectSettings import getAllProject, getValueByPjnm
 from app.chat import communicate_core_streaming, save_chat_history
 
 class ChatTab:
@@ -35,30 +35,31 @@ class ChatTab:
     
     def setup_ui(self):
         """UIコンポーネントをセットアップ"""
-        # 左側パネル（設定・入力）
+        # 左側パネル（設定・入力） - スクロール可能に変更
         self.setup_left_panel()
         
         # 右側パネル（チャット表示）
         self.setup_right_panel()
     
     def setup_left_panel(self):
-        """左側パネルをセットアップ"""
-        left_frame = ctk.CTkFrame(
+        """左側パネルをセットアップ（スクロール可能）"""
+        # スクロール可能フレーム
+        self.left_scrollable = ctk.CTkScrollableFrame(
             self.parent,
-            **AppStyles.get_frame_style('default')
+            **AppStyles.get_scrollable_frame_style()
         )
-        left_frame.grid(
+        self.left_scrollable.grid(
             row=0, 
             column=0, 
             padx=(0, AppStyles.SIZES['padding_medium']),
             pady=0,
             sticky="nsew"
         )
-        left_frame.grid_columnconfigure(0, weight=1)
+        self.left_scrollable.grid_columnconfigure(0, weight=1)
         
         # タイトル
         title_label = ctk.CTkLabel(
-            left_frame,
+            self.left_scrollable,
             text="Chat Configuration",
             font=AppStyles.FONTS['heading']
         )
@@ -70,26 +71,26 @@ class ChatTab:
             sticky="w"
         )
         
-        # 設定項目を縦に配置
+        # 設定項目を縦に配置（間隔を調整）
         current_row = 1
         
         # プロジェクト選択
-        current_row = self.setup_project_selection(left_frame, current_row)
+        current_row = self.setup_project_selection(self.left_scrollable, current_row)
         
         # モデル選択
-        current_row = self.setup_model_selection(left_frame, current_row)
+        current_row = self.setup_model_selection(self.left_scrollable, current_row)
         
         # 言語選択
-        current_row = self.setup_language_selection(left_frame, current_row)
+        current_row = self.setup_language_selection(self.left_scrollable, current_row)
         
         # ファイルアップロード
-        current_row = self.setup_file_upload(left_frame, current_row)
+        current_row = self.setup_file_upload(self.left_scrollable, current_row)
         
         # 入力テキストエリア
-        current_row = self.setup_input_area(left_frame, current_row)
+        current_row = self.setup_input_area(self.left_scrollable, current_row)
         
         # 実行ボタン
-        self.setup_execute_button(left_frame, current_row)
+        self.setup_execute_button(self.left_scrollable, current_row)
     
     def setup_project_selection(self, parent, start_row):
         """プロジェクト選択UIをセットアップ"""
@@ -98,7 +99,7 @@ class ChatTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -106,13 +107,14 @@ class ChatTab:
         self.project_combo = ctk.CTkComboBox(
             parent,
             variable=self.project_var,
+            command=self.on_project_changed,
             **AppStyles.get_entry_style()
         )
         self.project_combo.grid(
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -120,12 +122,12 @@ class ChatTab:
     
     def setup_model_selection(self, parent, start_row):
         """モデル選択UIをセットアップ"""
-        label = ctk.CTkLabel(parent, text="GPT Model:", font=AppStyles.FONTS['default'])
+        label = ctk.CTkLabel(parent, text="LLM Model:", font=AppStyles.FONTS['default'])
         label.grid(
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -139,7 +141,7 @@ class ChatTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -147,12 +149,12 @@ class ChatTab:
     
     def setup_language_selection(self, parent, start_row):
         """プログラミング言語選択UIをセットアップ"""
-        label = ctk.CTkLabel(parent, text="Programming Language:", font=AppStyles.FONTS['default'])
+        label = ctk.CTkLabel(parent, text="Programming Type:", font=AppStyles.FONTS['default'])
         label.grid(
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -166,7 +168,7 @@ class ChatTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -179,7 +181,7 @@ class ChatTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
@@ -188,7 +190,7 @@ class ChatTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -201,13 +203,13 @@ class ChatTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'], 
-            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
             sticky="w"
         )
         
         self.input_text = ctk.CTkTextbox(
             parent,
-            height=200,
+            height=150,  # 高さを少し縮小
             font=AppStyles.FONTS['default'],
             corner_radius=AppStyles.SIZES['corner_radius']
         )
@@ -215,7 +217,7 @@ class ChatTab:
             row=start_row + 1, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(4, AppStyles.SIZES['padding_medium']),
+            pady=(4, AppStyles.SIZES['padding_small']),
             sticky="ew"
         )
         
@@ -234,7 +236,7 @@ class ChatTab:
             row=start_row, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
-            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_large']),
+            pady=(AppStyles.SIZES['padding_small'], AppStyles.SIZES['padding_large']),
             sticky="ew"
         )
     
@@ -317,6 +319,30 @@ class ChatTab:
                 self.language_var.set(current_language)
             elif languages:
                 self.language_var.set(languages[0])
+        
+        # 初期プロジェクトが設定されている場合、Programming Typeを自動設定
+        if self.project_var.get():
+            self.auto_set_programming_type()
+    
+    def on_project_changed(self, value):
+        """プロジェクト変更時のハンドラ - Programming Typeを自動設定"""
+        self.auto_set_programming_type()
+    
+    def auto_set_programming_type(self):
+        """プロジェクトのProgramming Typeを自動設定"""
+        project_name = self.project_var.get()
+        if not project_name:
+            return
+        
+        # プロジェクトの設定からProgramming Typeを取得
+        project_data = getValueByPjnm(project_name)
+        if project_data and 'programming_type' in project_data:
+            programming_type = project_data['programming_type']
+            
+            # Programming Typeが有効な選択肢に含まれているかチェック
+            available_languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
+            if available_languages and programming_type in available_languages:
+                self.language_var.set(programming_type)
     
     def on_file_selected(self, file_path, file_data):
         """ファイル選択時のコールバック"""

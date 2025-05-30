@@ -7,23 +7,25 @@ import os
 from tkinter import filedialog, messagebox
 from ui.styles import AppStyles
 from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getValueByPjnm, getAllProject
+from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 
 class ProjectEditDialog(ctk.CTkToplevel):
     """プロジェクト編集ダイアログウィンドウ"""
     
-    def __init__(self, parent, project_name, project_path, project_description, save_callback=None):
+    def __init__(self, parent, project_name, project_path, project_description, programming_type="", save_callback=None):
         super().__init__(parent)
         
         self.project_name = project_name
         self.original_project_name = project_name  # 元の名前を保持
         self.project_path = project_path
         self.project_description = project_description
+        self.programming_type = programming_type
         self.save_callback = save_callback
         
         # ウィンドウ設定（可変サイズ対応）
         self.title(f"プロジェクト編集: {project_name}")
-        self.geometry("700x500")
-        self.minsize(600, 400)  # 最小サイズを設定
+        self.geometry("700x600")
+        self.minsize(600, 500)  # 最小サイズを設定
         self.resizable(True, True)  # リサイズ可能に変更
         
         # ウィンドウを中央に配置
@@ -42,9 +44,9 @@ class ProjectEditDialog(ctk.CTkToplevel):
         parent_height = parent.winfo_height()
         
         x = parent_x + (parent_width // 2) - (700 // 2)
-        y = parent_y + (parent_height // 2) - (500 // 2)
+        y = parent_y + (parent_height // 2) - (600 // 2)
         
-        self.geometry(f"700x500+{x}+{y}")
+        self.geometry(f"700x600+{x}+{y}")
     
     def setup_ui(self):
         """UIコンポーネントをセットアップ"""
@@ -75,7 +77,7 @@ class ProjectEditDialog(ctk.CTkToplevel):
             sticky="nsew"
         )
         form_frame.grid_columnconfigure(0, weight=1)
-        form_frame.grid_rowconfigure(5, weight=1)  # 説明欄を拡張可能に
+        form_frame.grid_rowconfigure(7, weight=1)  # 説明欄を拡張可能に
         
         # プロジェクト名表示（編集不可）
         self.setup_project_name_display(form_frame, 0)
@@ -83,8 +85,11 @@ class ProjectEditDialog(ctk.CTkToplevel):
         # ディレクトリパス入力
         self.setup_directory_input(form_frame, 2)
         
+        # Programming Type選択
+        self.setup_programming_type_selection(form_frame, 4)
+        
         # プロジェクト説明入力（拡張可能）
-        self.setup_description_input(form_frame, 4)
+        self.setup_description_input(form_frame, 6)
         
         # ボタンフレーム
         self.setup_buttons()
@@ -178,6 +183,38 @@ class ProjectEditDialog(ctk.CTkToplevel):
         )
         browse_button.grid(row=0, column=1, sticky="e")
     
+    def setup_programming_type_selection(self, parent, start_row):
+        """Programming Type選択をセットアップ"""
+        label = ctk.CTkLabel(
+            parent,
+            text="Programming Type:",
+            font=AppStyles.FONTS['default']
+        )
+        label.grid(
+            row=start_row,
+            column=0,
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_medium'], 4),
+            sticky="w"
+        )
+        
+        self.programming_type_var = ctk.StringVar()
+        self.programming_type_combo = ctk.CTkComboBox(
+            parent,
+            variable=self.programming_type_var,
+            **AppStyles.get_entry_style()
+        )
+        self.programming_type_combo.grid(
+            row=start_row + 1,
+            column=0,
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(4, AppStyles.SIZES['padding_medium']),
+            sticky="ew"
+        )
+        
+        # Programming Type一覧を読み込み
+        self.load_programming_types()
+    
     def setup_description_input(self, parent, start_row):
         """プロジェクト説明入力をセットアップ（拡張可能）"""
         label = ctk.CTkLabel(
@@ -248,6 +285,17 @@ class ProjectEditDialog(ctk.CTkToplevel):
             sticky="ew"
         )
     
+    def load_programming_types(self):
+        """Programming Type一覧を読み込み"""
+        languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
+        if languages:
+            self.programming_type_combo.configure(values=languages)
+            # 現在のProgramming Typeを設定
+            if self.programming_type in languages:
+                self.programming_type_var.set(self.programming_type)
+            elif languages:
+                self.programming_type_var.set(languages[0])
+    
     def browse_directory(self):
         """ディレクトリ選択ダイアログ"""
         directory = filedialog.askdirectory(initialdir=self.path_entry.get())
@@ -263,6 +311,7 @@ class ProjectEditDialog(ctk.CTkToplevel):
         """保存ボタンクリック"""
         # 入力値取得（プロジェクト名は変更不可なので元の名前を使用）
         new_path = self.path_entry.get().strip()
+        new_programming_type = self.programming_type_var.get()
         new_description = self.description_text.get("1.0", "end-1c").strip()
         
         # 入力検証
@@ -274,21 +323,26 @@ class ProjectEditDialog(ctk.CTkToplevel):
             messagebox.showerror("エラー", "有効なディレクトリパスを入力してください。")
             return
         
+        if not new_programming_type:
+            messagebox.showerror("エラー", "Programming Typeを選択してください。")
+            return
+        
         try:
             # 既存の値データを取得
             existing_value = getValueByPjnm(self.original_project_name)
             if not existing_value:
                 existing_value = {}
             
-            # 説明を更新
+            # 説明とProgramming Typeを更新
             existing_value['description'] = new_description
+            existing_value['programming_type'] = new_programming_type
             
             # プロジェクト情報を保存（名前は変更されないので同じ名前を使用）
             upsertPjdirAndValueByPjnm(self.original_project_name, new_path, existing_value)
             
             # コールバック実行
             if self.save_callback:
-                self.save_callback(self.original_project_name, new_path, new_description)
+                self.save_callback(self.original_project_name, new_path, new_description, new_programming_type)
             
             messagebox.showinfo("成功", "プロジェクト情報を保存しました。")
             self.destroy()
