@@ -4,7 +4,7 @@ from localjsondb.jsonDB import ValidatedSchemaFactory, BaseJsonDbORM, DoFactory
 class _MyProjectsettingsProp:
     projectname: str
     pjdir: str = ""
-    value: dict = {}
+    value: dict = {}  # プロジェクト説明などの追加情報を格納
 
 
 class _MyProjectSettingsSchema(_MyProjectsettingsProp, ValidatedSchemaFactory):
@@ -37,6 +37,7 @@ def getPjdirByPjnm(_projectname):
 
 
 def getValueByPjnm(_projectname):
+    """プロジェクトの追加情報（説明など）を取得"""
     myProjectSettingsDo = MyProjectSettingsDo()
     myProjectSettingsDo.projectname = _projectname
     for a in MyProjectSettings.jsondb.getByQuery(myProjectSettingsDo.to_query_dict()):
@@ -57,6 +58,7 @@ def getAllProject():
 
 
 def upsertPjdirAndValueByPjnm(_projectname, _pjdir, _value):
+    """プロジェクト設定を保存（説明を含む）"""
     myProjectSettingsDo = MyProjectSettingsDo()
     myProjectSettingsDo.projectname = _projectname
     myProjectSettingsDo.pjdir = _pjdir

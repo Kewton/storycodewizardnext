@@ -119,10 +119,11 @@ class HistoryTab:
         list_frame.grid_columnconfigure(0, weight=1)
         list_frame.grid_rowconfigure(0, weight=1)
         
-        # 履歴リストボックス
+        # 履歴リストボックス - フォントサイズを大きく設定
+        history_font = ('Helvetica', 14)  # フォントサイズを大きく
         self.history_listbox = tk.Listbox(
             list_frame,
-            font=AppStyles.FONTS['small'],
+            font=history_font,
             bg=AppStyles.COLORS['surface'],
             fg=AppStyles.COLORS['text'],
             selectbackground=AppStyles.COLORS['primary'],
@@ -287,11 +288,12 @@ class HistoryTab:
             self.clear_detail_display()
     
     def update_history_list(self):
-        """履歴リストを更新"""
+        """履歴リストを更新（実行時刻とモデル名のみ表示）"""
         self.history_listbox.delete(0, tk.END)
         
         for i, item in enumerate(self.current_history_data):
-            display_text = f"{item['registration_date']} | {item['gptmodel']} | {item['input'][:50]}..."
+            # 実行時刻とモデル名のみを表示
+            display_text = f"{item['registration_date']} | {item['gptmodel']}"
             self.history_listbox.insert(tk.END, display_text)
     
     def on_history_select(self, event):

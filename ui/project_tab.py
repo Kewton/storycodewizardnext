@@ -72,6 +72,9 @@ class ProjectTab:
         # ディレクトリ選択
         current_row = self.setup_directory_selection(left_frame, current_row)
         
+        # プロジェクト説明入力
+        current_row = self.setup_description_input(left_frame, current_row)
+        
         # 作成ボタン
         self.setup_create_button(left_frame, current_row)
     
@@ -139,6 +142,33 @@ class ProjectTab:
             **AppStyles.get_button_style('outline')
         )
         browse_button.grid(row=0, column=1, sticky="e")
+        
+        return start_row + 2
+    
+    def setup_description_input(self, parent, start_row):
+        """プロジェクト説明入力をセットアップ"""
+        label = ctk.CTkLabel(parent, text="プロジェクト説明:", font=AppStyles.FONTS['default'])
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_medium'], 4), 
+            sticky="w"
+        )
+        
+        self.description_text = ctk.CTkTextbox(
+            parent,
+            height=100,
+            font=AppStyles.FONTS['default'],
+            corner_radius=AppStyles.SIZES['corner_radius']
+        )
+        self.description_text.grid(
+            row=start_row + 1, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(4, AppStyles.SIZES['padding_medium']),
+            sticky="ew"
+        )
         
         return start_row + 2
     
@@ -214,13 +244,17 @@ class ProjectTab:
         """プロジェクト作成"""
         project_name = self.project_name_entry.get().strip()
         directory_path = self.directory_entry.get().strip()
+        description = self.description_text.get("1.0", "end-1c").strip()
         
-        success, message = create_new_project(project_name, directory_path)
+        success, message = self.create_new_project_with_description(
+            project_name, directory_path, description
+        )
         
         if success:
             # 入力欄をクリア
             self.project_name_entry.delete(0, 'end')
             self.directory_entry.delete(0, 'end')
+            self.description_text.delete("1.0", "end")
             
             # プロジェクト一覧を更新
             self.load_projects()
@@ -232,6 +266,37 @@ class ProjectTab:
             messagebox.showinfo("Success", message)
         else:
             messagebox.showerror("Error", message)
+    
+    def create_new_project_with_description(self, project_name, directory_path, description):
+        """説明付きプロジェクト作成"""
+        from app.myjsondb.myHistories import createProject, getAllProject
+        from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getAllProject
+        
+        # 入力値検証
+        if not project_name.strip():
+            return False, "プロジェクト名を入力してください。"
+        
+        if not directory_path.strip():
+            return False, "ディレクトリパスを入力してください。"
+        
+        if not os.path.isdir(directory_path):
+            return False, "有効なディレクトリパスを入力してください。"
+        
+        # 既存プロジェクト名チェック
+        existing_projects = getAllProject()
+        if project_name in existing_projects:
+            return False, "このプロジェクト名は既に存在します。"
+        
+        try:
+            createProject(project_name)
+            value_data = {
+                "test": "sss",
+                "description": description if description else "プロジェクトの説明がありません。"
+            }
+            upsertPjdirAndValueByPjnm(project_name, directory_path, value_data)
+            return True, f"プロジェクト '{project_name}' を追加しました。"
+        except Exception as e:
+            return False, f"プロジェクト作成中にエラーが発生しました: {str(e)}"
     
     def refresh_data(self):
         """データを更新"""
@@ -271,7 +336,8 @@ class ProjectTab:
                 self.projects_scrollable,
                 project_name=project_name,
                 project_path=project_dir,
-                delete_callback=self.delete_project_callback
+                delete_callback=self.delete_project_callback,
+                edit_callback=self.on_project_edited
             )
             project_card.grid(
                 row=i, 
@@ -300,3 +366,10 @@ class ProjectTab:
                 messagebox.showinfo("Success", message)
             else:
                 messagebox.showerror("Error", message)
+    
+    def on_project_edited(self):
+        """プロジェクト編集後のコールバック"""
+        self.load_projects()
+        # 全タブのデータを更新
+        if self.main_window:
+            self.main_window.refresh_all_tabs()

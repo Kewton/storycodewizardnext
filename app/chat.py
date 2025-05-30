@@ -7,7 +7,7 @@ from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 from app.myjsondb.myHistories import createProject, getProjectList, dropProject, upsertValToPjByKey, getAllHistoryOfPj, getValOfPjByKey, deletePjByKey
 from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getPjdirByPjnm, deletePjSettingsByKey, getAllProject
 from app.prompt import createPromt
-from app.util.execLlmApi import execLlmApi
+from app.util.execLlmApi import execLlmApi, execLlmApiStreaming
 import base64
 import os
 import subprocess
@@ -41,6 +41,45 @@ def communicate_core(selected_project, selected_model, selected_programing_model
     
     # LLM API実行
     message_content, message_role = execLlmApi(selected_model, messages, encoded_file)
+    
+    bot_message = {
+        "content": message_content,
+        "role": message_role
+    }
+    messages.append(bot_message)
+    
+    return messages
+
+
+def communicate_core_streaming(selected_project, selected_model, selected_programing_model, user_input, encoded_file="", streaming_callback=None):
+    """
+    ストリーミング対応チャット通信のコア処理（UI非依存）
+    
+    Args:
+        selected_project (str): 選択されたプロジェクト名
+        selected_model (str): 選択されたLLMモデル
+        selected_programing_model (str): 選択されたプログラミング言語
+        user_input (str): ユーザー入力テキスト
+        encoded_file (str): Base64エンコードされたファイルデータ
+        streaming_callback (callable): ストリーミングチャンク受信時のコールバック関数
+    
+    Returns:
+        list: メッセージリスト
+    """
+    messages = []
+    
+    # システムロール取得
+    systemrole_content = getValueByFormnameAndKeyName("chat", "systemrole", selected_programing_model)
+    systemrole_content["pjdir"] = getPjdirByPjnm(selected_project)
+    messages.append({"role": "system", "content": systemrole_content["system_role"]})
+    
+    # ユーザーメッセージ作成
+    content = createPromt(systemrole_content, user_input)
+    user_message = {"role": "user", "content": content}
+    messages.append(user_message)
+    
+    # ストリーミングLLM API実行
+    message_content, message_role = execLlmApiStreaming(selected_model, messages, encoded_file, streaming_callback)
     
     bot_message = {
         "content": message_content,

@@ -170,3 +170,127 @@ def execLlmApi(_selected_model, _messages, encoded_file):
         return content, role
     else:
         return {}, ""
+
+
+def execLlmApiStreaming(_selected_model, _messages, encoded_file, streaming_callback=None):
+    """
+    ストリーミング対応のLLM API実行関数
+    
+    Args:
+        _selected_model (str): 選択されたモデル名
+        _messages (list): メッセージリスト
+        encoded_file (str): エンコードされたファイルデータ
+        streaming_callback (callable): ストリーミングチャンク受信時のコールバック関数
+    
+    Returns:
+        tuple: (完全なレスポンス内容, ロール)
+    """
+    if isChatGptAPI(_selected_model):
+        if isChatGPTImageAPI(_selected_model) and len(encoded_file) > 0:
+            _inpurt_messages = []
+            _inpurt_messages.append(_messages[0])
+            _inpurt_messages.append(
+                {"role": "user", "content": [
+                    {"type": "text", "text": _messages[1]["content"]},
+                    {"type": "image_url", "image_url": {
+                        "url": f"data:image/jpeg;base64,{encoded_file}"}}
+                ]}
+            )
+            response = chatgptapi_client.chat.completions.create(
+                model=_selected_model,
+                messages=_inpurt_messages,
+                stream=True
+            )
+        else:
+            response = chatgptapi_client.chat.completions.create(
+                model=_selected_model,
+                messages=_messages,
+                stream=True
+            )
+        
+        # GPTストリーミングレスポンス処理
+        content = ""
+        role = "assistant"
+        for chunk in response:
+            if chunk.choices[0].delta.content is not None:
+                chunk_content = chunk.choices[0].delta.content
+                content += chunk_content
+                if streaming_callback:
+                    streaming_callback(chunk_content)
+            if chunk.choices[0].delta.role:
+                role = chunk.choices[0].delta.role
+        
+        return content, role
+
+    elif isChatGPT_o1(_selected_model):
+        _inpurt_messages, _systemrole = buildInpurtMessages(_messages, encoded_file)
+
+        response = chatgptapi_client.chat.completions.create(
+            model=_selected_model,
+            messages=_inpurt_messages,
+            stream=True
+        )
+        
+        # o1モデルストリーミングレスポンス処理
+        content = ""
+        role = "assistant"
+        for chunk in response:
+            if chunk.choices[0].delta.content is not None:
+                chunk_content = chunk.choices[0].delta.content
+                content += chunk_content
+                if streaming_callback:
+                    streaming_callback(chunk_content)
+            if chunk.choices[0].delta.role:
+                role = chunk.choices[0].delta.role
+        
+        return content, role
+
+    elif isGemini(_selected_model):
+        _inpurt_messages, _systemrole = buildInpurtMessages(_messages, encoded_file)
+
+        # Geminiの場合はストリーミング機能が制限されているため、通常の実行を行う
+        response = gemini_client.models.generate_content(
+            model=_selected_model,
+            contents=_inpurt_messages[0]["content"]
+        )
+        
+        # 一括でコールバックを呼び出し
+        content = response.text
+        if streaming_callback:
+            streaming_callback(content)
+        
+        return content, "assistant"
+
+    elif isClaude(_selected_model):
+        _inpurt_messages, _systemrole = buildInpurtMessages(_messages, encoded_file)
+
+        _max_tokens = 4096
+
+        if "claude-sonnet-4" in _selected_model or "claude-3-7-sonnet" in _selected_model:
+            _max_tokens = 64000
+        elif "claude-opus-4" in _selected_model:
+            _max_tokens = 32000
+
+        response = claude_client.messages.create(
+            max_tokens=_max_tokens,
+            system=_systemrole,
+            model=_selected_model,
+            messages=_inpurt_messages,
+            stream=True
+        )
+
+        # Claudeストリーミングレスポンス処理
+        content = ""
+        role = "assistant"
+        for event in response:
+            if hasattr(event, "delta") and hasattr(event.delta, "text"):
+                chunk_content = event.delta.text
+                content += chunk_content
+                if streaming_callback:
+                    streaming_callback(chunk_content)
+            if hasattr(event, "role"):
+                role = event.role
+
+        return content, role
+    else:
+        return "", "assistant"

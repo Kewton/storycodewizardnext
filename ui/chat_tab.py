@@ -1,6 +1,6 @@
 """
 StoryCodeWizard Chat Tab
-チャット機能のUIコンポーネント
+チャット機能のUIコンポーネント（ストリーミング対応）
 """
 import customtkinter as ctk
 import tkinter as tk
@@ -8,10 +8,11 @@ from tkinter import messagebox
 import threading
 from ui.styles import AppStyles
 from ui.widgets.chat_message import ChatMessage
+from ui.widgets.streaming_chat_message import StreamingChatMessage
 from ui.widgets.file_uploader import FileUploader
 from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 from app.myjsondb.myProjectSettings import getAllProject
-from app.chat import communicate_core, save_chat_history
+from app.chat import communicate_core_streaming, save_chat_history
 
 class ChatTab:
     """チャット機能タブのUIコンポーネント"""
@@ -21,6 +22,8 @@ class ChatTab:
         self.main_window = main_window
         self.current_messages = []
         self.current_file_data = ""
+        self.current_streaming_message = None
+        self.is_streaming = False
         
         # レイアウト設定
         self.parent.grid_columnconfigure(0, weight=2)
@@ -322,6 +325,11 @@ class ChatTab:
     
     def execute_chat(self):
         """チャット実行"""
+        # 既にストリーミング中の場合は処理しない
+        if self.is_streaming:
+            messagebox.showwarning("Warning", "現在処理中です。しばらくお待ちください。")
+            return
+        
         # 入力値検証
         user_input = self.input_text.get("1.0", "end-1c").strip()
         if not user_input:
@@ -334,6 +342,39 @@ class ChatTab:
         
         # ボタンを無効化
         self.execute_button.configure(state="disabled", text="処理中...")
+        self.is_streaming = True
+        
+        # チャット履歴をクリア
+        self.clear_chat_display()
+        
+        # ユーザーメッセージを表示
+        user_msg = StreamingChatMessage(
+            self.chat_scrollable,
+            speaker="You",
+            is_user=True
+        )
+        user_msg.set_content(user_input)
+        user_msg.grid(
+            row=0, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_small'],
+            pady=AppStyles.SIZES['padding_small'],
+            sticky="ew"
+        )
+        
+        # エージェントメッセージ（ストリーミング用）を準備
+        self.current_streaming_message = StreamingChatMessage(
+            self.chat_scrollable,
+            speaker="Agent",
+            is_user=False
+        )
+        self.current_streaming_message.grid(
+            row=1, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_small'],
+            pady=AppStyles.SIZES['padding_small'],
+            sticky="ew"
+        )
         
         # 非同期でチャット処理を実行
         thread = threading.Thread(target=self._execute_chat_async)
@@ -343,23 +384,21 @@ class ChatTab:
     def _execute_chat_async(self):
         """非同期チャット処理"""
         try:
-            # チャット履歴をクリア
-            self.clear_chat_display()
-            
             # ユーザー入力を取得
             user_input = self.input_text.get("1.0", "end-1c").strip()
             
-            # チャット処理実行
-            messages = communicate_core(
+            # ストリーミングチャット処理実行
+            messages = communicate_core_streaming(
                 self.project_var.get(),
                 self.model_var.get(),
                 self.language_var.get(),
                 user_input,
-                self.current_file_data
+                self.current_file_data,
+                self._on_streaming_chunk
             )
             
-            # UI更新（メインスレッドで実行）
-            self.parent.after(0, lambda: self._update_chat_display(messages))
+            # ストリーミング完了
+            self.parent.after(0, lambda: self.current_streaming_message.finish_streaming())
             
             # 履歴保存
             save_chat_history(
@@ -382,29 +421,16 @@ class ChatTab:
             self.parent.after(0, lambda: messagebox.showerror("Error", error_msg))
         finally:
             # ボタンを有効化
+            self.is_streaming = False
             self.parent.after(0, lambda: self.execute_button.configure(state="normal", text="実行"))
+    
+    def _on_streaming_chunk(self, chunk):
+        """ストリーミングチャンク受信時のコールバック"""
+        if self.current_streaming_message:
+            self.parent.after(0, lambda: self.current_streaming_message.update_content(chunk))
     
     def clear_chat_display(self):
         """チャット表示をクリア"""
         for widget in self.chat_scrollable.winfo_children():
             widget.destroy()
-    
-    def _update_chat_display(self, messages):
-        """チャット表示を更新"""
-        self.current_messages = messages
-        
-        for i, message in enumerate(messages[1:], 1):  # システムメッセージをスキップ
-            speaker = "You" if message["role"] == "user" else "Agent"
-            chat_msg = ChatMessage(
-                self.chat_scrollable,
-                speaker=speaker,
-                content=message["content"],
-                is_user=(message["role"] == "user")
-            )
-            chat_msg.grid(
-                row=i-1, 
-                column=0, 
-                padx=AppStyles.SIZES['padding_small'],
-                pady=AppStyles.SIZES['padding_small'],
-                sticky="ew"
-            )
+        self.current_streaming_message = None
