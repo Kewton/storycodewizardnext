@@ -10,6 +10,7 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 - チャット履歴の保存・検索・ダウンロード
 - ファイルアップロード対応（JPEG）
 - コード自動生成とプロジェクトへの反映
+- **VS Code風アクティビティーサイドバー**（直感的なナビゲーション）
 - モダンなCustomTkinter UI
 - リアルタイムデータ更新機能
 
@@ -44,23 +45,29 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 
 ### メインウィンドウ (MainWindow)
 - **位置**: `./ui/main_window.py`
-- **機能**: アプリケーションのメインコンテナ、タブ管理
-- **コンポーネント**: CTkTabview、ウィンドウサイズ管理
-- **改善点**: レスポンシブレイアウト、タブ間データ同期
+- **機能**: アプリケーションのメインコンテナ、**アクティビティーサイドバー管理**
+- **コンポーネント**: ActivitySidebar、メインコンテンツエリア、ウィンドウサイズ管理
+- **改善点**: VS Code風ナビゲーション、最大化されたコンテンツ表示領域
 
-### Story2Codeタブ (ChatTab)
+### アクティビティーサイドバー (ActivitySidebar)
+- **位置**: `./ui/widgets/activity_sidebar.py`
+- **機能**: VS Code風のサイドバーナビゲーション、機能切り替え
+- **コンポーネント**: アイコンボタン、アクティブ状態表示、コンテンツ切り替え
+- **改善点**: 直感的なアイコンベースナビゲーション、視覚的フィードバック
+
+### Story2Codeコンテンツ (ChatTab)
 - **位置**: `./ui/chat_tab.py`
 - **機能**: LLMとの対話インターフェース、ストリーミング応答表示
 - **コンポーネント**: プロジェクト選択、モデル選択、Programming Type選択（プロジェクト連携）、入力エリア、チャット表示
 - **改善点**: リアルタイムストリーミング表示、スクロール可能な設定パネル、プロジェクト選択時の自動Programming Type設定、**Markdown表示対応**
 
-### MyHistoryタブ (HistoryTab)
+### MyHistoryコンテンツ (HistoryTab)
 - **位置**: `./ui/history_tab.py`
 - **機能**: 過去のチャット履歴管理
 - **コンポーネント**: 履歴リスト、詳細表示、削除・ダウンロード機能
 - **改善点**: 自動データ更新、フィルタリング機能強化、実行時刻とモデル名のみ表示（フォントサイズ拡大）、**Markdown表示対応**
 
-### Project Listタブ (ProjectTab)
+### Project Listコンテンツ (ProjectTab)
 - **位置**: `./ui/project_tab.py`
 - **機能**: プロジェクトの作成・管理・編集（Programming Type管理含む）
 - **コンポーネント**: プロジェクト一覧、新規作成フォーム（Programming Type選択付き）、プロジェクト編集機能
@@ -73,6 +80,7 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 - **FileUploader**: `./ui/widgets/file_uploader.py` - ファイルアップロード機能
 - **StreamingChatMessage**: `./ui/widgets/streaming_chat_message.py` - ストリーミング対応チャットメッセージ表示（**Markdown対応**）
 - **MarkdownRenderer**: `./ui/widgets/markdown_renderer.py` - **新規追加**: Markdown表示用ウィジェット
+- **ActivitySidebar**: `./ui/widgets/activity_sidebar.py` - **新規追加**: VS Code風アクティビティーサイドバー
 
 ## アーキテクチャ
 
@@ -80,15 +88,16 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
     ./
     ├── main.py                    # アプリケーションエントリーポイント
     ├── ui/                        # UIコンポーネント
-    │   ├── main_window.py         # メインウィンドウ
-    │   ├── chat_tab.py           # チャット機能タブ（ストリーミング対応、Programming Type連携）
-    │   ├── history_tab.py        # 履歴管理タブ
-    │   ├── project_tab.py        # プロジェクト管理タブ（Programming Type管理対応）
+    │   ├── main_window.py         # メインウィンドウ（アクティビティーサイドバー対応）
+    │   ├── chat_tab.py           # チャット機能コンテンツ（ストリーミング対応、Programming Type連携）
+    │   ├── history_tab.py        # 履歴管理コンテンツ
+    │   ├── project_tab.py        # プロジェクト管理コンテンツ（Programming Type管理対応）
     │   ├── styles.py             # UI共通スタイル定義
     │   └── widgets/              # カスタムウィジェット
+    │       ├── activity_sidebar.py # **新規**: VS Code風アクティビティーサイドバー
     │       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
     │       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
-    │       ├── markdown_renderer.py # **新規**: Markdown表示ウィジェット
+    │       ├── markdown_renderer.py # Markdown表示ウィジェット
     │       ├── project_card.py   # プロジェクトカード（Programming Type表示対応）
     │       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（Programming Type編集対応）
     │       └── file_uploader.py  # ファイルアップロード
@@ -106,6 +115,22 @@ StreamlitからCustomTkinterに変換されたデスクトップチャットア�
 - **Database**: JSONベースローカルDB
 - **LLM API**: OpenAI, Anthropic, Google Gemini（ストリーミング対応）
 - **Markdown処理**: markdown、pygments（シンタックスハイライト）
+- **ナビゲーション**: VS Code風アクティビティーサイドバー
+
+## 新機能: VS Code風アクティビティーサイドバー
+
+### ナビゲーション方式
+- **左側サイドバー**: アイコンベースの機能切り替え
+- **Story2Code**: 💬 アイコンでチャット機能へアクセス
+- **MyHistory**: 📚 アイコンで履歴管理へアクセス
+- **Project List**: 📁 アイコンでプロジェクト管理へアクセス
+- **アクティブ状態**: 選択中の機能が視覚的にハイライト表示
+
+### ユーザー体験の向上
+- **最大化されたコンテンツ表示**: タブビューを廃止し、メインエリアを最大活用
+- **直感的なナビゲーション**: VS Codeライクなアイコンベース操作
+- **高速な機能切り替え**: ワンクリックでの機能切り替え
+- **視覚的フィードバック**: アクティブ状態の明確な表示
 
 ## 新機能: Markdown表示対応
 
@@ -136,15 +161,17 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - セカンダリ: #14375e (ダークブルー)
 - アクセント: #1f538d (ライトブルー)
 - 背景: #212121 (ダークグレー)
+- **サイドバー**: #2d2d2d (ダークグレー、VS Code風)
 
 ### レイアウト設計指針
 - **間隔統一**: 全てのコンポーネント間で一貫した間隔を使用
 - **視覚的階層**: ラベル、入力フィールド、ボタンの明確な配置
 - **レスポンシブ対応**: ウィンドウサイズ変更に対応した柔軟なレイアウト
 - **縦スクロール対応**: 設定パネルでの適切なスクロール機能
-- **データ同期**: タブ間でのリアルタイムデータ更新
+- **データ同期**: コンテンツ間でのリアルタイムデータ更新
 - **ストリーミング対応**: LLM応答のリアルタイム表示
 - **Markdown対応**: 豊富な表現力を持つテキスト表示
+- **VS Code風ナビゲーション**: 直感的なサイドバーベース操作
 
 ### イベントハンドリング
 - 非同期LLM API呼び出し
@@ -154,6 +181,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - 自動データリフレッシュ機能
 - Markdownリアルタイムレンダリング
 - プロジェクト選択時のProgramming Type自動設定
+- **アクティビティーサイドバーナビゲーション**
 
 ## プロジェクト管理機能
 
@@ -167,7 +195,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - プロジェクトカードから直接編集可能
 - プロジェクトパス、説明、Programming Typeの編集（名前は編集不可）
 - 可変サイズダイアログ対応
-- リアルタイム更新と全タブ同期
+- リアルタイム更新と全コンテンツ同期
 
 ### Programming Type連携機能
 - プロジェクト作成時にProgramming Typeを選択
@@ -202,6 +230,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 5. **ストリーミングエラー**: API接続とキー設定を確認
 6. **Markdown表示エラー**: markdown、pygmentsライブラリのインストールを確認
 7. **Programming Type連携エラー**: プロジェクト設定の整合性を確認
+8. **サイドバーナビゲーションエラー**: ウィンドウサイズと表示設定を確認
 
 ### ログ出力
 アプリケーションログは標準出力に表示されます。
@@ -213,6 +242,8 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **レスポンシブUI**: より高速で滑らかな操作感
 - **ストリーミング対応**: リアルタイムLLM応答表示
 - **Markdown表示対応**: 豊富な表現力でリッチなテキスト表示
+- **VS Code風ナビゲーション**: 直感的なアクティビティーサイドバー
+- **最大化されたコンテンツ表示**: タブビューからサイドバーへの移行
 - **カスタマイズ性向上**: テーマ・レイアウトの柔軟な調整
 - **ファイル管理**: ドラッグ&ドロップによる直感的なファイル操作
 - **リアルタイム更新**: データベース変更の即座な反映
@@ -221,14 +252,15 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 - **縦スクロール対応**: 全画面表示でも快適な操作性
 
 ### 機能移行対応表
-| Streamlit機能 | CustomTkinter対応 |
-|--------------|------------------|
-| st.tabs() | CTkTabview |
-| st.selectbox() | CTkComboBox |
-| st.text_area() | CTkTextbox |
-| st.button() | CTkButton |
-| st.file_uploader() | カスタムFileUploader |
-| st.dataframe() | Tkinter Listbox + カスタム表示 |
-| st.download_button() | ファイルダイアログ + 保存処理 |
-| st.write_stream() | StreamingChatMessage (Markdown対応) |
-| st.markdown() | **新規**: MarkdownRenderer |
+| Streamlit機能 | CustomTkinter対応 | 新アーキテクチャ |
+|--------------|------------------|------------------|
+| st.tabs() | CTkTabview | **ActivitySidebar** |
+| st.selectbox() | CTkComboBox | CTkComboBox |
+| st.text_area() | CTkTextbox | CTkTextbox |
+| st.button() | CTkButton | CTkButton |
+| st.file_uploader() | カスタムFileUploader | カスタムFileUploader |
+| st.dataframe() | Tkinter Listbox + カスタム表示 | Tkinter Listbox + カスタム表示 |
+| st.download_button() | ファイルダイアログ + 保存処理 | ファイルダイアログ + 保存処理 |
+| st.write_stream() | StreamingChatMessage (Markdown対応) | StreamingChatMessage (Markdown対応) |
+| st.markdown() | **新規**: MarkdownRenderer | **新規**: MarkdownRenderer |
+| タブナビゲーション | **新規**: ActivitySidebar | **VS Code風サイドバー** |

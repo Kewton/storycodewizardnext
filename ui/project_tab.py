@@ -12,17 +12,17 @@ from app.myjsondb.myHistories import getProjectList
 from app.myjsondb.myProjectSettings import getPjdirByPjnm
 from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 
-class ProjectTab:
+class ProjectTab(ctk.CTkFrame):
     """プロジェクト管理タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
-        self.parent = parent
+        super().__init__(parent)
         self.main_window = main_window
         
         # レイアウト設定
-        self.parent.grid_columnconfigure(0, weight=1)
-        self.parent.grid_columnconfigure(1, weight=2)
-        self.parent.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_rowconfigure(0, weight=1)
         
         self.setup_ui()
         self.load_projects()
@@ -39,7 +39,7 @@ class ProjectTab:
         """左側パネル（新規作成）をセットアップ（スクロール可能）"""
         # スクロール可能フレーム
         self.left_scrollable = ctk.CTkScrollableFrame(
-            self.parent,
+            self,
             **AppStyles.get_scrollable_frame_style()
         )
         self.left_scrollable.grid(
@@ -227,7 +227,7 @@ class ProjectTab:
     def setup_right_panel(self):
         """右側パネル（プロジェクト一覧）をセットアップ"""
         right_frame = ctk.CTkFrame(
-            self.parent,
+            self,
             **AppStyles.get_frame_style('default')
         )
         right_frame.grid(

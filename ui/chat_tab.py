@@ -14,11 +14,11 @@ from app.myjsondb.myStreamlit import getValueByFormnameAndKeyName
 from app.myjsondb.myProjectSettings import getAllProject, getValueByPjnm
 from app.chat import communicate_core_streaming, save_chat_history
 
-class ChatTab:
+class ChatTab(ctk.CTkFrame):
     """チャット機能タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
-        self.parent = parent
+        super().__init__(parent)
         self.main_window = main_window
         self.current_messages = []
         self.current_file_data = ""
@@ -26,9 +26,9 @@ class ChatTab:
         self.is_streaming = False
         
         # レイアウト設定
-        self.parent.grid_columnconfigure(0, weight=2)
-        self.parent.grid_columnconfigure(1, weight=3)
-        self.parent.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=2)
+        self.grid_columnconfigure(1, weight=3)
+        self.grid_rowconfigure(0, weight=1)
         
         self.setup_ui()
         self.load_initial_data()
@@ -45,7 +45,7 @@ class ChatTab:
         """左側パネルをセットアップ（スクロール可能）"""
         # スクロール可能フレーム
         self.left_scrollable = ctk.CTkScrollableFrame(
-            self.parent,
+            self,
             **AppStyles.get_scrollable_frame_style()
         )
         self.left_scrollable.grid(
@@ -243,7 +243,7 @@ class ChatTab:
     def setup_right_panel(self):
         """右側パネル（チャット表示）をセットアップ"""
         right_frame = ctk.CTkFrame(
-            self.parent,
+            self,
             **AppStyles.get_frame_style('default')
         )
         right_frame.grid(
@@ -424,7 +424,7 @@ class ChatTab:
             )
             
             # ストリーミング完了
-            self.parent.after(0, lambda: self.current_streaming_message.finish_streaming())
+            self.after(0, lambda: self.current_streaming_message.finish_streaming())
             
             # 履歴保存
             save_chat_history(
@@ -435,25 +435,25 @@ class ChatTab:
             )
             
             # 入力欄をクリア
-            self.parent.after(0, lambda: self.input_text.delete("1.0", "end"))
+            self.after(0, lambda: self.input_text.delete("1.0", "end"))
             
             # 全タブのデータを更新
             if self.main_window:
-                self.parent.after(0, self.main_window.refresh_all_tabs)
+                self.after(0, self.main_window.refresh_all_content)
             
         except Exception as e:
             error_msg = f"チャット実行中にエラーが発生しました: {str(e)}"
             print(error_msg)
-            self.parent.after(0, lambda: messagebox.showerror("Error", error_msg))
+            self.after(0, lambda: messagebox.showerror("Error", error_msg))
         finally:
             # ボタンを有効化
             self.is_streaming = False
-            self.parent.after(0, lambda: self.execute_button.configure(state="normal", text="実行"))
+            self.after(0, lambda: self.execute_button.configure(state="normal", text="実行"))
     
     def _on_streaming_chunk(self, chunk):
         """ストリーミングチャンク受信時のコールバック"""
         if self.current_streaming_message:
-            self.parent.after(0, lambda: self.current_streaming_message.update_content(chunk))
+            self.after(0, lambda: self.current_streaming_message.update_content(chunk))
     
     def clear_chat_display(self):
         """チャット表示をクリア"""

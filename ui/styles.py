@@ -18,8 +18,12 @@ class AppStyles:
         'background': '#212121',
         'surface': '#2b2b2b',
         'surface_light': '#383838',
+        'sidebar': '#2d2d2d',  # VS Code風サイドバー
+        'sidebar_hover': '#404040',  # サイドバーホバー状態
+        'sidebar_active': '#1f538d',  # サイドバーアクティブ状態
         'text': '#ffffff',
         'text_secondary': '#b0b0b0',
+        'text_sidebar': '#cccccc',  # サイドバーテキスト
         'border': '#404040',
         'error': '#f44336',
         'warning': '#ff9800',
@@ -33,6 +37,7 @@ class AppStyles:
         'subheading': ('Helvetica', 14, 'bold'),
         'small': ('Helvetica', 11),
         'code': ('Courier New', 12),
+        'sidebar_icon': ('Arial', 20),  # サイドバーアイコン用
     }
     
     # 共通サイズ（レイアウト間隔を改善）
@@ -47,6 +52,8 @@ class AppStyles:
         'border_width': 1,
         'label_spacing': 4,  # ラベルと入力フィールド間の間隔
         'section_spacing': 20,  # セクション間の間隔
+        'sidebar_width': 70,  # サイドバー幅
+        'sidebar_button_size': 50,  # サイドバーボタンサイズ
     }
     
     @classmethod
@@ -81,6 +88,15 @@ class AppStyles:
                 'corner_radius': cls.SIZES['corner_radius'],
                 'border_width': cls.SIZES['border_width'],
                 'font': cls.FONTS['default']
+            },
+            'sidebar': {
+                'fg_color': 'transparent',
+                'hover_color': cls.COLORS['sidebar_hover'],
+                'text_color': cls.COLORS['text_sidebar'],
+                'corner_radius': cls.SIZES['corner_radius'],
+                'font': cls.FONTS['sidebar_icon'],
+                'width': cls.SIZES['sidebar_button_size'],
+                'height': cls.SIZES['sidebar_button_size']
             }
         }
         return styles.get(variant, styles['primary'])
@@ -108,6 +124,11 @@ class AppStyles:
                 'fg_color': cls.COLORS['surface_light'],
                 'border_width': 1,
                 'border_color': cls.COLORS['border']
+            },
+            'sidebar': {
+                'corner_radius': 0,
+                'fg_color': cls.COLORS['sidebar'],
+                'border_width': 0
             }
         }
         return styles.get(variant, styles['default'])
@@ -118,6 +139,20 @@ class AppStyles:
         return {
             'corner_radius': cls.SIZES['corner_radius'],
             'fg_color': cls.COLORS['surface']
+        }
+    
+    @classmethod
+    def get_sidebar_style(cls):
+        """サイドバー専用スタイルを取得"""
+        return {
+            'frame': cls.get_frame_style('sidebar'),
+            'button': cls.get_button_style('sidebar'),
+            'colors': {
+                'background': cls.COLORS['sidebar'],
+                'hover': cls.COLORS['sidebar_hover'],
+                'active': cls.COLORS['sidebar_active'],
+                'text': cls.COLORS['text_sidebar']
+            }
         }
     
     @classmethod

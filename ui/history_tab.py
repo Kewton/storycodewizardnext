@@ -17,20 +17,20 @@ from app.chat import (
 )
 from app.myjsondb.myHistories import getValOfPjByKey
 
-class HistoryTab:
+class HistoryTab(ctk.CTkFrame):
     """履歴管理タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
-        self.parent = parent
+        super().__init__(parent)
         self.main_window = main_window
         self.current_history_data = []
         self.selected_index = 0
         self.current_messages = []
         
         # レイアウト設定
-        self.parent.grid_columnconfigure(0, weight=1)
-        self.parent.grid_columnconfigure(1, weight=2)
-        self.parent.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_rowconfigure(0, weight=1)
         
         self.setup_ui()
         self.load_initial_data()
@@ -46,7 +46,7 @@ class HistoryTab:
     def setup_left_panel(self):
         """左側パネル（履歴一覧）をセットアップ"""
         left_frame = ctk.CTkFrame(
-            self.parent,
+            self,
             **AppStyles.get_frame_style('default')
         )
         left_frame.grid(
@@ -142,7 +142,7 @@ class HistoryTab:
     def setup_right_panel(self):
         """右側パネル（詳細表示）をセットアップ"""
         right_frame = ctk.CTkFrame(
-            self.parent,
+            self,
             **AppStyles.get_frame_style('default')
         )
         right_frame.grid(
