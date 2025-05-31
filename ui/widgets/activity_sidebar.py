@@ -3,7 +3,119 @@ Activity Sidebar Widget
 VS Code風のアクティビティーサイドバー用カスタムウィジェット
 """
 import customtkinter as ctk
+import tkinter as tk
 from ui.styles import AppStyles
+
+class ToolTip:
+    """ツールチップウィジェット"""
+    
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip_window = None
+        self.show_delay = 500  # 表示遅延（ミリ秒）
+        self.hide_delay = 100   # 非表示遅延（ミリ秒）
+        self.show_timer = None
+        self.hide_timer = None
+        
+        # イベントバインド
+        self.widget.bind("<Enter>", self.on_enter)
+        self.widget.bind("<Leave>", self.on_leave)
+        self.widget.bind("<Motion>", self.on_motion)
+    
+    def on_enter(self, event):
+        """マウスエンター時の処理"""
+        self.cancel_hide_timer()
+        self.show_timer = self.widget.after(self.show_delay, self.show_tooltip)
+    
+    def on_leave(self, event):
+        """マウスリーブ時の処理"""
+        self.cancel_show_timer()
+        if self.tooltip_window:
+            self.hide_timer = self.widget.after(self.hide_delay, self.hide_tooltip)
+    
+    def on_motion(self, event):
+        """マウス移動時の処理"""
+        if self.tooltip_window:
+            self.update_tooltip_position(event)
+    
+    def cancel_show_timer(self):
+        """表示タイマーをキャンセル"""
+        if self.show_timer:
+            self.widget.after_cancel(self.show_timer)
+            self.show_timer = None
+    
+    def cancel_hide_timer(self):
+        """非表示タイマーをキャンセル"""
+        if self.hide_timer:
+            self.widget.after_cancel(self.hide_timer)
+            self.hide_timer = None
+    
+    def show_tooltip(self):
+        """ツールチップを表示"""
+        if self.tooltip_window:
+            return
+        
+        self.tooltip_window = tk.Toplevel(self.widget)
+        self.tooltip_window.wm_overrideredirect(True)
+        self.tooltip_window.wm_attributes("-topmost", True)
+        
+        # スタイリング
+        label = tk.Label(
+            self.tooltip_window,
+            text=self.text,
+            background="#2d2d2d",
+            foreground="#ffffff",
+            font=("Arial", 10),
+            relief="solid",
+            borderwidth=1,
+            padx=8,
+            pady=4
+        )
+        label.pack()
+        
+        # 位置を更新
+        self.update_tooltip_position()
+    
+    def update_tooltip_position(self, event=None):
+        """ツールチップの位置を更新"""
+        if not self.tooltip_window:
+            return
+        
+        # ウィジェットの位置を取得
+        x = self.widget.winfo_rootx() + self.widget.winfo_width() + 10
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() // 2
+        
+        # 画面外に出ないよう調整
+        screen_width = self.widget.winfo_screenwidth()
+        screen_height = self.widget.winfo_screenheight()
+        
+        tooltip_width = self.tooltip_window.winfo_reqwidth()
+        tooltip_height = self.tooltip_window.winfo_reqheight()
+        
+        if x + tooltip_width > screen_width:
+            x = self.widget.winfo_rootx() - tooltip_width - 10
+        
+        if y + tooltip_height > screen_height:
+            y = screen_height - tooltip_height - 10
+        
+        if y < 0:
+            y = 0
+        
+        self.tooltip_window.wm_geometry(f"+{x}+{y}")
+    
+    def hide_tooltip(self):
+        """ツールチップを非表示"""
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
+    
+    def destroy(self):
+        """ツールチップを完全に破棄"""
+        self.cancel_show_timer()
+        self.cancel_hide_timer()
+        self.hide_tooltip()
+
 
 class ActivitySidebar(ctk.CTkFrame):
     """VS Code風アクティビティーサイドバーウィジェット"""
@@ -20,6 +132,8 @@ class ActivitySidebar(ctk.CTkFrame):
         self.on_activity_changed = on_activity_changed
         self.active_button = None
         self.buttons = {}
+        self.tooltips = {}  # ツールチップ管理
+        self._click_debounce = False  # クリック重複防止
         
         # 固定幅の設定
         self.configure(width=70)
@@ -36,19 +150,19 @@ class ActivitySidebar(ctk.CTkFrame):
             {
                 'id': 'story2code',
                 'icon': '💬',
-                'tooltip': 'Story2Code\nLLMとのチャット',
+                'tooltip': 'Story2Code\n\nLLMとのチャット機能\n• 複数LLM対応\n• ストリーミング表示\n• Markdown対応',
                 'row': 0
             },
             {
                 'id': 'history',
                 'icon': '📚',
-                'tooltip': 'MyHistory\nチャット履歴管理',
+                'tooltip': 'MyHistory\n\nチャット履歴管理\n• プロジェクト別履歴\n• エクスポート機能\n• 詳細表示',
                 'row': 1
             },
             {
                 'id': 'projects',
                 'icon': '📁',
-                'tooltip': 'Project List\nプロジェクト管理',
+                'tooltip': 'Project List\n\nプロジェクト管理\n• 新規作成・編集\n• Programming Type管理\n• ディレクトリ連携',
                 'row': 2
             }
         ]
@@ -78,30 +192,34 @@ class ActivitySidebar(ctk.CTkFrame):
             sticky="n"
         )
         
-        # ツールチップ効果（簡易版）
-        self.create_tooltip(button, activity['tooltip'])
+        # ツールチップを作成
+        tooltip = ToolTip(button, activity['tooltip'])
+        self.tooltips[activity['id']] = tooltip
         
         self.buttons[activity['id']] = button
     
-    def create_tooltip(self, widget, text):
-        """簡易ツールチップを作成"""
-        def on_enter(event):
-            # ツールチップ表示のロジック（簡易版）
-            print(f"Tooltip: {text}")
-        
-        def on_leave(event):
-            # ツールチップ非表示のロジック
-            pass
-        
-        widget.bind("<Enter>", on_enter)
-        widget.bind("<Leave>", on_leave)
-    
     def on_button_click(self, activity_id):
-        """ボタンクリック時のハンドラ"""
-        self.set_active(activity_id)
+        """ボタンクリック時のハンドラ（デバウンス付き）"""
+        # 重複クリック防止
+        if self._click_debounce:
+            return
         
-        if self.on_activity_changed:
-            self.on_activity_changed(activity_id)
+        self._click_debounce = True
+        
+        try:
+            # 即座にアクティブ状態を更新（視覚的フィードバック）
+            self.set_active(activity_id)
+            
+            # コールバック実行
+            if self.on_activity_changed:
+                self.on_activity_changed(activity_id)
+        finally:
+            # 短時間後にデバウンスフラグをリセット
+            self.after(100, self._reset_debounce)
+    
+    def _reset_debounce(self):
+        """デバウンスフラグをリセット"""
+        self._click_debounce = False
     
     def set_active(self, activity_id):
         """アクティブなボタンを設定"""
@@ -126,3 +244,11 @@ class ActivitySidebar(ctk.CTkFrame):
             if button == self.active_button:
                 return activity_id
         return None
+    
+    def destroy(self):
+        """ウィジェット破棄時のクリーンアップ"""
+        # ツールチップを破棄
+        for tooltip in self.tooltips.values():
+            tooltip.destroy()
+        
+        super().destroy()
