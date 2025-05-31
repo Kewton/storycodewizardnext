@@ -1,0 +1,211 @@
+/* StoryCodeWizard Documentation Custom Styles */
+
+/* カスタムカラー定義 */
+:root {
+  --storycode-primary: #1f538d;
+  --storycode-secondary: #2fa572;
+  --storycode-accent: #4a9eff;
+  --storycode-dark: #14375e;
+}
+
+/* ロゴ・ブランディング */
+.md-header__title {
+  font-weight: 600;
+  color: var(--storycode-primary);
+}
+
+/* カスタムアイコン */
+.md-nav__icon {
+  color: var(--storycode-accent);
+}
+
+/* コードブロックのカスタマイズ */
+.highlight pre {
+  border-left: 4px solid var(--storycode-primary);
+  background-color: #2d2d2d;
+}
+
+/* 警告ボックスのカスタマイズ */
+.admonition.info {
+  border-left-color: var(--storycode-accent);
+}
+
+.admonition.warning {
+  border-left-color: #ff9800;
+}
+
+.admonition.danger {
+  border-left-color: #f44336;
+}
+
+/* テーブルのスタイリング */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--storycode-primary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--storycode-primary);
+  color: white;
+  font-weight: 600;
+}
+
+/* ナビゲーションのカスタマイズ */
+.md-nav__item--active > .md-nav__link {
+  color: var(--storycode-primary);
+  font-weight: 600;
+}
+
+/* フッターのカスタマイズ */
+.md-footer {
+  background-color: var(--storycode-dark);
+}
+
+/* ボタンのカスタマイズ */
+.md-button {
+  background-color: var(--storycode-primary);
+  border-color: var(--storycode-primary);
+}
+
+.md-button:hover {
+  background-color: var(--storycode-dark);
+  border-color: var(--storycode-dark);
+}
+
+/* 検索ボックスのカスタマイズ */
+.md-search__input {
+  border: 1px solid var(--storycode-accent);
+}
+
+.md-search__input:focus {
+  border-color: var(--storycode-primary);
+  box-shadow: 0 0 0 2px rgba(31, 83, 141, 0.2);
+}
+
+/* カスタム情報ボックス */
+.storycode-feature {
+  background: linear-gradient(135deg, var(--storycode-primary), var(--storycode-accent));
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.storycode-feature h3 {
+  margin-top: 0;
+  color: white;
+}
+
+/* コード言語表示の改善 */
+.highlight .filename {
+  background-color: var(--storycode-primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 4px 4px 0 0;
+}
+
+/* メモ・ヒントボックス */
+.storycode-tip {
+  background-color: rgba(74, 158, 255, 0.1);
+  border-left: 4px solid var(--storycode-accent);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.storycode-tip::before {
+  content: "💡 ";
+  font-size: 1.2rem;
+}
+
+/* アーキテクチャ図のスタイリング */
+.architecture-diagram {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.architecture-diagram img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--storycode-primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .storycode-feature {
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+  }
+  
+  .md-typeset table:not([class]) {
+    font-size: 0.85rem;
+  }
+}
+
+/* ダークモード対応 */
+[data-md-color-scheme="slate"] {
+  --storycode-primary: #4a9eff;
+  --storycode-secondary: #50fa7b;
+  --storycode-accent: #8be9fd;
+}
+
+[data-md-color-scheme="slate"] .storycode-feature {
+  background: linear-gradient(135deg, #44475a, #6272a4);
+}
+
+[data-md-color-scheme="slate"] .highlight pre {
+  background-color: #282a36;
+  border-left-color: var(--storycode-accent);
+}
+
+/* アニメーション効果 */
+.md-nav__link:hover {
+  transition: color 0.2s ease;
+  color: var(--storycode-primary);
+}
+
+.md-button {
+  transition: all 0.2s ease;
+}
+
+/* カスタムバッジ */
+.storycode-badge {
+  background-color: var(--storycode-primary);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  margin: 0 0.25rem;
+}
+
+.storycode-badge.secondary {
+  background-color: var(--storycode-secondary);
+}
+
+.storycode-badge.accent {
+  background-color: var(--storycode-accent);
+}
+
+/* キーボードショートカット表示 */
+.keyboard-key {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  padding: 0.2rem 0.4rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin: 0 0.1rem;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+[data-md-color-scheme="slate"] .keyboard-key {
+  background-color: #44475a;
+  border-color: #6272a4;
+  color: #f8f8f2;
+}

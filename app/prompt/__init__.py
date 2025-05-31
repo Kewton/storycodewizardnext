@@ -319,11 +319,28 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
 # 前提条件
 - {_prerequisites}
 
+## ドキュメント
+- {_prerequisites}/docs にてmkdocsを使用してドキュメントを生成するものとします
+- アプリケーションのセットアップ手順や仕様、ガイドはmkdocsに記載するものとします
+- mkdocsの定義は、{_prerequisites}/mkdocs.yml にて定義するものとします
+- mkdocsにてmkdocstrings-pythonを使用して、Pythonのdocstringからドキュメントを生成するものとします
+- mkdocsの使用には下記コマンドで必要なライブラリをインストールするものとします
+   ```bash
+   pip install mkdocs mkdocs-material mkdocstrings mkdocstrings-python mkdocs-toc-md
+   ```
+- mkdocsの実行には下記コマンドを実行するものとします
+   ```bash
+   mkdocs serve
+   ```
+   
 # 制約条件
 - 要求文書を適切な表現にブラッシュアップすること
 - アウトプットはmarkdown形式とし、出力フォーマットに従うこと
 - 変更が発生するファイルは全て出力すること
-- セットアップ手順はREADME.mdに記載すること
+- 変更が発生しないファイルは出力しないこと
+- README.mdには変更を加えないこと
+- 削除するファイルがある場合は、削除するファイル名と理由を明確にし、内容が空のファイルを出力すること
+- セットアップ手順、仕様、ガイドはmkdocsに記載すること
 - UIの構成要素を言語化し、各コンポーネントとソースファイルの位置付けを明確にすること
 - 新規インストールが必要ライブラリは、インストール方法を明確にすること
 - git への commit コメントを出力すること
@@ -369,7 +386,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
     ---
     ## ./xxx/yyy.py
     ### 変更内容
-    新規作成
+    <変更内容>
     ### ./xxx/yyy.py
     ```py
     <変更後の./xxx/yyy.py>
@@ -377,7 +394,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
     ---
     ## ./xxx/zzz.py
     ### 変更内容
-    新規作成
+    <変更内容>
     ### ./xxx/zzz.py
     ```py
     <変更後の./xxx/zzz.py>
@@ -385,10 +402,18 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
     ---
     ## ./aaa/bbb.py
     ### 変更内容
-    新規作成
+    <変更内容>
     ### ./aaa/bbb.py
     ```py
     <変更後の./aaa/bbb.py>
+    ```
+    ---
+    ## ./aaa/ccc.py
+    ### 変更内容
+    <削除理由>
+    ### ./aaa/ccc.py
+    ```py
+    <削除する場合は内容が空のファイルを出力すること>
     ```
     ---
     ```
