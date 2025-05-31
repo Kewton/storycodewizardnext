@@ -164,6 +164,12 @@ class ActivitySidebar(ctk.CTkFrame):
                 'icon': '📁',
                 'tooltip': 'Project List\n\nプロジェクト管理\n• 新規作成・編集\n• Programming Type管理\n• ディレクトリ連携',
                 'row': 2
+            },
+            {
+                'id': 'help',
+                'icon': '❓',
+                'tooltip': 'ヘルプ\n\nユーザーガイド\n• 機能説明\n• 使い方ガイド\n• よくある質問',
+                'row': 3
             }
         ]
         

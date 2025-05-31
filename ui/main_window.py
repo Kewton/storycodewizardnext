@@ -6,6 +6,7 @@ import customtkinter as ctk
 from ui.chat_tab import ChatTab
 from ui.history_tab import HistoryTab
 from ui.project_tab import ProjectTab
+from ui.help_tab import HelpTab
 from ui.widgets.activity_sidebar import ActivitySidebar
 from ui.styles import AppStyles
 
@@ -135,6 +136,8 @@ class MainWindow(ctk.CTk):
             self.content_components[activity_id] = HistoryTab(self.content_frame, main_window=self)
         elif activity_id == "projects":
             self.content_components[activity_id] = ProjectTab(self.content_frame, main_window=self)
+        elif activity_id == "help":
+            self.content_components[activity_id] = HelpTab(self.content_frame, main_window=self)
         
         # 作成時刻を記録（キャッシュ管理用）
         import time
