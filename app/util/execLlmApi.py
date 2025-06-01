@@ -36,13 +36,11 @@ def isChatGPT_o1(_selected_model):
 
 
 def isChatGPTImageAPI(_selected_model):
-    if "gpt-4o" in _selected_model:
-        return True
-    elif "o1" in _selected_model:
-        return True
-    elif "o2" in _selected_model:
+    if "gpt" in _selected_model:
         return True
     elif "o3" in _selected_model:
+        return True
+    elif "o4" in _selected_model:
         return True
     else:
         return False
@@ -306,8 +304,8 @@ def execLlmApiStreaming(
     Returns:
         tuple: (Full response content, role)
     """
-    if isChatGptAPI(_selected_model):
-        if isChatGPTImageAPI(_selected_model) and len(encoded_file) > 0:
+    if isChatGPTImageAPI(_selected_model):
+        if len(encoded_file) > 0:
             processed_messages_streaming = []
             # メッセージ履歴を処理し、最後のユーザーメッセージに画像を追加
             for msg in _messages:
@@ -368,30 +366,6 @@ def execLlmApiStreaming(
             )
         
         # GPTストリーミングレスポンス処理
-        content = ""
-        role = "assistant"
-        for chunk in response:
-            if chunk.choices[0].delta.content is not None:
-                chunk_content = chunk.choices[0].delta.content
-                content += chunk_content
-                if streaming_callback:
-                    streaming_callback(chunk_content)
-            if chunk.choices[0].delta.role:
-                role = chunk.choices[0].delta.role
-        
-        return content, role
-
-    elif isChatGPT_o1(_selected_model):  # This block seems redundant if isChatGptAPI covers "o1" models.
-                                        # Assuming it's a distinct logic path as per original code.
-        _inpurt_messages, _systemrole = buildInpurtMessages(_messages, encoded_file)
-
-        response = chatgptapi_client.chat.completions.create(
-            model=_selected_model,
-            messages=_inpurt_messages, # buildInpurtMessages might not be ideal for plain OpenAI if it's Claude-specific for images
-            stream=True
-        )
-        
-        # o1モデルストリーミングレスポンス処理
         content = ""
         role = "assistant"
         for chunk in response:
