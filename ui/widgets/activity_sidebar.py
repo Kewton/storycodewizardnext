@@ -15,9 +15,10 @@ class ToolTip:
         self.text = text
         self.tooltip_window = None
         self.show_delay = 500  # 表示遅延（ミリ秒）
-        self.hide_delay = 100   # 非表示遅延（ミリ秒）
+        self.hide_delay = 300   # 非表示遅延を増加（ミリ秒）
         self.show_timer = None
         self.hide_timer = None
+        self.is_mouse_over = False  # マウスオーバー状態を追跡
         
         # イベントバインド
         self.widget.bind("<Enter>", self.on_enter)
@@ -26,19 +27,29 @@ class ToolTip:
     
     def on_enter(self, event):
         """マウスエンター時の処理"""
+        self.is_mouse_over = True
         self.cancel_hide_timer()
-        self.show_timer = self.widget.after(self.show_delay, self.show_tooltip)
+        if not self.tooltip_window:  # ツールチップが表示されていない場合のみ表示タイマーを開始
+            self.show_timer = self.widget.after(self.show_delay, self.show_tooltip)
     
     def on_leave(self, event):
         """マウスリーブ時の処理"""
+        self.is_mouse_over = False
         self.cancel_show_timer()
         if self.tooltip_window:
-            self.hide_timer = self.widget.after(self.hide_delay, self.hide_tooltip)
+            # マウスが離れた時にすぐに非表示タイマーを開始
+            self.hide_timer = self.widget.after(self.hide_delay, self.check_and_hide_tooltip)
     
     def on_motion(self, event):
         """マウス移動時の処理"""
+        self.is_mouse_over = True
+        # マウスが動いている間は非表示タイマーをキャンセル
+        self.cancel_hide_timer()
+        
         if self.tooltip_window:
             self.update_tooltip_position(event)
+        elif not self.show_timer:  # 表示タイマーが動いていない場合のみ新規開始
+            self.show_timer = self.widget.after(self.show_delay, self.show_tooltip)
     
     def cancel_show_timer(self):
         """表示タイマーをキャンセル"""
@@ -52,9 +63,14 @@ class ToolTip:
             self.widget.after_cancel(self.hide_timer)
             self.hide_timer = None
     
+    def check_and_hide_tooltip(self):
+        """マウス状態を確認してツールチップを非表示"""
+        if not self.is_mouse_over and self.tooltip_window:
+            self.hide_tooltip()
+    
     def show_tooltip(self):
         """ツールチップを表示"""
-        if self.tooltip_window:
+        if self.tooltip_window or not self.is_mouse_over:
             return
         
         self.tooltip_window = tk.Toplevel(self.widget)
@@ -65,19 +81,31 @@ class ToolTip:
         label = tk.Label(
             self.tooltip_window,
             text=self.text,
-            background=AppStyles.COLORS.get('surface_light', "#383838"), # AppStylesから色を取得
+            background=AppStyles.COLORS.get('surface_light', "#383838"),
             foreground=AppStyles.COLORS.get('text', "#ffffff"),
-            font=AppStyles.FONTS.get('small', ("Arial", 10)), # AppStylesからフォントを取得
+            font=AppStyles.FONTS.get('small', ("Arial", 10)),
             relief="solid",
             borderwidth=1,
-            padx=10,  # パディング調整
-            pady=6,   # パディング調整
-            justify=tk.LEFT # 左寄せ
+            padx=12,  # パディング調整
+            pady=8,   # パディング調整
+            justify=tk.LEFT
         )
         label.pack()
         
         # 位置を更新
         self.update_tooltip_position()
+        
+        # ツールチップウィンドウにもマウスイベントをバインド
+        self.tooltip_window.bind("<Enter>", self.on_tooltip_enter)
+        self.tooltip_window.bind("<Leave>", self.on_tooltip_leave)
+    
+    def on_tooltip_enter(self, event):
+        """ツールチップウィンドウにマウスが入った時"""
+        self.cancel_hide_timer()
+    
+    def on_tooltip_leave(self, event):
+        """ツールチップウィンドウからマウスが出た時"""
+        self.hide_timer = self.widget.after(self.hide_delay, self.check_and_hide_tooltip)
     
     def update_tooltip_position(self, event=None):
         """ツールチップの位置を更新"""
@@ -85,25 +113,28 @@ class ToolTip:
             return
         
         # ウィジェットの位置を取得
-        x = self.widget.winfo_rootx() + self.widget.winfo_width() + 10
-        y = self.widget.winfo_rooty() 
+        x = self.widget.winfo_rootx() + self.widget.winfo_width() + 15
+        y = self.widget.winfo_rooty() + (self.widget.winfo_height() // 2)
         
         # 画面外に出ないよう調整
         screen_width = self.widget.winfo_screenwidth()
         screen_height = self.widget.winfo_screenheight()
         
-        self.tooltip_window.update_idletasks() # ウィンドウサイズを確定
+        self.tooltip_window.update_idletasks()
         tooltip_width = self.tooltip_window.winfo_reqwidth()
         tooltip_height = self.tooltip_window.winfo_reqheight()
         
+        # 右端からはみ出る場合は左側に表示
         if x + tooltip_width > screen_width:
-            x = self.widget.winfo_rootx() - tooltip_width - 10
+            x = self.widget.winfo_rootx() - tooltip_width - 15
         
+        # 下端からはみ出る場合は上に調整
         if y + tooltip_height > screen_height:
             y = screen_height - tooltip_height - 10
         
+        # 上端からはみ出る場合は下に調整
         if y < 0:
-            y = 0
+            y = 10
         
         self.tooltip_window.wm_geometry(f"+{x}+{y}")
     
@@ -249,7 +280,7 @@ class ActivitySidebar(ctk.CTkFrame):
             sticky="s"
         )
         
-        # ツールチップを作成
+        # ツールチップを作成（改善されたツールチップを使用）
         restart_tooltip = ToolTip(restart_button, 
                                  'アプリケーション再起動\n\n'
                                  'アプリケーションを完全に再起動します\n'

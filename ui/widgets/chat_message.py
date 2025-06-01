@@ -112,7 +112,6 @@ class ChatMessage(ctk.CTkFrame):
     
     def setup_collapsible_content(self, start_row):
         """折りたたみ可能なコンテンツをセットアップ"""
-        self.is_expanded = False
         
         # 折りたたみボタン
         style = AppStyles.get_button_style('outline').copy()
@@ -134,7 +133,29 @@ class ChatMessage(ctk.CTkFrame):
         
         # コンテンツフレーム（初期は非表示）
         self.content_frame = ctk.CTkFrame(self, fg_color="transparent")
-    
+
+        self.is_expanded = False
+        if self.is_expanded:
+            # 折りたたむ
+            self.content_frame.grid_remove()
+            self.collapse_button.configure(text="▶ Show Content")
+            self.is_expanded = False
+        else:
+            # 展開する
+            if not hasattr(self, '_content_created'):
+                self.create_collapsible_content()
+                self._content_created = True
+            
+            self.content_frame.grid(
+                row=3, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_medium'],
+                pady=(0, AppStyles.SIZES['padding_medium']),
+                sticky="ew"
+            )
+            self.collapse_button.configure(text="▼ Hide Content")
+            self.is_expanded = True
+
     def setup_regular_content(self, start_row):
         """通常のコンテンツをセットアップ"""
         if self.enable_markdown and not self.is_user and hasattr(self, 'is_markdown_view') and self.is_markdown_view:

@@ -439,7 +439,7 @@ class HistoryTab(ctk.CTkFrame):
                 speaker="You",
                 content=input_text,
                 is_user=True,
-                max_height=100  # 従来の200の1/2
+                max_height=200
             )
             input_msg.grid(
                 row=current_row, 
