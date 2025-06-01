@@ -60,17 +60,18 @@ class ToolTip:
         self.tooltip_window.wm_overrideredirect(True)
         self.tooltip_window.wm_attributes("-topmost", True)
         
-        # スタイリング
+        # スタイリング改善
         label = tk.Label(
             self.tooltip_window,
             text=self.text,
-            background="#2d2d2d",
-            foreground="#ffffff",
-            font=("Arial", 10),
+            background=AppStyles.COLORS.get('surface_light', "#383838"), # AppStylesから色を取得
+            foreground=AppStyles.COLORS.get('text', "#ffffff"),
+            font=AppStyles.FONTS.get('small', ("Arial", 10)), # AppStylesからフォントを取得
             relief="solid",
             borderwidth=1,
-            padx=8,
-            pady=4
+            padx=10,  # パディング調整
+            pady=6,   # パディング調整
+            justify=tk.LEFT # 左寄せ
         )
         label.pack()
         
@@ -84,12 +85,13 @@ class ToolTip:
         
         # ウィジェットの位置を取得
         x = self.widget.winfo_rootx() + self.widget.winfo_width() + 10
-        y = self.widget.winfo_rooty() + self.widget.winfo_height() // 2
+        y = self.widget.winfo_rooty() 
         
         # 画面外に出ないよう調整
         screen_width = self.widget.winfo_screenwidth()
         screen_height = self.widget.winfo_screenheight()
         
+        self.tooltip_window.update_idletasks() # ウィンドウサイズを確定
         tooltip_width = self.tooltip_window.winfo_reqwidth()
         tooltip_height = self.tooltip_window.winfo_reqheight()
         
@@ -123,7 +125,7 @@ class ActivitySidebar(ctk.CTkFrame):
     def __init__(self, parent, on_activity_changed=None, **kwargs):
         # サイドバー専用のスタイル
         sidebar_style = {
-            'fg_color': '#2d2d2d',  # VS Code風ダークグレー
+            'fg_color': AppStyles.COLORS.get('sidebar', '#2d2d2d'),
             'corner_radius': 0,
             'border_width': 0
         }
@@ -136,7 +138,7 @@ class ActivitySidebar(ctk.CTkFrame):
         self._click_debounce = False  # クリック重複防止
         
         # 固定幅の設定
-        self.configure(width=70)
+        self.configure(width=AppStyles.SIZES.get('sidebar_width', 70))
         self.grid_propagate(False)
         
         self.setup_ui()
@@ -150,25 +152,49 @@ class ActivitySidebar(ctk.CTkFrame):
             {
                 'id': 'story2code',
                 'icon': '💬',
-                'tooltip': 'コード作成をリクエスト\n\n複数LLM対応のコード生成機能\n• ストリーミング表示\n• Markdown対応\n• ファイルアップロード対応',
+                'tooltip': (
+                    'コード作成をリクエスト\n\n'
+                    '複数LLM対応のコード生成機能\n'
+                    '• ストリーミング表示\n'
+                    '• Markdown対応\n'
+                    '• ファイルアップロード対応'
+                ),
                 'row': 0
             },
             {
                 'id': 'history',
                 'icon': '📚',
-                'tooltip': 'コーディングエージェントとの会話履歴\n\nプロジェクト別の会話履歴管理\n• エクスポート機能\n• 詳細表示\n• プロジェクト反映',
+                'tooltip': (
+                    'コーディングエージェントとの会話履歴\n\n'
+                    'プロジェクト別の会話履歴管理\n'
+                    '• エクスポート機能\n'
+                    '• 詳細表示\n'
+                    '• プロジェクト反映'
+                ),
                 'row': 1
             },
             {
                 'id': 'projects',
                 'icon': '📁',
-                'tooltip': 'Project List\n\nプロジェクト管理\n• 新規作成・編集\n• コーディングエージェント管理\n• ディレクトリ連携',
+                'tooltip': (
+                    'Project List\n\n'
+                    'プロジェクト管理\n'
+                    '• 新規作成・編集\n'
+                    '• コーディングエージェント管理\n'
+                    '• ディレクトリ連携'
+                ),
                 'row': 2
             },
             {
                 'id': 'help',
                 'icon': '❓',
-                'tooltip': 'ヘルプ\n\nユーザーガイド\n• 機能説明\n• 使い方ガイド\n• よくある質問',
+                'tooltip': (
+                    'ヘルプ\n\n'
+                    'ユーザーガイド\n'
+                    '• 機能説明\n'
+                    '• 使い方ガイド\n'
+                    '• よくある質問'
+                ),
                 'row': 3
             }
         ]
@@ -178,22 +204,17 @@ class ActivitySidebar(ctk.CTkFrame):
     
     def create_activity_button(self, activity):
         """アクティビティーボタンを作成"""
+        button_style = AppStyles.get_sidebar_style()['button']
         button = ctk.CTkButton(
             self,
             text=activity['icon'],
-            width=50,
-            height=50,
-            font=('Arial', 20),
-            fg_color='transparent',
-            hover_color='#404040',
-            text_color='#cccccc',
-            corner_radius=8,
-            command=lambda: self.on_button_click(activity['id'])
+            command=lambda: self.on_button_click(activity['id']),
+            **button_style # スタイルを適用
         )
         button.grid(
             row=activity['row'],
             column=0,
-            padx=10,
+            padx= (self.cget('width') - button_style['width']) // 2, # 中央揃え
             pady=(15, 5),
             sticky="n"
         )
@@ -229,19 +250,20 @@ class ActivitySidebar(ctk.CTkFrame):
     
     def set_active(self, activity_id):
         """アクティブなボタンを設定"""
+        sidebar_colors = AppStyles.get_sidebar_style()['colors']
         # 前のアクティブボタンをリセット
         if self.active_button:
             self.active_button.configure(
-                fg_color='transparent',
-                text_color='#cccccc'
+                fg_color='transparent', # 通常時の色
+                text_color=sidebar_colors['text']
             )
         
         # 新しいアクティブボタンを設定
         if activity_id in self.buttons:
             self.active_button = self.buttons[activity_id]
             self.active_button.configure(
-                fg_color=AppStyles.COLORS['primary'],
-                text_color='#ffffff'
+                fg_color=sidebar_colors['active'], # アクティブ時の色
+                text_color='#ffffff' # アクティブ時のテキスト色
             )
     
     def get_active(self):
