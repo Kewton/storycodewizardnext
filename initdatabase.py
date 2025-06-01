@@ -22,8 +22,8 @@ def initdata():
         "chat",
         "systemrole",
         {
-            "プログラミング言語": ["Next.js_1", "FastAPI", "Next.js_2", "CustomTkinter"],
-            "Next.js_1": {
+            "プログラミング言語": ["Next.js_Agent", "CustomTkinter_Agent", "FastAPI", "Next.js_2"],
+            "Next.js_Agent": {
                 "srcdire": "src",
                 "libraryFileList": [
                     "eslint.config.mjs",
@@ -77,7 +77,7 @@ def initdata():
                 ],
                 "prompt": "fastAPItemplate"
             },
-            "CustomTkinter": {
+            "CustomTkinter_Agent": {
                 "srcdire": "",
                 "libraryFileList": [
                     "requirements.txt"
