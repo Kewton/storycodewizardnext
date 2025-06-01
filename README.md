@@ -264,3 +264,7 @@ CustomTkinterのダークテーマをベースにカスタムカラーパレッ�
 | st.write_stream() | StreamingChatMessage (Markdown対応) | StreamingChatMessage (Markdown対応) |
 | st.markdown() | **新規**: MarkdownRenderer | **新規**: MarkdownRenderer |
 | タブナビゲーション | **新規**: ActivitySidebar | **VS Code風サイドバー** |
+
+## ライセンス
+
+このプロジェクトはMITライセンスのもとで公開されています。詳細については、[LICENSE](LICENSE)ファイルをご覧ください。
