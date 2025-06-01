@@ -317,7 +317,7 @@ class ProjectTab(ctk.CTkFrame):
     
     def create_new_project_with_all_data(self, project_name, directory_path, programming_type, description):
         """Programming Type対応のプロジェクト作成"""
-        from app.myjsondb.myHistories import createProject, getAllProject
+        from app.myjsondb.myHistories import createProject, getProjectList
         from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getAllProject
         
         # 入力値検証
