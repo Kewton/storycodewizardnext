@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from ui.styles import AppStyles
 from ui.widgets.chat_message import ChatMessage
-from app.myjsondb.myProjectSettings import getAllProject
+from app.myjsondb.myProjectSettings import getAllProject, getValueByPjnm
 from app.chat import (
     format_history_data, 
     get_user_content_from_messages, 
@@ -57,7 +57,7 @@ class HistoryTab(ctk.CTkFrame):
             sticky="nsew"
         )
         left_frame.grid_columnconfigure(0, weight=1)
-        left_frame.grid_rowconfigure(3, weight=1)
+        left_frame.grid_rowconfigure(4, weight=1) # history_list のrowを1つ下げるので、weightをかけるrowも変更
         
         # タイトル
         title_label = ctk.CTkLabel(
@@ -77,7 +77,7 @@ class HistoryTab(ctk.CTkFrame):
         self.setup_project_selection(left_frame, 1)
         
         # 履歴リスト
-        self.setup_history_list(left_frame, 3)
+        self.setup_history_list(left_frame, 4) # プロジェクト説明ラベルを追加したので1行下げる
     
     def setup_project_selection(self, parent, start_row):
         """プロジェクト選択UIをセットアップ"""
@@ -103,6 +103,23 @@ class HistoryTab(ctk.CTkFrame):
             padx=AppStyles.SIZES['padding_medium'],
             pady=(4, AppStyles.SIZES['padding_large']),
             sticky="ew"
+        )
+
+        # プロジェクト説明表示ラベル
+        self.project_description_label = ctk.CTkLabel(
+            parent,
+            text="プロジェクトを選択してください。",
+            font=AppStyles.FONTS['small'],
+            text_color=AppStyles.COLORS['text_secondary'],
+            wraplength=380, # 左パネルの幅に応じて調整
+            justify="left"
+        )
+        self.project_description_label.grid(
+            row=start_row + 2,
+            column=0,
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_small'], AppStyles.SIZES['padding_medium']),
+            sticky="w"
         )
     
     def setup_history_list(self, parent, row):
@@ -256,27 +273,63 @@ class HistoryTab(ctk.CTkFrame):
         """データを更新"""
         # プロジェクト一覧を読み込み
         projects = getAllProject()
+        current_project_before_refresh = self.project_var.get() # 更新前のプロジェクトを保持
+
         if projects and projects != [""]:
-            current_project = self.project_var.get()
             self.project_combo.configure(values=projects)
-            if current_project in projects:
-                self.project_var.set(current_project)
-                self.load_history_data()
+            if current_project_before_refresh in projects:
+                self.project_var.set(current_project_before_refresh)
+                self.load_history_data() # 既存プロジェクト選択時は履歴もロード
             elif projects:
                 self.project_var.set(projects[0])
-                self.load_history_data()
+                self.load_history_data() # 新規プロジェクト選択時は履歴もロード
+            # プロジェクト変更イベントを手動でトリガーして説明を更新
+            self.on_project_changed(self.project_var.get())
+        else:
+            self.project_combo.configure(values=[])
+            self.project_var.set("")
+            self.project_description_label.configure(text="プロジェクトがありません。")
+            self.current_history_data = [] # プロジェクトがない場合は履歴もクリア
+            self.update_history_list()
+            self.clear_detail_display()
     
-    def on_project_changed(self, value):
+    def on_project_changed(self, project_name):
         """プロジェクト変更時のハンドラ"""
-        self.load_history_data()
+        if project_name:
+            project_data = getValueByPjnm(project_name)
+            if project_data and 'description' in project_data:
+                description = project_data['description']
+                self.project_description_label.configure(text=f"説明: {description if description else '説明がありません。'}")
+            else:
+                self.project_description_label.configure(text="説明: プロジェクト情報が見つかりません。")
+            
+            self.load_history_data()
+        else:
+            self.project_description_label.configure(text="プロジェクトを選択してください。")
+            self.current_history_data = []
+            self.update_history_list()
+            self.clear_detail_display()
     
     def load_history_data(self):
         """履歴データを読み込み"""
-        if not self.project_var.get():
+        project_name = self.project_var.get()
+        if not project_name:
+            self.project_description_label.configure(text="プロジェクトを選択してください。")
+            self.current_history_data = []
+            self.update_history_list()
+            self.clear_detail_display()
             return
+
+        # プロジェクト説明の表示（プロジェクト名が有効な場合のみ）
+        project_data = getValueByPjnm(project_name)
+        if project_data and 'description' in project_data:
+            description = project_data['description']
+            self.project_description_label.configure(text=f"説明: {description if description else '説明がありません。'}")
+        else:
+            self.project_description_label.configure(text="説明: プロジェクト情報が見つかりません。")
         
         # 履歴データ取得
-        self.current_history_data = format_history_data(self.project_var.get())
+        self.current_history_data = format_history_data(project_name)
         self.update_history_list()
         
         # 最初の項目を選択

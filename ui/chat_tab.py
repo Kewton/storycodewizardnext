@@ -120,7 +120,24 @@ class ChatTab(ctk.CTkFrame):
             sticky="ew"
         )
         
-        return start_row + 2
+        # プロジェクト説明表示ラベル
+        self.project_description_label = ctk.CTkLabel(
+            parent,
+            text="プロジェクトを選択してください。",
+            font=AppStyles.FONTS['small'],
+            text_color=AppStyles.COLORS['text_secondary'],
+            wraplength=380, # 左パネルの幅に応じて調整
+            justify="left"
+        )
+        self.project_description_label.grid(
+            row=start_row + 2,
+            column=0,
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(AppStyles.SIZES['padding_small'], AppStyles.SIZES['padding_medium']), # 説明文なので少しスペースを確保
+            sticky="w"
+        )
+        
+        return start_row + 3 # 1行追加したので+3
     
     def setup_model_selection(self, parent, start_row):
         """モデル選択UIをセットアップ"""
@@ -294,14 +311,21 @@ class ChatTab(ctk.CTkFrame):
         """データを更新"""
         # プロジェクト一覧を読み込み
         projects = getAllProject()
+        current_project_before_refresh = self.project_var.get() # 更新前のプロジェクトを保持
+
         if projects and projects != [""]:
-            current_project = self.project_var.get()
             self.project_combo.configure(values=projects)
-            if current_project in projects:
-                self.project_var.set(current_project)
+            if current_project_before_refresh in projects:
+                self.project_var.set(current_project_before_refresh)
             elif projects:
                 self.project_var.set(projects[0])
-        
+            # プロジェクト変更イベントを手動でトリガーして説明を更新
+            self.on_project_changed(self.project_var.get()) 
+        else:
+            self.project_combo.configure(values=[])
+            self.project_var.set("")
+            self.project_description_label.configure(text="プロジェクトがありません。")
+
         # モデル一覧を読み込み
         models = getValueByFormnameAndKeyName("chat", "gpt", "gpt_model")
         if models:
@@ -322,29 +346,52 @@ class ChatTab(ctk.CTkFrame):
             elif languages:
                 self.language_var.set(languages[0])
         
-        # 初期プロジェクトが設定されている場合、コーディングエージェントを自動設定
+        # 初期プロジェクトが設定されている場合、コーディングエージェントを自動設定と説明表示
         if self.project_var.get():
-            self.auto_set_coding_agent()
+            self.auto_set_coding_agent() # これが on_project_changed を内部で呼び出す
+        elif not projects or projects == [""]:
+            self.project_description_label.configure(text="プロジェクトがありません。")
+            self.language_var.set("") # プロジェクトがない場合はコーディングエージェントもクリア
     
-    def on_project_changed(self, value):
-        """プロジェクト変更時のハンドラ - コーディングエージェントを自動設定"""
-        self.auto_set_coding_agent()
+    def on_project_changed(self, project_name):
+        """プロジェクト変更時のハンドラ - コーディングエージェントを自動設定し、プロジェクト説明を表示"""
+        if project_name:
+            project_data = getValueByPjnm(project_name)
+            if project_data and 'description' in project_data:
+                description = project_data['description']
+                self.project_description_label.configure(text=f"説明: {description if description else '説明がありません。'}")
+            else:
+                self.project_description_label.configure(text="説明: プロジェクト情報が見つかりません。")
+            
+            self.auto_set_coding_agent()
+        else:
+            self.project_description_label.configure(text="プロジェクトを選択してください。")
+            self.language_var.set("") # プロジェクトが選択されていない場合はコーディングエージェントもクリア
     
     def auto_set_coding_agent(self):
-        """プロジェクトのコーディングエージェントを自動設定"""
+        """プロジェクトのコーディングエージェントを自動設定し、説明を更新"""
         project_name = self.project_var.get()
         if not project_name:
+            self.project_description_label.configure(text="プロジェクトを選択してください。")
+            self.language_var.set("")
             return
         
-        # プロジェクトの設定からコーディングエージェントを取得
         project_data = getValueByPjnm(project_name)
-        if project_data and 'programming_type' in project_data:
-            programming_type = project_data['programming_type']
-            
-            # コーディングエージェントが有効な選択肢に含まれているかチェック
-            available_languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
-            if available_languages and programming_type in available_languages:
-                self.language_var.set(programming_type)
+        if project_data:
+            # プロジェクト説明を更新
+            description = project_data.get('description', '説明がありません。')
+            self.project_description_label.configure(text=f"説明: {description}")
+
+            # コーディングエージェントを設定
+            if 'programming_type' in project_data:
+                programming_type = project_data['programming_type']
+                available_languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
+                if available_languages and programming_type in available_languages:
+                    self.language_var.set(programming_type)
+                # programming_typeがリストにない場合、またはキーが存在しない場合は、何もしない（現在の選択を維持するか、デフォルトのまま）
+        else:
+            self.project_description_label.configure(text="説明: プロジェクト情報が見つかりません。")
+            # プロジェクトデータがない場合、コーディングエージェントはクリアしない方が良いかもしれない（ユーザーが手動設定している可能性）
     
     def on_file_selected(self, file_path, file_data):
         """ファイル選択時のコールバック"""

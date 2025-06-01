@@ -73,9 +73,11 @@ class FileUploader(ctk.CTkFrame):
     def select_file(self):
         """ファイル選択ダイアログを開く"""
         file_path = filedialog.askopenfilename(
-            title="JPEG画像を選択",
+            title="JPEG/PNG画像を選択",
             filetypes=[
+                ("Image files", "*.jpg *.jpeg *.png"),
                 ("JPEG files", "*.jpg *.jpeg"),
+                ("PNG files", "*.png"),
                 ("All files", "*.*")
             ]
         )
