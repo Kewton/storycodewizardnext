@@ -10,7 +10,7 @@ from ui.widgets.markdown_renderer import MarkdownRenderer
 class ChatMessage(ctk.CTkFrame):
     """チャットメッセージ表示ウィジェット"""
     
-    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, max_height=None, **kwargs):
+    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, max_height=None, default_markdown_view=True, **kwargs):
         super().__init__(parent, **kwargs)
         
         self.speaker = speaker
@@ -18,6 +18,7 @@ class ChatMessage(ctk.CTkFrame):
         self.is_user = is_user
         self.enable_markdown = enable_markdown and not is_user  # ユーザーメッセージはMarkdown無効
         self.max_height = max_height  # 最大高さ制限
+        self.default_markdown_view = default_markdown_view  # デフォルト表示モード
         
         # フレームスタイル設定
         if is_user:
@@ -71,7 +72,8 @@ class ChatMessage(ctk.CTkFrame):
     
     def setup_view_toggle(self):
         """表示切り替えボタンをセットアップ"""
-        self.is_markdown_view = True
+        # デフォルト表示モードを設定
+        self.is_markdown_view = self.default_markdown_view
         
         button_frame = ctk.CTkFrame(self, fg_color="transparent")
         button_frame.grid(
@@ -86,9 +88,12 @@ class ChatMessage(ctk.CTkFrame):
         style['font'] = AppStyles.FONTS['small']
         style['height'] = 25
         
+        # デフォルト表示モードに基づいてボタンテキストを設定
+        initial_button_text = "📝 Raw Text" if self.is_markdown_view else "🎨 Markdown"
+        
         self.toggle_view_button = ctk.CTkButton(
             button_frame,
-            text="📝 Raw Text",
+            text=initial_button_text,
             command=self.toggle_view_mode,
             width=100,
             **style

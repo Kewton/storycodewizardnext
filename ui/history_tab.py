@@ -456,10 +456,12 @@ class HistoryTab(ctk.CTkFrame):
                 section_label = "③ Your Context"
                 speaker = "You"
                 max_height = 600  # 高さ制限なし
+                default_markdown_view = True  # ユーザーコンテキストはMarkdownデフォルト
             elif message["role"] == "assistant":
                 section_label = "④ Agent Context"
                 speaker = "Coding Agent"
                 max_height = 600  # 高さ制限なし
+                default_markdown_view = False  # エージェントコンテキストはRaw Textデフォルト
             else:
                 continue
             
@@ -483,7 +485,8 @@ class HistoryTab(ctk.CTkFrame):
                 speaker=speaker,
                 content=message["content"],
                 is_user=(message["role"] == "user"),
-                max_height=max_height
+                max_height=max_height,
+                default_markdown_view=default_markdown_view
             )
             chat_msg.grid(
                 row=current_row, 
