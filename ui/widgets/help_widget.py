@@ -390,35 +390,11 @@ A: ネットワーク接続を確認し、アプリケーションを再起動�
         self.set_active_nav("📖 ドキュメント")
         self.clear_content()
         
-        overview_text = """StoryCodeWizardの詳細なドキュメントは、
-mkdocsを使用して生成・管理されています。
+        overview_text = """StoryCodeWizardの詳細なドキュメントは、mkdocsを使用して生成・管理されています。
 より詳しい情報が必要な場合は、以下をご参照ください。"""
         
         self.add_section("ドキュメント概要", overview_text, 0)
-        
-        docs_text = """• インストールガイド: セットアップ手順
-• ユーザーガイド: 各機能の詳細説明
-• アーキテクチャ: システム構成の詳細
-• API リファレンス: 開発者向け情報
-• 開発ガイド: カスタマイズ・拡張方法"""
-        
-        self.add_section("利用可能なドキュメント", docs_text, 2)
-        
-        # 外部リンクボタンを追加
-        external_links_title = ctk.CTkLabel(
-            self.content_scrollable,
-            text="外部リンク",
-            font=AppStyles.FONTS['subheading'],
-            text_color=AppStyles.COLORS['primary']
-        )
-        external_links_title.grid(
-            row=4, 
-            column=0, 
-            padx=AppStyles.SIZES['padding_small'],
-            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
-            sticky="w"
-        )
-        
+                
         # 公式ドキュメントリンク
         self.add_link_button("🌐 公式ドキュメントサイト", "https://kewton.github.io/storycodewizardnext/", 5)
         
@@ -430,9 +406,6 @@ mkdocsを使用して生成・管理されています。
 1. ターミナルでプロジェクトディレクトリに移動
 2. 以下のコマンドを実行:
    mkdocs serve
-3. ブラウザで http://localhost:8000 にアクセス
-
-詳細な技術情報や開発者向けの情報は、
-上記の外部リンクから最新のWebドキュメントをご確認ください。"""
+3. ブラウザで http://localhost:8000 にアクセス"""
         
         self.add_section("ローカルドキュメントへのアクセス", access_text, 7)
