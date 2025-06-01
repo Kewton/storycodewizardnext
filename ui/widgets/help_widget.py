@@ -62,7 +62,7 @@ class HelpWidget(ctk.CTkFrame):
         # ナビゲーションボタン
         nav_items = [
             ("🚀 はじめに", self.show_getting_started),
-            ("💬 コード作成をリクエスト", self.show_chat_help),
+            ("💬 コード生成リクエスト", self.show_chat_help),
             ("📁 プロジェクト管理", self.show_project_help),
             ("📚 コーディングエージェントとの会話履歴", self.show_history_help),
             ("🎨 UI操作ガイド", self.show_ui_help),
@@ -196,9 +196,9 @@ class HelpWidget(ctk.CTkFrame):
         self.add_section("StoryCodeWizardとは", welcome_text, 0)
         
         steps_text = """1. 左側のサイドバーから機能を選択
-2. プロジェクトを作成（📁 Project List）
-3. コード作成をリクエスト機能でLLMと対話（💬 コード作成をリクエスト）
-4. 生成されたコードを確認・ダウンロード
+2. プロジェクトを作成（📁 プロジェクト管理）
+3. コード生成リクエスト機能でコード生成を実施（💬 コード生成リクエスト）
+4. 生成されたコードを確認しプロジェクトへの反映を実施（💬 コード生成リクエスト）
 5. 履歴から過去の結果を参照（📚 コーディングエージェントとの会話履歴）"""
         
         self.add_section("基本的な使い方", steps_text, 2)
@@ -207,28 +207,31 @@ class HelpWidget(ctk.CTkFrame):
 • リアルタイムストリーミング応答
 • Markdown形式での美しい表示
 • プロジェクトごとの履歴管理
-• ファイルアップロード対応（JPEG画像）
+• ファイルアップロード対応（JPEG画像とPNG画像）
 • コード生成結果の自動プロジェクト反映"""
         
         self.add_section("主な機能", features_text, 4)
     
     def show_chat_help(self):
-        """コード作成をリクエスト機能ヘルプを表示"""
-        self.content_title.configure(text="💬 コード作成をリクエスト")
-        self.set_active_nav("💬 コード作成をリクエスト")
+        """コード生成リクエスト機能ヘルプを表示"""
+        self.content_title.configure(text="💬 コード生成リクエスト")
+        self.set_active_nav("💬 コード生成リクエスト")
         self.clear_content()
         
-        overview_text = """コード作成をリクエスト機能では、LLMと対話してコードを生成できます。
+        overview_text = """コード生成リクエスト機能では、コーディングエージェントにコード生成を依頼できます。
 左側の設定パネルでプロジェクトやモデルを選択し、
-右側でリアルタイムに応答を確認できます。"""
+右側でリアルタイムに応答を確認できます。
+コーディングエージェントからの応答が完了するとプロジェクトへの反映が可能になります。
+"""
         
         self.add_section("機能概要", overview_text, 0)
         
         config_text = """• プロジェクト: 作業対象のプロジェクトを選択
 • LLMモデル: 使用するAIモデルを選択
 • コーディングエージェント: プロジェクトの開発言語/フレームワーク
-• ファイルアップロード: JPEG画像を添付可能
-• 要求入力: 生成したいコードの要求を記述"""
+• ファイルアップロード: JPEG画像とPNG画像を添付可能
+• 要求入力: 生成したいコードの要求を記述
+• プロジェクトに範囲: 生成したコードをプロジェクトに反映するオプション"""
         
         self.add_section("設定項目", config_text, 2)
         
@@ -300,14 +303,14 @@ class HelpWidget(ctk.CTkFrame):
         self.set_active_nav("🎨 UI操作ガイド")
         self.clear_content()
         
-        overview_text = """StoryCodeWizardはVS Code風のモダンなUIを採用しています。
+        overview_text = """StoryCodeWizardはモダンなUIを採用しています。
 直感的な操作で各機能にアクセスできるよう設計されています。"""
         
         self.add_section("UI概要", overview_text, 0)
         
-        sidebar_text = """• 💬 コード作成をリクエスト: LLMとの対話によるコード生成
+        sidebar_text = """• 💬 コード生成リクエスト: LLMとの対話によるコード生成
 • 📚 コーディングエージェントとの会話履歴: 履歴管理
-• 📁 Project List: プロジェクト管理
+• 📁 プロジェクト管理: プロジェクト管理
 • ❓ ヘルプ: このガイド
 • アクティブ状態: 選択中の機能がハイライト表示"""
         
@@ -344,7 +347,7 @@ Q: コード作成の応答が表示されない
 A: インターネット接続とAPIキーの設定を確認してください。
 
 Q: ファイルアップロードができない
-A: JPEG形式のファイルのみサポートしています。"""
+A: JPEG形式とPNG形式のファイルのみサポートしています。"""
         
         self.add_section("使用方法関連", usage_text, 2)
         

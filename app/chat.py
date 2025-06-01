@@ -327,7 +327,7 @@ def chat():
     st.title("StoryCodeWizard")
     st.info("CustomTkinter版も利用可能です: python main.py で起動")
     
-    tab1, tab2, tab3 = st.tabs(["Stroy2Code", "MyHistory", "Project List"])
+    tab1, tab2, tab3 = st.tabs(["Stroy2Code", "MyHistory", "プロジェクト管理"])
 
     with tab1:
         st.write("CustomTkinter版をご利用ください")

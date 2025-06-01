@@ -1,6 +1,6 @@
 """
 StoryCodeWizard Chat Tab
-コード作成をリクエスト機能のUIコンポーネント（ストリーミング対応）
+コード生成リクエスト機能のUIコンポーネント（ストリーミング対応）
 """
 import customtkinter as ctk
 import tkinter as tk
@@ -16,7 +16,7 @@ from app.myjsondb.myProjectSettings import getAllProject, getValueByPjnm
 from app.chat import communicate_core_streaming, save_chat_history
 
 class ChatTab(ctk.CTkFrame):
-    """コード作成をリクエスト機能タブのUIコンポーネント"""
+    """コード生成リクエスト機能タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
         super().__init__(parent)

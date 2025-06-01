@@ -153,7 +153,7 @@ class ActivitySidebar(ctk.CTkFrame):
                 'id': 'story2code',
                 'icon': '💬',
                 'tooltip': (
-                    'コード作成をリクエスト\n\n'
+                    'コード生成リクエスト\n\n'
                     '複数LLM対応のコード生成機能\n'
                     '• ストリーミング表示\n'
                     '• Markdown対応\n'
@@ -177,7 +177,7 @@ class ActivitySidebar(ctk.CTkFrame):
                 'id': 'projects',
                 'icon': '📁',
                 'tooltip': (
-                    'Project List\n\n'
+                    'プロジェクト管理\n\n'
                     'プロジェクト管理\n'
                     '• 新規作成・編集\n'
                     '• コーディングエージェント管理\n'
