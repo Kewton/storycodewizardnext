@@ -62,9 +62,9 @@ class HelpWidget(ctk.CTkFrame):
         # ナビゲーションボタン
         nav_items = [
             ("🚀 はじめに", self.show_getting_started),
-            ("💬 チャット機能", self.show_chat_help),
+            ("💬 コード作成をリクエスト", self.show_chat_help),
             ("📁 プロジェクト管理", self.show_project_help),
-            ("📚 履歴管理", self.show_history_help),
+            ("📚 コーディングエージェントとの会話履歴", self.show_history_help),
             ("🎨 UI操作ガイド", self.show_ui_help),
             ("❓ よくある質問", self.show_faq),
             ("📖 ドキュメント", self.show_documentation)
@@ -197,9 +197,9 @@ class HelpWidget(ctk.CTkFrame):
         
         steps_text = """1. 左側のサイドバーから機能を選択
 2. プロジェクトを作成（📁 Project List）
-3. チャット機能でLLMと対話（💬 Story2Code）
+3. コード作成をリクエスト機能でLLMと対話（💬 コード作成をリクエスト）
 4. 生成されたコードを確認・ダウンロード
-5. 履歴から過去の結果を参照（📚 MyHistory）"""
+5. 履歴から過去の結果を参照（📚 コーディングエージェントとの会話履歴）"""
         
         self.add_section("基本的な使い方", steps_text, 2)
         
@@ -213,12 +213,12 @@ class HelpWidget(ctk.CTkFrame):
         self.add_section("主な機能", features_text, 4)
     
     def show_chat_help(self):
-        """チャット機能ヘルプを表示"""
-        self.content_title.configure(text="💬 チャット機能")
-        self.set_active_nav("💬 チャット機能")
+        """コード作成をリクエスト機能ヘルプを表示"""
+        self.content_title.configure(text="💬 コード作成をリクエスト")
+        self.set_active_nav("💬 コード作成をリクエスト")
         self.clear_content()
         
-        overview_text = """チャット機能では、LLMと対話してコードを生成できます。
+        overview_text = """コード作成をリクエスト機能では、LLMと対話してコードを生成できます。
 左側の設定パネルでプロジェクトやモデルを選択し、
 右側でリアルタイムに応答を確認できます。"""
         
@@ -226,7 +226,7 @@ class HelpWidget(ctk.CTkFrame):
         
         config_text = """• プロジェクト: 作業対象のプロジェクトを選択
 • LLMモデル: 使用するAIモデルを選択
-• Programming Type: プロジェクトの開発言語/フレームワーク
+• コーディングエージェント: プロジェクトの開発言語/フレームワーク
 • ファイルアップロード: JPEG画像を添付可能
 • 要求入力: 生成したいコードの要求を記述"""
         
@@ -234,7 +234,7 @@ class HelpWidget(ctk.CTkFrame):
         
         tips_text = """• 具体的で明確な要求を記述する
 • プロジェクトを事前に作成しておく
-• Programming Typeはプロジェクト作成時に自動設定される
+• コーディングエージェントはプロジェクト作成時に自動設定される
 • ストリーミング中は他の操作を控える
 • Markdown表示でコードを見やすく確認"""
         
@@ -247,7 +247,7 @@ class HelpWidget(ctk.CTkFrame):
         self.clear_content()
         
         overview_text = """プロジェクト管理では、開発プロジェクトの作成・編集・削除を行います。
-各プロジェクトにはディレクトリパス、Programming Type、
+各プロジェクトにはディレクトリパス、コーディングエージェント、
 説明などの情報を設定できます。"""
         
         self.add_section("機能概要", overview_text, 0)
@@ -255,7 +255,7 @@ class HelpWidget(ctk.CTkFrame):
         create_text = """1. 左側パネルの入力フォームに情報を入力
 2. プロジェクト名: 識別用の一意な名前
 3. ディレクトリパス: ソースコードの保存場所
-4. Programming Type: 開発言語/フレームワーク
+4. コーディングエージェント: 開発言語/フレームワーク
 5. プロジェクト説明: プロジェクトの詳細説明"""
         
         self.add_section("プロジェクト作成", create_text, 2)
@@ -268,12 +268,12 @@ class HelpWidget(ctk.CTkFrame):
         self.add_section("プロジェクト管理", management_text, 4)
     
     def show_history_help(self):
-        """履歴管理ヘルプを表示"""
-        self.content_title.configure(text="📚 履歴管理")
-        self.set_active_nav("📚 履歴管理")
+        """コーディングエージェントとの会話履歴ヘルプを表示"""
+        self.content_title.configure(text="📚 コーディングエージェントとの会話履歴")
+        self.set_active_nav("📚 コーディングエージェントとの会話履歴")
         self.clear_content()
         
-        overview_text = """履歴管理では、過去のチャット履歴を確認・管理できます。
+        overview_text = """コーディングエージェントとの会話履歴では、過去のコード作成履歴を確認・管理できます。
 プロジェクトごとに整理された履歴から、
 必要な情報を簡単に見つけることができます。"""
         
@@ -282,6 +282,7 @@ class HelpWidget(ctk.CTkFrame):
         view_text = """• 左側: プロジェクト選択と履歴一覧
 • 右側: 選択した履歴の詳細表示
 • 実行時刻とモデル名で履歴を識別
+• 4セクション形式: システムロール内容、入力、ユーザーコンテキスト、エージェントコンテキスト
 • Markdown形式で美しく表示"""
         
         self.add_section("履歴表示", view_text, 2)
@@ -289,7 +290,7 @@ class HelpWidget(ctk.CTkFrame):
         actions_text = """• 削除: 不要な履歴を削除
 • ダウンロード: Your Context/Agent Contextを保存
 • プロジェクト反映: 生成されたコードをプロジェクトに適用
-• 詳細表示: チャット内容の確認"""
+• 詳細表示: 会話内容の4セクション表示"""
         
         self.add_section("利用可能な操作", actions_text, 4)
     
@@ -304,8 +305,8 @@ class HelpWidget(ctk.CTkFrame):
         
         self.add_section("UI概要", overview_text, 0)
         
-        sidebar_text = """• 💬 Story2Code: チャット機能
-• 📚 MyHistory: 履歴管理
+        sidebar_text = """• 💬 コード作成をリクエスト: LLMとの対話によるコード生成
+• 📚 コーディングエージェントとの会話履歴: 履歴管理
 • 📁 Project List: プロジェクト管理
 • ❓ ヘルプ: このガイド
 • アクティブ状態: 選択中の機能がハイライト表示"""
@@ -339,7 +340,7 @@ A: python initdatabase.py を実行してデータベースを初期化してく
         usage_text = """Q: プロジェクトが作成できない
 A: ディレクトリパスが正しく、アクセス権限があることを確認してください。
 
-Q: チャット応答が表示されない
+Q: コード作成の応答が表示されない
 A: インターネット接続とAPIキーの設定を確認してください。
 
 Q: ファイルアップロードができない

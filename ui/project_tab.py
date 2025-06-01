@@ -74,8 +74,8 @@ class ProjectTab(ctk.CTkFrame):
         # ディレクトリ選択
         current_row = self.setup_directory_selection(self.left_scrollable, current_row)
         
-        # Programming Type選択
-        current_row = self.setup_programming_type_selection(self.left_scrollable, current_row)
+        # コーディングエージェント選択
+        current_row = self.setup_coding_agent_selection(self.left_scrollable, current_row)
         
         # プロジェクト説明入力
         current_row = self.setup_description_input(self.left_scrollable, current_row)
@@ -150,9 +150,9 @@ class ProjectTab(ctk.CTkFrame):
         
         return start_row + 2
     
-    def setup_programming_type_selection(self, parent, start_row):
-        """Programming Type選択をセットアップ"""
-        label = ctk.CTkLabel(parent, text="Programming Type:", font=AppStyles.FONTS['default'])
+    def setup_coding_agent_selection(self, parent, start_row):
+        """コーディングエージェント選択をセットアップ"""
+        label = ctk.CTkLabel(parent, text="コーディングエージェント:", font=AppStyles.FONTS['default'])
         label.grid(
             row=start_row, 
             column=0, 
@@ -175,8 +175,8 @@ class ProjectTab(ctk.CTkFrame):
             sticky="ew"
         )
         
-        # Programming Type一覧を読み込み
-        self.load_programming_types()
+        # コーディングエージェント一覧を読み込み
+        self.load_coding_agents()
         
         return start_row + 2
     
@@ -268,8 +268,8 @@ class ProjectTab(ctk.CTkFrame):
         )
         self.projects_scrollable.grid_columnconfigure(0, weight=1)
     
-    def load_programming_types(self):
-        """Programming Type一覧を読み込み"""
+    def load_coding_agents(self):
+        """コーディングエージェント一覧を読み込み"""
         languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
         if languages:
             self.programming_type_combo.configure(values=languages)
@@ -299,7 +299,7 @@ class ProjectTab(ctk.CTkFrame):
             self.project_name_entry.delete(0, 'end')
             self.directory_entry.delete(0, 'end')
             self.description_text.delete("1.0", "end")
-            # Programming Typeは最初の選択肢にリセット
+            # コーディングエージェントは最初の選択肢にリセット
             languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
             if languages:
                 self.programming_type_var.set(languages[0])
@@ -316,7 +316,7 @@ class ProjectTab(ctk.CTkFrame):
             messagebox.showerror("Error", message)
     
     def create_new_project_with_all_data(self, project_name, directory_path, programming_type, description):
-        """Programming Type対応のプロジェクト作成"""
+        """コーディングエージェント対応のプロジェクト作成"""
         from app.myjsondb.myHistories import createProject, getProjectList
         from app.myjsondb.myProjectSettings import upsertPjdirAndValueByPjnm, getAllProject
         
@@ -331,7 +331,7 @@ class ProjectTab(ctk.CTkFrame):
             return False, "有効なディレクトリパスを入力してください。"
         
         if not programming_type.strip():
-            return False, "Programming Typeを選択してください。"
+            return False, "コーディングエージェントを選択してください。"
         
         # 既存プロジェクト名チェック
         existing_projects = getAllProject()
@@ -352,7 +352,7 @@ class ProjectTab(ctk.CTkFrame):
     
     def refresh_data(self):
         """データを更新"""
-        self.load_programming_types()
+        self.load_coding_agents()
         self.load_projects()
     
     def load_projects(self):

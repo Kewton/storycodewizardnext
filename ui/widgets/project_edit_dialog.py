@@ -85,8 +85,8 @@ class ProjectEditDialog(ctk.CTkToplevel):
         # ディレクトリパス入力
         self.setup_directory_input(form_frame, 2)
         
-        # Programming Type選択
-        self.setup_programming_type_selection(form_frame, 4)
+        # コーディングエージェント選択
+        self.setup_coding_agent_selection(form_frame, 4)
         
         # プロジェクト説明入力（拡張可能）
         self.setup_description_input(form_frame, 6)
@@ -183,11 +183,11 @@ class ProjectEditDialog(ctk.CTkToplevel):
         )
         browse_button.grid(row=0, column=1, sticky="e")
     
-    def setup_programming_type_selection(self, parent, start_row):
-        """Programming Type選択をセットアップ"""
+    def setup_coding_agent_selection(self, parent, start_row):
+        """コーディングエージェント選択をセットアップ"""
         label = ctk.CTkLabel(
             parent,
-            text="Programming Type:",
+            text="コーディングエージェント:",
             font=AppStyles.FONTS['default']
         )
         label.grid(
@@ -212,8 +212,8 @@ class ProjectEditDialog(ctk.CTkToplevel):
             sticky="ew"
         )
         
-        # Programming Type一覧を読み込み
-        self.load_programming_types()
+        # コーディングエージェント一覧を読み込み
+        self.load_coding_agents()
     
     def setup_description_input(self, parent, start_row):
         """プロジェクト説明入力をセットアップ（拡張可能）"""
@@ -285,12 +285,12 @@ class ProjectEditDialog(ctk.CTkToplevel):
             sticky="ew"
         )
     
-    def load_programming_types(self):
-        """Programming Type一覧を読み込み"""
+    def load_coding_agents(self):
+        """コーディングエージェント一覧を読み込み"""
         languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
         if languages:
             self.programming_type_combo.configure(values=languages)
-            # 現在のProgramming Typeを設定
+            # 現在のコーディングエージェントを設定
             if self.programming_type in languages:
                 self.programming_type_var.set(self.programming_type)
             elif languages:
@@ -324,7 +324,7 @@ class ProjectEditDialog(ctk.CTkToplevel):
             return
         
         if not new_programming_type:
-            messagebox.showerror("エラー", "Programming Typeを選択してください。")
+            messagebox.showerror("エラー", "コーディングエージェントを選択してください。")
             return
         
         try:
@@ -333,7 +333,7 @@ class ProjectEditDialog(ctk.CTkToplevel):
             if not existing_value:
                 existing_value = {}
             
-            # 説明とProgramming Typeを更新
+            # 説明とコーディングエージェントを更新
             existing_value['description'] = new_description
             existing_value['programming_type'] = new_programming_type
             

@@ -150,19 +150,19 @@ class ActivitySidebar(ctk.CTkFrame):
             {
                 'id': 'story2code',
                 'icon': '💬',
-                'tooltip': 'Story2Code\n\nLLMとのチャット機能\n• 複数LLM対応\n• ストリーミング表示\n• Markdown対応',
+                'tooltip': 'コード作成をリクエスト\n\n複数LLM対応のコード生成機能\n• ストリーミング表示\n• Markdown対応\n• ファイルアップロード対応',
                 'row': 0
             },
             {
                 'id': 'history',
                 'icon': '📚',
-                'tooltip': 'MyHistory\n\nチャット履歴管理\n• プロジェクト別履歴\n• エクスポート機能\n• 詳細表示',
+                'tooltip': 'コーディングエージェントとの会話履歴\n\nプロジェクト別の会話履歴管理\n• エクスポート機能\n• 詳細表示\n• プロジェクト反映',
                 'row': 1
             },
             {
                 'id': 'projects',
                 'icon': '📁',
-                'tooltip': 'Project List\n\nプロジェクト管理\n• 新規作成・編集\n• Programming Type管理\n• ディレクトリ連携',
+                'tooltip': 'Project List\n\nプロジェクト管理\n• 新規作成・編集\n• コーディングエージェント管理\n• ディレクトリ連携',
                 'row': 2
             },
             {

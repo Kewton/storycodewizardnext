@@ -1,6 +1,6 @@
 """
 StoryCodeWizard History Tab
-チャット履歴管理のUIコンポーネント
+コーディングエージェントとの会話履歴管理のUIコンポーネント
 """
 import customtkinter as ctk
 import tkinter as tk
@@ -18,7 +18,7 @@ from app.chat import (
 from app.myjsondb.myHistories import getValOfPjByKey
 
 class HistoryTab(ctk.CTkFrame):
-    """履歴管理タブのUIコンポーネント"""
+    """コーディングエージェントとの会話履歴管理タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
         super().__init__(parent)
@@ -62,7 +62,7 @@ class HistoryTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             left_frame,
-            text="Chat History",
+            text="コーディングエージェントとの会話履歴",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -158,7 +158,7 @@ class HistoryTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             right_frame,
-            text="History Details",
+            text="会話詳細",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -172,7 +172,7 @@ class HistoryTab(ctk.CTkFrame):
         # アクションボタン
         self.setup_action_buttons(right_frame, 1)
         
-        # チャット詳細表示
+        # 会話詳細表示
         self.setup_chat_detail(right_frame, 2)
     
     def setup_action_buttons(self, parent, row):
@@ -234,7 +234,7 @@ class HistoryTab(ctk.CTkFrame):
         self.apply_button.grid(row=0, column=3, padx=(5, 0), sticky="ew")
     
     def setup_chat_detail(self, parent, row):
-        """チャット詳細表示をセットアップ"""
+        """会話詳細表示をセットアップ"""
         self.detail_scrollable = ctk.CTkScrollableFrame(
             parent,
             **AppStyles.get_scrollable_frame_style()
@@ -321,15 +321,106 @@ class HistoryTab(ctk.CTkFrame):
             self.clear_detail_display()
             return
         
-        # 詳細表示更新
-        self.update_detail_display(self.current_messages)
+        # 詳細表示更新（4セクション形式）
+        self.update_detail_display_enhanced(self.current_messages, input_text=item['input'])
     
-    def update_detail_display(self, messages):
-        """詳細表示を更新"""
+    def update_detail_display_enhanced(self, messages, input_text=None):
+        """詳細表示を更新（4セクション形式：system role content、input、your context、agent context）"""
         self.clear_detail_display()
         
+        current_row = 0
+        
+        # ①System Role Content
+        if messages and len(messages) > 0 and messages[0]["role"] == "system":
+            system_content = messages[0]["content"]
+            section_header = ctk.CTkLabel(
+                self.detail_scrollable,
+                text="① System Role Content",
+                font=AppStyles.FONTS['subheading'],
+                text_color=AppStyles.COLORS['accent']
+            )
+            section_header.grid(
+                row=current_row, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=(AppStyles.SIZES['padding_small'], 4),
+                sticky="w"
+            )
+            current_row += 1
+            
+            system_msg = ChatMessage(
+                self.detail_scrollable,
+                speaker="System",
+                content=system_content,
+                is_user=False
+            )
+            system_msg.grid(
+                row=current_row, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=(0, AppStyles.SIZES['padding_medium']),
+                sticky="ew"
+            )
+            current_row += 1
+        
+        # ②Input        
+        if input_text:
+            section_header = ctk.CTkLabel(
+                self.detail_scrollable,
+                text="② Input",
+                font=AppStyles.FONTS['subheading'],
+                text_color=AppStyles.COLORS['accent']
+            )
+            section_header.grid(
+                row=current_row, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=(AppStyles.SIZES['padding_small'], 4),
+                sticky="w"
+            )
+            current_row += 1
+            
+            input_msg = ChatMessage(
+                self.detail_scrollable,
+                speaker="Input",
+                content=input_text,
+                is_user=False
+            )
+            input_msg.grid(
+                row=current_row, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=(0, AppStyles.SIZES['padding_medium']),
+                sticky="ew"
+            )
+            current_row += 1
+        
+        # ③Your Context & ④Agent Context
         for i, message in enumerate(messages[1:], 1):  # システムメッセージをスキップ
-            speaker = "You" if message["role"] == "user" else "Agent"
+            if message["role"] == "user":
+                section_label = "③ Your Context"
+                speaker = "You"
+            elif message["role"] == "assistant":
+                section_label = "④ Agent Context"
+                speaker = "Coding Agent"
+            else:
+                continue
+            
+            section_header = ctk.CTkLabel(
+                self.detail_scrollable,
+                text=section_label,
+                font=AppStyles.FONTS['subheading'],
+                text_color=AppStyles.COLORS['accent']
+            )
+            section_header.grid(
+                row=current_row, 
+                column=0, 
+                padx=AppStyles.SIZES['padding_small'],
+                pady=(AppStyles.SIZES['padding_small'], 4),
+                sticky="w"
+            )
+            current_row += 1
+            
             chat_msg = ChatMessage(
                 self.detail_scrollable,
                 speaker=speaker,
@@ -337,12 +428,13 @@ class HistoryTab(ctk.CTkFrame):
                 is_user=(message["role"] == "user")
             )
             chat_msg.grid(
-                row=i-1, 
+                row=current_row, 
                 column=0, 
                 padx=AppStyles.SIZES['padding_small'],
-                pady=AppStyles.SIZES['padding_small'],
+                pady=(0, AppStyles.SIZES['padding_medium']),
                 sticky="ew"
             )
+            current_row += 1
     
     def clear_detail_display(self):
         """詳細表示をクリア"""

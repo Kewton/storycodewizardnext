@@ -1,6 +1,6 @@
 """
 StoryCodeWizard Chat Tab
-チャット機能のUIコンポーネント（ストリーミング対応）
+コード作成をリクエスト機能のUIコンポーネント（ストリーミング対応）
 """
 import customtkinter as ctk
 import tkinter as tk
@@ -15,7 +15,7 @@ from app.myjsondb.myProjectSettings import getAllProject, getValueByPjnm
 from app.chat import communicate_core_streaming, save_chat_history
 
 class ChatTab(ctk.CTkFrame):
-    """チャット機能タブのUIコンポーネント"""
+    """コード作成をリクエスト機能タブのUIコンポーネント"""
     
     def __init__(self, parent, main_window=None):
         super().__init__(parent)
@@ -38,7 +38,7 @@ class ChatTab(ctk.CTkFrame):
         # 左側パネル（設定・入力） - スクロール可能に変更
         self.setup_left_panel()
         
-        # 右側パネル（チャット表示）
+        # 右側パネル（コード表示）
         self.setup_right_panel()
     
     def setup_left_panel(self):
@@ -60,7 +60,7 @@ class ChatTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             self.left_scrollable,
-            text="Chat Configuration",
+            text="コード作成設定",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -80,8 +80,8 @@ class ChatTab(ctk.CTkFrame):
         # モデル選択
         current_row = self.setup_model_selection(self.left_scrollable, current_row)
         
-        # 言語選択
-        current_row = self.setup_language_selection(self.left_scrollable, current_row)
+        # コーディングエージェント選択
+        current_row = self.setup_coding_agent_selection(self.left_scrollable, current_row)
         
         # ファイルアップロード
         current_row = self.setup_file_upload(self.left_scrollable, current_row)
@@ -147,9 +147,9 @@ class ChatTab(ctk.CTkFrame):
         
         return start_row + 2
     
-    def setup_language_selection(self, parent, start_row):
-        """プログラミング言語選択UIをセットアップ"""
-        label = ctk.CTkLabel(parent, text="Programming Type:", font=AppStyles.FONTS['default'])
+    def setup_coding_agent_selection(self, parent, start_row):
+        """コーディングエージェント選択UIをセットアップ"""
+        label = ctk.CTkLabel(parent, text="コーディングエージェント:", font=AppStyles.FONTS['default'])
         label.grid(
             row=start_row, 
             column=0, 
@@ -241,7 +241,7 @@ class ChatTab(ctk.CTkFrame):
         )
     
     def setup_right_panel(self):
-        """右側パネル（チャット表示）をセットアップ"""
+        """右側パネル（コード表示）をセットアップ"""
         right_frame = ctk.CTkFrame(
             self,
             **AppStyles.get_frame_style('default')
@@ -259,7 +259,7 @@ class ChatTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             right_frame,
-            text="Chat Messages",
+            text="生成されたコード",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -270,7 +270,7 @@ class ChatTab(ctk.CTkFrame):
             sticky="w"
         )
         
-        # チャットメッセージ表示エリア
+        # コードメッセージ表示エリア
         self.chat_scrollable = ctk.CTkScrollableFrame(
             right_frame,
             **AppStyles.get_scrollable_frame_style()
@@ -310,7 +310,7 @@ class ChatTab(ctk.CTkFrame):
             elif models:
                 self.model_var.set(models[0])
         
-        # プログラミング言語一覧を読み込み
+        # コーディングエージェント一覧を読み込み
         languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
         if languages:
             current_language = self.language_var.get()
@@ -320,26 +320,26 @@ class ChatTab(ctk.CTkFrame):
             elif languages:
                 self.language_var.set(languages[0])
         
-        # 初期プロジェクトが設定されている場合、Programming Typeを自動設定
+        # 初期プロジェクトが設定されている場合、コーディングエージェントを自動設定
         if self.project_var.get():
-            self.auto_set_programming_type()
+            self.auto_set_coding_agent()
     
     def on_project_changed(self, value):
-        """プロジェクト変更時のハンドラ - Programming Typeを自動設定"""
-        self.auto_set_programming_type()
+        """プロジェクト変更時のハンドラ - コーディングエージェントを自動設定"""
+        self.auto_set_coding_agent()
     
-    def auto_set_programming_type(self):
-        """プロジェクトのProgramming Typeを自動設定"""
+    def auto_set_coding_agent(self):
+        """プロジェクトのコーディングエージェントを自動設定"""
         project_name = self.project_var.get()
         if not project_name:
             return
         
-        # プロジェクトの設定からProgramming Typeを取得
+        # プロジェクトの設定からコーディングエージェントを取得
         project_data = getValueByPjnm(project_name)
         if project_data and 'programming_type' in project_data:
             programming_type = project_data['programming_type']
             
-            # Programming Typeが有効な選択肢に含まれているかチェック
+            # コーディングエージェントが有効な選択肢に含まれているかチェック
             available_languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
             if available_languages and programming_type in available_languages:
                 self.language_var.set(programming_type)
@@ -350,7 +350,7 @@ class ChatTab(ctk.CTkFrame):
         print(f"File selected: {file_path}")
     
     def execute_chat(self):
-        """チャット実行"""
+        """コード作成実行"""
         # 既にストリーミング中の場合は処理しない
         if self.is_streaming:
             messagebox.showwarning("Warning", "現在処理中です。しばらくお待ちください。")
@@ -370,7 +370,7 @@ class ChatTab(ctk.CTkFrame):
         self.execute_button.configure(state="disabled", text="処理中...")
         self.is_streaming = True
         
-        # チャット履歴をクリア
+        # コード履歴をクリア
         self.clear_chat_display()
         
         # ユーザーメッセージを表示
@@ -391,7 +391,7 @@ class ChatTab(ctk.CTkFrame):
         # エージェントメッセージ（ストリーミング用）を準備
         self.current_streaming_message = StreamingChatMessage(
             self.chat_scrollable,
-            speaker="Agent",
+            speaker="Coding Agent",
             is_user=False
         )
         self.current_streaming_message.grid(
@@ -402,18 +402,18 @@ class ChatTab(ctk.CTkFrame):
             sticky="ew"
         )
         
-        # 非同期でチャット処理を実行
+        # 非同期でコード作成処理を実行
         thread = threading.Thread(target=self._execute_chat_async)
         thread.daemon = True
         thread.start()
     
     def _execute_chat_async(self):
-        """非同期チャット処理"""
+        """非同期コード作成処理"""
         try:
             # ユーザー入力を取得
             user_input = self.input_text.get("1.0", "end-1c").strip()
             
-            # ストリーミングチャット処理実行
+            # ストリーミングコード作成処理実行
             messages = communicate_core_streaming(
                 self.project_var.get(),
                 self.model_var.get(),
@@ -442,7 +442,7 @@ class ChatTab(ctk.CTkFrame):
                 self.after(0, self.main_window.refresh_all_content)
             
         except Exception as e:
-            error_msg = f"チャット実行中にエラーが発生しました: {str(e)}"
+            error_msg = f"コード作成実行中にエラーが発生しました: {str(e)}"
             print(error_msg)
             self.after(0, lambda: messagebox.showerror("Error", error_msg))
         finally:
@@ -456,7 +456,7 @@ class ChatTab(ctk.CTkFrame):
             self.after(0, lambda: self.current_streaming_message.update_content(chunk))
     
     def clear_chat_display(self):
-        """チャット表示をクリア"""
+        """コード表示をクリア"""
         for widget in self.chat_scrollable.winfo_children():
             widget.destroy()
         self.current_streaming_message = None

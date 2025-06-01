@@ -54,10 +54,10 @@ class ProjectCard(ctk.CTkFrame):
             sticky="w"
         )
         
-        # Programming Type
+        # コーディングエージェント
         programming_type_label = ctk.CTkLabel(
             self,
-            text=f"Programming Type: {self.programming_type}",
+            text=f"コーディングエージェント: {self.programming_type}",
             font=AppStyles.FONTS['small'],
             text_color=AppStyles.COLORS['accent']
         )
