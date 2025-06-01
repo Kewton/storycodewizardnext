@@ -6,6 +6,7 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
 import threading
+import datetime
 from ui.styles import AppStyles
 from ui.widgets.chat_message import ChatMessage
 from ui.widgets.streaming_chat_message import StreamingChatMessage
@@ -24,6 +25,7 @@ class ChatTab(ctk.CTkFrame):
         self.current_file_data = ""
         self.current_streaming_message = None
         self.is_streaming = False
+        self.current_timestamp = None
         
         # レイアウト設定
         self.grid_columnconfigure(0, weight=2)
@@ -60,7 +62,7 @@ class ChatTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             self.left_scrollable,
-            text="コード作成設定",
+            text="コード生成リクエスト設定",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -176,7 +178,7 @@ class ChatTab(ctk.CTkFrame):
     
     def setup_file_upload(self, parent, start_row):
         """ファイルアップロードUIをセットアップ"""
-        label = ctk.CTkLabel(parent, text="File Upload (JPEG):", font=AppStyles.FONTS['default'])
+        label = ctk.CTkLabel(parent, text="File Upload (JPEG, PNG):", font=AppStyles.FONTS['default'])
         label.grid(
             row=start_row, 
             column=0, 
@@ -259,7 +261,7 @@ class ChatTab(ctk.CTkFrame):
         # タイトル
         title_label = ctk.CTkLabel(
             right_frame,
-            text="生成されたコード",
+            text="コーディングエージェントから回答",
             font=AppStyles.FONTS['heading']
         )
         title_label.grid(
@@ -366,6 +368,9 @@ class ChatTab(ctk.CTkFrame):
             messagebox.showwarning("Warning", "プロジェクトを選択してください。")
             return
         
+        # タイムスタンプを生成（履歴保存用と反映用で同じものを使用）
+        self.current_timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        
         # ボタンを無効化
         self.execute_button.configure(state="disabled", text="処理中...")
         self.is_streaming = True
@@ -389,10 +394,14 @@ class ChatTab(ctk.CTkFrame):
         )
         
         # エージェントメッセージ（ストリーミング用）を準備
+        # プロジェクト反映用の情報を渡す
         self.current_streaming_message = StreamingChatMessage(
             self.chat_scrollable,
             speaker="Coding Agent",
-            is_user=False
+            is_user=False,
+            project_name=self.project_var.get(),
+            model_name=self.model_var.get(),
+            timestamp=self.current_timestamp
         )
         self.current_streaming_message.grid(
             row=1, 
@@ -448,7 +457,7 @@ class ChatTab(ctk.CTkFrame):
         finally:
             # ボタンを有効化
             self.is_streaming = False
-            self.after(0, lambda: self.execute_button.configure(state="normal", text="実行"))
+            self.after(0, lambda: self.execute_button.configure(state="normal", text="コード生成をリクエスト"))
     
     def _on_streaming_chunk(self, chunk):
         """ストリーミングチャンク受信時のコールバック"""

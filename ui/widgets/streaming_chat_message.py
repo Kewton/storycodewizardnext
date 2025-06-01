@@ -4,13 +4,15 @@ Streaming Chat Message Widget
 """
 import customtkinter as ctk
 import tkinter as tk
+from tkinter import messagebox
 from ui.styles import AppStyles
 from ui.widgets.markdown_renderer import MarkdownRenderer
+from app.chat import apply_to_project
 
 class StreamingChatMessage(ctk.CTkFrame):
     """ストリーミング対応チャットメッセージ表示ウィジェット"""
     
-    def __init__(self, parent, speaker, is_user=False, enable_markdown=True, **kwargs):
+    def __init__(self, parent, speaker, is_user=False, enable_markdown=True, project_name=None, model_name=None, timestamp=None, **kwargs):
         super().__init__(parent, **kwargs)
         
         self.speaker = speaker
@@ -18,6 +20,12 @@ class StreamingChatMessage(ctk.CTkFrame):
         self.content = ""
         self.enable_markdown = enable_markdown and not is_user  # ユーザーメッセージはMarkdown無効
         self.is_markdown_view = True
+        self.is_streaming_finished = False
+        
+        # プロジェクト反映用の情報
+        self.project_name = project_name
+        self.model_name = model_name
+        self.timestamp = timestamp
         
         # フレームスタイル設定
         if is_user:
@@ -80,6 +88,11 @@ class StreamingChatMessage(ctk.CTkFrame):
         
         # コンテンツ表示
         self.setup_content_display(current_row)
+        current_row += 1
+        
+        # プロジェクト反映ボタン（エージェントメッセージのみ、初期は非表示）
+        if not self.is_user:
+            self.setup_apply_button(current_row)
         
         # ユーザーメッセージの場合は即座にコンテンツを設定
         if self.is_user:
@@ -108,6 +121,31 @@ class StreamingChatMessage(ctk.CTkFrame):
             **style
         )
         self.toggle_view_button.grid(row=0, column=0, sticky="w")
+    
+    def setup_apply_button(self, row):
+        """プロジェクト反映ボタンをセットアップ"""
+        # ボタンフレーム
+        self.apply_button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        
+        # プロジェクト反映ボタン
+        primary_style = AppStyles.get_button_style('primary').copy()
+        primary_style['height'] = AppStyles.SIZES['button_height']
+        self.apply_button = ctk.CTkButton(
+            self.apply_button_frame,
+            text="プロジェクトに反映",
+            command=self.apply_to_project,
+            **primary_style
+        )
+        self.apply_button.grid(
+            row=0, 
+            column=0, 
+            padx=0,
+            pady=0,
+            sticky="w"
+        )
+        
+        # 初期は非表示
+        # フレーム自体をgridに配置しないことで非表示状態にする
     
     def toggle_view_mode(self):
         """表示モードを切り替え"""
@@ -206,6 +244,65 @@ class StreamingChatMessage(ctk.CTkFrame):
                 text="✅ 完了",
                 text_color=AppStyles.COLORS['success']
             )
+            self.is_streaming_finished = True
+            
+            # プロジェクト反映ボタンを表示（必要な情報が揃っている場合のみ）
+            if self.project_name and self.model_name and self.timestamp:
+                self.show_apply_button()
+    
+    def show_apply_button(self):
+        """プロジェクト反映ボタンを表示"""
+        if hasattr(self, 'apply_button_frame'):
+            # ボタンフレームの行番号を計算
+            button_row = 4 if self.enable_markdown else 3
+            
+            self.apply_button_frame.grid(
+                row=button_row,
+                column=0,
+                padx=AppStyles.SIZES['padding_medium'],
+                pady=(AppStyles.SIZES['padding_small'], AppStyles.SIZES['padding_medium']),
+                sticky="w"
+            )
+    
+    def hide_apply_button(self):
+        """プロジェクト反映ボタンを非表示"""
+        if hasattr(self, 'apply_button_frame'):
+            self.apply_button_frame.grid_remove()
+    
+    def apply_to_project(self):
+        """プロジェクトに反映"""
+        if not self.content:
+            messagebox.showwarning("Warning", "反映するコンテンツがありません。")
+            return
+        
+        if not (self.project_name and self.model_name and self.timestamp):
+            messagebox.showwarning("Warning", "プロジェクト反映に必要な情報が不足しています。")
+            return
+        
+        # ボタンを無効化（二重実行防止）
+        self.apply_button.configure(state="disabled", text="反映中...")
+        
+        try:
+            success, message = apply_to_project(
+                self.content,
+                self.project_name,
+                self.model_name,
+                self.timestamp
+            )
+            
+            if success:
+                messagebox.showinfo("Success", message)
+                # 反映成功後はボタンを非表示
+                self.hide_apply_button()
+            else:
+                messagebox.showerror("Error", message)
+                # エラーの場合はボタンを再度有効化
+                self.apply_button.configure(state="normal", text="プロジェクトに反映")
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"プロジェクト反映中にエラーが発生しました: {str(e)}")
+            # エラーの場合はボタンを再度有効化
+            self.apply_button.configure(state="normal", text="プロジェクトに反映")
     
     def get_content(self):
         """現在のコンテンツを取得"""
