@@ -324,6 +324,10 @@ class ActivitySidebar(ctk.CTkFrame):
         self._click_debounce = True
         
         try:
+            # クリックされたボタンに対応するツールチップを非表示にする
+            if activity_id in self.tooltips:
+                self.tooltips[activity_id].hide_tooltip()
+
             # 即座にアクティブ状態を更新（視覚的フィードバック）
             self.set_active(activity_id)
             
