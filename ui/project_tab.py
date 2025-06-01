@@ -309,7 +309,7 @@ class ProjectTab(ctk.CTkFrame):
             
             # 全タブのデータを更新
             if self.main_window:
-                self.main_window.refresh_all_tabs()
+                self.main_window.refresh_all_content()
             
             messagebox.showinfo("Success", message)
         else:
@@ -415,7 +415,7 @@ class ProjectTab(ctk.CTkFrame):
                 self.load_projects()
                 # 全タブのデータを更新
                 if self.main_window:
-                    self.main_window.refresh_all_tabs()
+                    self.main_window.refresh_all_content()
                 messagebox.showinfo("Success", message)
             else:
                 messagebox.showerror("Error", message)
@@ -425,4 +425,4 @@ class ProjectTab(ctk.CTkFrame):
         self.load_projects()
         # 全タブのデータを更新
         if self.main_window:
-            self.main_window.refresh_all_tabs()
+            self.main_window.refresh_all_content()

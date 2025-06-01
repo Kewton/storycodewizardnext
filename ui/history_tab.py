@@ -375,7 +375,7 @@ class HistoryTab(ctk.CTkFrame):
                 self.load_history_data()
                 # 全タブのデータを更新
                 if self.main_window:
-                    self.main_window.refresh_all_tabs()
+                    self.main_window.refresh_all_content()
             else:
                 messagebox.showerror("Error", "履歴項目の削除に失敗しました。")
     
