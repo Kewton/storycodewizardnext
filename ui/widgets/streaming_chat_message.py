@@ -19,7 +19,7 @@ class StreamingChatMessage(ctk.CTkFrame):
         self.is_user = is_user
         self.content = ""
         self.enable_markdown = enable_markdown and not is_user  # ユーザーメッセージはMarkdown無効
-        self.is_markdown_view = True
+        self.is_markdown_view = False  # デフォルトをRaw Textに変更
         self.is_streaming_finished = False
         
         # プロジェクト反映用の情報
@@ -115,7 +115,7 @@ class StreamingChatMessage(ctk.CTkFrame):
         
         self.toggle_view_button = ctk.CTkButton(
             button_frame,
-            text="📝 Raw Text",
+            text="🎨 Markdown",  # デフォルトがRaw Textなので、切り替えボタンはMarkdownを示す
             command=self.toggle_view_mode,
             width=100,
             **style

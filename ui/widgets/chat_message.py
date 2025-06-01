@@ -10,7 +10,7 @@ from ui.widgets.markdown_renderer import MarkdownRenderer
 class ChatMessage(ctk.CTkFrame):
     """チャットメッセージ表示ウィジェット"""
     
-    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, max_height=None, default_markdown_view=True, **kwargs):
+    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, max_height=None, default_markdown_view=False, **kwargs):
         super().__init__(parent, **kwargs)
         
         self.speaker = speaker
