@@ -4,6 +4,7 @@ Help Widget
 """
 import customtkinter as ctk
 import tkinter as tk
+import webbrowser
 from ui.styles import AppStyles
 
 class HelpWidget(ctk.CTkFrame):
@@ -179,6 +180,29 @@ class HelpWidget(ctk.CTkFrame):
             sticky="ew"
         )
     
+    def add_link_button(self, text, url, row):
+        """リンクボタンを追加"""
+        link_button = ctk.CTkButton(
+            self.content_scrollable,
+            text=text,
+            command=lambda: self.open_external_link(url),
+            **AppStyles.get_button_style('primary')
+        )
+        link_button.grid(
+            row=row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_small'],
+            pady=AppStyles.SIZES['padding_medium'],
+            sticky="w"
+        )
+    
+    def open_external_link(self, url):
+        """外部リンクをブラウザで開く"""
+        try:
+            webbrowser.open(url)
+        except Exception as e:
+            print(f"Failed to open URL {url}: {e}")
+    
     def show_getting_started(self):
         """はじめにページを表示"""
         self.content_title.configure(text="🚀 はじめに")
@@ -312,6 +336,7 @@ class HelpWidget(ctk.CTkFrame):
 • 📚 コーディングエージェントとの会話履歴: 履歴管理
 • 📁 プロジェクト管理: プロジェクト管理
 • ❓ ヘルプ: このガイド
+• 🔄 再起動: アプリケーションの再起動
 • アクティブ状態: 選択中の機能がハイライト表示"""
         
         self.add_section("アクティビティーサイドバー", sidebar_text, 2)
@@ -379,7 +404,28 @@ mkdocsを使用して生成・管理されています。
         
         self.add_section("利用可能なドキュメント", docs_text, 2)
         
-        access_text = """ドキュメントサーバーを起動するには:
+        # 外部リンクボタンを追加
+        external_links_title = ctk.CTkLabel(
+            self.content_scrollable,
+            text="外部リンク",
+            font=AppStyles.FONTS['subheading'],
+            text_color=AppStyles.COLORS['primary']
+        )
+        external_links_title.grid(
+            row=4, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_small'],
+            pady=(AppStyles.SIZES['padding_medium'], AppStyles.SIZES['padding_small']),
+            sticky="w"
+        )
+        
+        # 公式ドキュメントリンク
+        self.add_link_button("🌐 公式ドキュメントサイト", "https://kewton.github.io/storycodewizardnext/", 5)
+        
+        # GitHubリポジトリリンク
+        self.add_link_button("📂 GitHubリポジトリ", "https://github.com/Kewton/storycodewizardnext", 6)
+        
+        access_text = """ローカルドキュメントサーバーを起動するには:
 
 1. ターミナルでプロジェクトディレクトリに移動
 2. 以下のコマンドを実行:
@@ -387,6 +433,6 @@ mkdocsを使用して生成・管理されています。
 3. ブラウザで http://localhost:8000 にアクセス
 
 詳細な技術情報や開発者向けの情報は、
-Webドキュメントをご確認ください。"""
+上記の外部リンクから最新のWebドキュメントをご確認ください。"""
         
-        self.add_section("ドキュメントへのアクセス", access_text, 4)
+        self.add_section("ローカルドキュメントへのアクセス", access_text, 7)

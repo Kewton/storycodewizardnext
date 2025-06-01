@@ -4,6 +4,7 @@ VS Code風のアクティビティーサイドバー用カスタムウィジェ�
 """
 import customtkinter as ctk
 import tkinter as tk
+import sys
 from ui.styles import AppStyles
 
 class ToolTip:
@@ -145,7 +146,7 @@ class ActivitySidebar(ctk.CTkFrame):
     
     def setup_ui(self):
         """UIコンポーネントをセットアップ"""
-        self.grid_rowconfigure(10, weight=1)  # 下部に余白を作る
+        self.grid_rowconfigure(10, weight=1)  # 中間に余白を作る
         
         # アクティビティーボタンを作成
         activities = [
@@ -201,6 +202,9 @@ class ActivitySidebar(ctk.CTkFrame):
         
         for activity in activities:
             self.create_activity_button(activity)
+        
+        # 再起動ボタンを最下部に追加
+        self.create_restart_button()
     
     def create_activity_button(self, activity):
         """アクティビティーボタンを作成"""
@@ -224,6 +228,61 @@ class ActivitySidebar(ctk.CTkFrame):
         self.tooltips[activity['id']] = tooltip
         
         self.buttons[activity['id']] = button
+    
+    def create_restart_button(self):
+        """再起動ボタンを作成"""
+        button_style = AppStyles.get_sidebar_style()['button'].copy()
+        # 再起動ボタンは少し異なるスタイルを適用
+        button_style['text_color'] = AppStyles.COLORS.get('warning', '#ff9800')
+        
+        restart_button = ctk.CTkButton(
+            self,
+            text='🔄',
+            command=self.restart_application,
+            **button_style
+        )
+        restart_button.grid(
+            row=11,  # 最下部に配置
+            column=0,
+            padx=(self.cget('width') - button_style['width']) // 2,
+            pady=(15, 15),
+            sticky="s"
+        )
+        
+        # ツールチップを作成
+        restart_tooltip = ToolTip(restart_button, 
+                                 'アプリケーション再起動\n\n'
+                                 'アプリケーションを完全に再起動します\n'
+                                 '• 設定の再読み込み\n'
+                                 '• メモリクリア\n'
+                                 '• トラブル解決に効果的')
+        self.tooltips['restart'] = restart_tooltip
+    
+    def restart_application(self):
+        """アプリケーションを再起動"""
+        try:
+            # 確認ダイアログを表示
+            from tkinter import messagebox
+            result = messagebox.askyesno(
+                "アプリケーション再起動",
+                "アプリケーションを再起動しますか？\n\n"
+                "現在の作業内容は保存済みであることを確認してください。"
+            )
+            
+            if result:
+                # ウィンドウを閉じる前にクリーンアップ
+                self.master.on_closing()
+                
+                # Pythonスクリプトを再起動
+                import subprocess
+                subprocess.Popen([sys.executable] + sys.argv)
+                
+                # 現在のプロセスを終了
+                sys.exit(0)
+        except Exception as e:
+            print(f"Restart failed: {e}")
+            from tkinter import messagebox
+            messagebox.showerror("再起動エラー", f"再起動に失敗しました: {str(e)}")
     
     def on_button_click(self, activity_id):
         """ボタンクリック時のハンドラ（デバウンス付き）"""
