@@ -421,7 +421,7 @@ class HistoryTab(ctk.CTkFrame):
         if input_text:
             section_header = ctk.CTkLabel(
                 self.detail_scrollable,
-                text="② Youre Request",
+                text="② Your Request",
                 font=AppStyles.FONTS['subheading'],
                 text_color=AppStyles.COLORS['accent']
             )
