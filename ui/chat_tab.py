@@ -227,7 +227,7 @@ class ChatTab(ctk.CTkFrame):
         """実行ボタンをセットアップ"""
         self.execute_button = ctk.CTkButton(
             parent,
-            text="実行",
+            text="コード生成をリクエスト",
             command=self.execute_chat,
             height=AppStyles.SIZES['button_height'],
             **AppStyles.get_button_style('primary')

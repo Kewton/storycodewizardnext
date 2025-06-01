@@ -330,12 +330,12 @@ class HistoryTab(ctk.CTkFrame):
         
         current_row = 0
         
-        # ①System Role Content
+        # ①System Role Content - 高さを1/5に縮小（従来の400→80）
         if messages and len(messages) > 0 and messages[0]["role"] == "system":
             system_content = messages[0]["content"]
             section_header = ctk.CTkLabel(
                 self.detail_scrollable,
-                text="① System Role Content",
+                text="① Coding Agent Role",
                 font=AppStyles.FONTS['subheading'],
                 text_color=AppStyles.COLORS['accent']
             )
@@ -350,9 +350,10 @@ class HistoryTab(ctk.CTkFrame):
             
             system_msg = ChatMessage(
                 self.detail_scrollable,
-                speaker="System",
+                speaker="Coding Agent",
                 content=system_content,
-                is_user=False
+                is_user=True,
+                max_height=80  # 従来の400の1/5
             )
             system_msg.grid(
                 row=current_row, 
@@ -363,11 +364,11 @@ class HistoryTab(ctk.CTkFrame):
             )
             current_row += 1
         
-        # ②Input        
+        # ②Input - 高さを1/2に縮小（従来の200→100）
         if input_text:
             section_header = ctk.CTkLabel(
                 self.detail_scrollable,
-                text="② Input",
+                text="② Youre Request",
                 font=AppStyles.FONTS['subheading'],
                 text_color=AppStyles.COLORS['accent']
             )
@@ -382,9 +383,10 @@ class HistoryTab(ctk.CTkFrame):
             
             input_msg = ChatMessage(
                 self.detail_scrollable,
-                speaker="Input",
+                speaker="You",
                 content=input_text,
-                is_user=False
+                is_user=True,
+                max_height=100  # 従来の200の1/2
             )
             input_msg.grid(
                 row=current_row, 
@@ -395,14 +397,16 @@ class HistoryTab(ctk.CTkFrame):
             )
             current_row += 1
         
-        # ③Your Context & ④Agent Context
+        # ③Your Context & ④Agent Context - 高さ制限なし（従来通り）
         for i, message in enumerate(messages[1:], 1):  # システムメッセージをスキップ
             if message["role"] == "user":
                 section_label = "③ Your Context"
                 speaker = "You"
+                max_height = 600  # 高さ制限なし
             elif message["role"] == "assistant":
                 section_label = "④ Agent Context"
                 speaker = "Coding Agent"
+                max_height = 600  # 高さ制限なし
             else:
                 continue
             
@@ -425,7 +429,8 @@ class HistoryTab(ctk.CTkFrame):
                 self.detail_scrollable,
                 speaker=speaker,
                 content=message["content"],
-                is_user=(message["role"] == "user")
+                is_user=(message["role"] == "user"),
+                max_height=max_height
             )
             chat_msg.grid(
                 row=current_row, 

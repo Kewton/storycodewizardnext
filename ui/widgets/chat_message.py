@@ -10,13 +10,14 @@ from ui.widgets.markdown_renderer import MarkdownRenderer
 class ChatMessage(ctk.CTkFrame):
     """チャットメッセージ表示ウィジェット"""
     
-    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, **kwargs):
+    def __init__(self, parent, speaker, content, is_user=False, enable_markdown=True, max_height=None, **kwargs):
         super().__init__(parent, **kwargs)
         
         self.speaker = speaker
         self.content = content
         self.is_user = is_user
         self.enable_markdown = enable_markdown and not is_user  # ユーザーメッセージはMarkdown無効
+        self.max_height = max_height  # 最大高さ制限
         
         # フレームスタイル設定
         if is_user:
@@ -144,9 +145,15 @@ class ChatMessage(ctk.CTkFrame):
             )
         else:
             # 通常のテキストボックスを使用
+            # 高さ計算（max_heightが指定されている場合は制限を適用）
+            if self.max_height:
+                calculated_height = self.max_height
+            else:
+                calculated_height = min(max(self.content.count('\n') * 20 + 50, 100), 400)
+            
             self.content_widget = ctk.CTkTextbox(
                 self,
-                height=min(max(self.content.count('\n') * 20 + 50, 100), 400),
+                height=calculated_height,
                 font=AppStyles.FONTS['default'],
                 corner_radius=AppStyles.SIZES['corner_radius'],
                 wrap="word"
@@ -190,10 +197,16 @@ class ChatMessage(ctk.CTkFrame):
         """折りたたみ可能なコンテンツを作成"""
         self.content_frame.grid_columnconfigure(0, weight=1)
         
+        # 高さ制限を適用
+        if self.max_height:
+            content_height = self.max_height
+        else:
+            content_height = min(max(self.content.count('\n') * 20 + 50, 100), 300)
+        
         # コンテンツテキスト
         content_text = ctk.CTkTextbox(
             self.content_frame,
-            height=min(max(self.content.count('\n') * 20 + 50, 100), 300),
+            height=content_height,
             font=AppStyles.FONTS['default'],
             corner_radius=AppStyles.SIZES['corner_radius'],
             wrap="word"
