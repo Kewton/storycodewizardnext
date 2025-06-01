@@ -583,12 +583,34 @@ class HistoryTab(ctk.CTkFrame):
             messagebox.showwarning("Warning", "エージェントのコンテンツがありません。")
             return
         
+        # 確認ダイアログを表示
         item = self.current_history_data[self.selected_index]
+        confirmation_message = (
+            "選択した履歴のコードをプロジェクトに反映しますか？\n\n"
+            f"対象プロジェクト: {self.project_var.get()}\n"
+            f"生成モデル: {item['gptmodel']}\n"
+            f"実行時刻: {item['registration_date']}\n\n"
+            "この操作により、プロジェクト内のファイルが変更される可能性があります。\n"
+            "続行しますか？"
+        )
+        
+        result = messagebox.askyesno(
+            "プロジェクト反映の確認",
+            confirmation_message
+        )
+        
+        if not result:
+            return  # ユーザーがキャンセルした場合は処理を中止
+        
+        # 元の日時フォーマット（YYYYMMDDHHMMSS）に変換
+        # registration_dateは既にYYYY-MM-DD_HH:MM:SS形式のため、数字のみ抽出
+        timestamp = item['registration_date'].replace('-', '').replace('_', '').replace(':', '')
+        
         success, message = apply_to_project(
             content,
             self.project_var.get(),
             item['gptmodel'],
-            item['registration_date']
+            timestamp
         )
         
         if success:

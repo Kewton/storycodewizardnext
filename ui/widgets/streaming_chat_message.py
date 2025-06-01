@@ -279,6 +279,27 @@ class StreamingChatMessage(ctk.CTkFrame):
             messagebox.showwarning("Warning", "プロジェクト反映に必要な情報が不足しています。")
             return
         
+        # 確認ダイアログを表示
+        # タイムスタンプをYYYY-MM-DD_HH:MM:SS形式に変換
+        formatted_timestamp = f"{self.timestamp[:4]}-{self.timestamp[4:6]}-{self.timestamp[6:8]}_{self.timestamp[8:10]}:{self.timestamp[10:12]}:{self.timestamp[12:14]}"
+        
+        confirmation_message = (
+            "生成されたコードをプロジェクトに反映しますか？\n\n"
+            f"対象プロジェクト: {self.project_name}\n"
+            f"生成モデル: {self.model_name}\n"
+            f"実行時刻: {formatted_timestamp}\n\n"
+            "この操作により、プロジェクト内のファイルが変更される可能性があります。\n"
+            "続行しますか？"
+        )
+        
+        result = messagebox.askyesno(
+            "プロジェクト反映の確認",
+            confirmation_message
+        )
+        
+        if not result:
+            return  # ユーザーがキャンセルした場合は処理を中止
+        
         # ボタンを無効化（二重実行防止）
         self.apply_button.configure(state="disabled", text="反映中...")
         
