@@ -1313,24 +1313,231 @@
 <li>開発環境はPython &gt;= 3.9 の仮想環境を推奨</li>
 <li>SQLiteをデータベースとして採用</li>
 </ul>
-<h2 id="_7">技術詳細<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
-<h3 id="_8">ディレクトリ構成<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<h2 id="_7">技術仕様<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>UI Framework</strong>: CustomTkinter 5.2.0+</li>
+<li><strong>Python</strong>: 3.8+</li>
+<li><strong>Database</strong>: JSONベースローカルDB</li>
+<li><strong>LLM API</strong>: OpenAI, Anthropic, Google Gemini（ストリーミング対応）</li>
+<li><strong>Markdown処理</strong>: markdown、pygments（シンタックスハイライト）</li>
+<li><strong>ナビゲーション</strong>: VS Code風アクティビティーサイドバー</li>
+</ul>
+<h2 id="vs-code">新機能: VS Code風アクティビティーサイドバー<a class="headerlink" href="#vs-code" title="Permanent link">&para;</a></h2>
+<h3 id="_8">ナビゲーション方式<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>左側サイドバー</strong>: アイコンベースの機能切り替え</li>
+<li><strong>Story2Code</strong>: 💬 アイコンでチャット機能へアクセス</li>
+<li><strong>MyHistory</strong>: 📚 アイコンで履歴管理へアクセス</li>
+<li><strong>プロジェクト管理</strong>: 📁 アイコンでプロジェクト管理へアクセス</li>
+<li><strong>アクティブ状態</strong>: 選択中の機能が視覚的にハイライト表示</li>
+</ul>
+<h3 id="_9">ユーザー体験の向上<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>最大化されたコンテンツ表示</strong>: タブビューを廃止し、メインエリアを最大活用</li>
+<li><strong>直感的なナビゲーション</strong>: VS Codeライクなアイコンベース操作</li>
+<li><strong>高速な機能切り替え</strong>: ワンクリックでの機能切り替え</li>
+<li><strong>視覚的フィードバック</strong>: アクティブ状態の明確な表示</li>
+</ul>
+<h2 id="markdown">新機能: Markdown表示対応<a class="headerlink" href="#markdown" title="Permanent link">&para;</a></h2>
+<h3 id="_10">サポートする記法<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>見出し</strong>: # ## ### #### ##### ######</li>
+<li><strong>強調</strong>: <strong>太字</strong> <em>斜体</em> ~~取り消し線~~</li>
+<li><strong>リスト</strong>: 箇条書き（-）、番号付きリスト（1.）</li>
+<li><strong>コードブロック</strong>: <code>``言語名 および</code>インラインコード`</li>
+<li><strong>リンク</strong>: <a href="URL">テキスト</a></li>
+<li><strong>引用</strong>: &gt; 引用文</li>
+<li><strong>水平線</strong>: ---</li>
+<li><strong>表</strong>: Markdown表記法</li>
+</ul>
+<h3 id="_11">実装詳細<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>HTMLレンダリングによる高品質な表示</li>
+<li>コードブロックのシンタックスハイライト</li>
+<li>レスポンシブデザイン対応</li>
+<li>ダークテーマ最適化</li>
+</ul>
+<h3 id="_12">使用方法<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>LLMからの応答は自動的にMarkdown記法として解釈され、適切にレンダリングされます。従来のプレーンテキスト表示も引き続き利用可能です。</p>
+<h2 id="_13">開発者向け情報<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<h3 id="_14">カスタムテーマ<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<p>CustomTkinterのダークテーマをベースにカスタムカラーパレットを適用：
+- プライマリ: #1f538d (ブルー)
+- セカンダリ: #14375e (ダークブルー)
+- アクセント: #1f538d (ライトブルー)
+- 背景: #212121 (ダークグレー)
+- <strong>サイドバー</strong>: #2d2d2d (ダークグレー、VS Code風)</p>
+<h3 id="_15">レイアウト設計指針<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>間隔統一</strong>: 全てのコンポーネント間で一貫した間隔を使用</li>
+<li><strong>視覚的階層</strong>: ラベル、入力フィールド、ボタンの明確な配置</li>
+<li><strong>レスポンシブ対応</strong>: ウィンドウサイズ変更に対応した柔軟なレイアウト</li>
+<li><strong>縦スクロール対応</strong>: 設定パネルでの適切なスクロール機能</li>
+<li><strong>データ同期</strong>: コンテンツ間でのリアルタイムデータ更新</li>
+<li><strong>ストリーミング対応</strong>: LLM応答のリアルタイム表示</li>
+<li><strong>Markdown対応</strong>: 豊富な表現力を持つテキスト表示</li>
+<li><strong>VS Code風ナビゲーション</strong>: 直感的なサイドバーベース操作</li>
+</ul>
+<h3 id="_16">イベントハンドリング<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<ul>
+<li>非同期LLM API呼び出し</li>
+<li>ストリーミングレスポンス処理</li>
+<li>リアルタイムUI更新</li>
+<li>ファイルドラッグ&amp;ドロップ対応</li>
+<li>自動データリフレッシュ機能</li>
+<li>Markdownリアルタイムレンダリング</li>
+<li>プロジェクト選択時のProgramming Type自動設定</li>
+<li><strong>アクティビティーサイドバーナビゲーション</strong></li>
+</ul>
+<h2 id="_17">プロジェクト管理機能<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<h3 id="_18">プロジェクト設定<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>プロジェクト名</strong>: 識別用の名前（編集不可）</li>
+<li><strong>プロジェクトパス</strong>: ソースコードのディレクトリパス</li>
+<li><strong>プロジェクト説明</strong>: プロジェクトの詳細説明</li>
+<li><strong>Programming Type</strong>: プロジェクトで使用するプログラミング言語・フレームワーク（Next.js、FastAPI、CustomTkinter等）</li>
+</ul>
+<h3 id="_19">プロジェクト編集機能<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>プロジェクトカードから直接編集可能</li>
+<li>プロジェクトパス、説明、Programming Typeの編集（名前は編集不可）</li>
+<li>可変サイズダイアログ対応</li>
+<li>リアルタイム更新と全コンテンツ同期</li>
+</ul>
+<h3 id="programming-type">Programming Type連携機能<a class="headerlink" href="#programming-type" title="Permanent link">&para;</a></h3>
+<ul>
+<li>プロジェクト作成時にProgramming Typeを選択</li>
+<li>Chat Configurationでプロジェクト選択時に自動的にProgramming Typeを設定</li>
+<li>プロジェクトごとに最適なプロンプトテンプレートを自動選択</li>
+</ul>
+<h2 id="_20">チャット履歴機能<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<h3 id="_21">履歴表示形式<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>実行時刻</strong>: YYYY-MM-DD_HH:MM:SS形式で表示</li>
+<li><strong>実行モデル</strong>: 使用されたLLMモデル名</li>
+<li><strong>フォント</strong>: 視認性向上のため大きなフォントサイズを使用</li>
+<li><strong>レイアウト</strong>: シンプルで見やすい2項目表示</li>
+<li><strong>Markdown表示</strong>: 履歴の詳細表示でMarkdown記法対応</li>
+</ul>
+<h2 id="llm">LLMストリーミング機能<a class="headerlink" href="#llm" title="Permanent link">&para;</a></h2>
+<h3 id="_22">リアルタイム応答表示<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ストリーミング対応</strong>: Claude、GPT、Geminiのストリーミング応答を表示</li>
+<li><strong>リアルタイム更新</strong>: 応答テキストがリアルタイムで表示される</li>
+<li><strong>処理状態表示</strong>: 実行中、完了状態の明確な表示</li>
+<li><strong>応答保存</strong>: ストリーミング完了後に履歴として保存</li>
+<li><strong>Markdown対応</strong>: ストリーミング中もMarkdown記法をリアルタイム解析・表示</li>
+</ul>
+<h2 id="_23">トラブルシューティング<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
+<h3 id="_24">よくある問題<a class="headerlink" href="#_24" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>APIキーエラー</strong>: <code>secret_keys.py</code>の設定を確認</li>
+<li><strong>データベースエラー</strong>: <code>python initdatabase.py</code>を再実行</li>
+<li><strong>UI表示問題</strong>: CustomTkinterの最新版を確認</li>
+<li><strong>レイアウト崩れ</strong>: ウィンドウサイズを調整し、最小サイズ以上で使用</li>
+<li><strong>ストリーミングエラー</strong>: API接続とキー設定を確認</li>
+<li><strong>Markdown表示エラー</strong>: markdown、pygmentsライブラリのインストールを確認</li>
+<li><strong>Programming Type連携エラー</strong>: プロジェクト設定の整合性を確認</li>
+<li><strong>サイドバーナビゲーションエラー</strong>: ウィンドウサイズと表示設定を確認</li>
+</ol>
+<h3 id="_25">ログ出力<a class="headerlink" href="#_25" title="Permanent link">&para;</a></h3>
+<p>アプリケーションログは標準出力に表示されます。</p>
+<h2 id="streamlit">従来のStreamlit版からの変更点<a class="headerlink" href="#streamlit" title="Permanent link">&para;</a></h2>
+<h3 id="_26">主な改善点<a class="headerlink" href="#_26" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ネイティブデスクトップアプリ</strong>: ブラウザ不要で直接実行</li>
+<li><strong>レスポンシブUI</strong>: より高速で滑らかな操作感</li>
+<li><strong>ストリーミング対応</strong>: リアルタイムLLM応答表示</li>
+<li><strong>Markdown表示対応</strong>: 豊富な表現力でリッチなテキスト表示</li>
+<li><strong>VS Code風ナビゲーション</strong>: 直感的なアクティビティーサイドバー</li>
+<li><strong>最大化されたコンテンツ表示</strong>: タブビューからサイドバーへの移行</li>
+<li><strong>カスタマイズ性向上</strong>: テーマ・レイアウトの柔軟な調整</li>
+<li><strong>ファイル管理</strong>: ドラッグ&amp;ドロップによる直感的なファイル操作</li>
+<li><strong>リアルタイム更新</strong>: データベース変更の即座な反映</li>
+<li><strong>プロジェクト管理強化</strong>: Programming Type管理と連携機能</li>
+<li><strong>履歴表示改善</strong>: 見やすい実行時刻・モデル名表示</li>
+<li><strong>縦スクロール対応</strong>: 全画面表示でも快適な操作性</li>
+</ul>
+<h3 id="_27">機能移行対応表<a class="headerlink" href="#_27" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Streamlit機能</th>
+<th>CustomTkinter対応</th>
+<th>新アーキテクチャ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>st.tabs()</td>
+<td>CTkTabview</td>
+<td><strong>ActivitySidebar</strong></td>
+</tr>
+<tr>
+<td>st.selectbox()</td>
+<td>CTkComboBox</td>
+<td>CTkComboBox</td>
+</tr>
+<tr>
+<td>st.text_area()</td>
+<td>CTkTextbox</td>
+<td>CTkTextbox</td>
+</tr>
+<tr>
+<td>st.button()</td>
+<td>CTkButton</td>
+<td>CTkButton</td>
+</tr>
+<tr>
+<td>st.file_uploader()</td>
+<td>カスタムFileUploader</td>
+<td>カスタムFileUploader</td>
+</tr>
+<tr>
+<td>st.dataframe()</td>
+<td>Tkinter Listbox + カスタム表示</td>
+<td>Tkinter Listbox + カスタム表示</td>
+</tr>
+<tr>
+<td>st.download_button()</td>
+<td>ファイルダイアログ + 保存処理</td>
+<td>ファイルダイアログ + 保存処理</td>
+</tr>
+<tr>
+<td>st.write_stream()</td>
+<td>StreamingChatMessage (Markdown対応)</td>
+<td>StreamingChatMessage (Markdown対応)</td>
+</tr>
+<tr>
+<td>st.markdown()</td>
+<td><strong>新規</strong>: MarkdownRenderer</td>
+<td><strong>新規</strong>: MarkdownRenderer</td>
+</tr>
+<tr>
+<td>タブナビゲーション</td>
+<td><strong>新規</strong>: ActivitySidebar</td>
+<td><strong>VS Code風サイドバー</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_28">技術詳細<a class="headerlink" href="#_28" title="Permanent link">&para;</a></h2>
+<h3 id="_29">ディレクトリ構成<a class="headerlink" href="#_29" title="Permanent link">&para;</a></h3>
 <ul>
 <li>メインディレクトリ: <code>StoryCodeWizard</code></li>
 <li>アプリ構成: <code>app</code> ディレクトリ配下に各種モジュールを分類</li>
 <li>履歴データ: <code>./mydb/</code> ディレクトリで管理</li>
 </ul>
-<h3 id="_9">使用ライブラリ<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<h3 id="_30">使用ライブラリ<a class="headerlink" href="#_30" title="Permanent link">&para;</a></h3>
 <ul>
 <li>必須ライブラリは <code>requirements.txt</code> に記載済み</li>
 <li>新規ライブラリ追加時は <code>pip install</code> コマンドを提供</li>
 </ul>
-<h3 id="_10">テスト<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<h3 id="_31">テスト<a class="headerlink" href="#_31" title="Permanent link">&para;</a></h3>
 <ul>
 <li>pytestを用いてユニットテストを作成</li>
 <li>テスト実行コマンド:
-  ```bash
-  pytest</li>
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pytest
+</span></code></pre></div></li>
 </ul>
 
 

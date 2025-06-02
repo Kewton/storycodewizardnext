@@ -850,6 +850,84 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      UIコンポーネント構成
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UIコンポーネント構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mainwindow" class="md-nav__link">
+    <span class="md-ellipsis">
+      メインウィンドウ (MainWindow)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activitysidebar" class="md-nav__link">
+    <span class="md-ellipsis">
+      アクティビティーサイドバー (ActivitySidebar)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#story2code-chattab" class="md-nav__link">
+    <span class="md-ellipsis">
+      Story2Codeコンテンツ (ChatTab)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#myhistory-historytab" class="md-nav__link">
+    <span class="md-ellipsis">
+      MyHistoryコンテンツ (HistoryTab)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projecttab" class="md-nav__link">
+    <span class="md-ellipsis">
+      プロジェクト管理コンテンツ (ProjectTab)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      カスタムウィジェット
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      アーキテクチャ
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1322,6 +1400,76 @@
 <h2 id="_2">システム概要<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>StoryCodeWizardは、LLM（大規模言語モデル）を活用したコード生成・プロジェクト管理デスクトップアプリケーションです。</p>
 <h3 id="_3">主要コンポーネント<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<h2 id="ui">UIコンポーネント構成<a class="headerlink" href="#ui" title="Permanent link">&para;</a></h2>
+<h3 id="mainwindow">メインウィンドウ (MainWindow)<a class="headerlink" href="#mainwindow" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>位置</strong>: <code>./ui/main_window.py</code></li>
+<li><strong>機能</strong>: アプリケーションのメインコンテナ、<strong>アクティビティーサイドバー管理</strong></li>
+<li><strong>コンポーネント</strong>: ActivitySidebar、メインコンテンツエリア、ウィンドウサイズ管理</li>
+<li><strong>改善点</strong>: VS Code風ナビゲーション、最大化されたコンテンツ表示領域</li>
+</ul>
+<h3 id="activitysidebar">アクティビティーサイドバー (ActivitySidebar)<a class="headerlink" href="#activitysidebar" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>位置</strong>: <code>./ui/widgets/activity_sidebar.py</code></li>
+<li><strong>機能</strong>: VS Code風のサイドバーナビゲーション、機能切り替え</li>
+<li><strong>コンポーネント</strong>: アイコンボタン、アクティブ状態表示、コンテンツ切り替え</li>
+<li><strong>改善点</strong>: 直感的なアイコンベースナビゲーション、視覚的フィードバック</li>
+</ul>
+<h3 id="story2code-chattab">Story2Codeコンテンツ (ChatTab)<a class="headerlink" href="#story2code-chattab" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>位置</strong>: <code>./ui/chat_tab.py</code></li>
+<li><strong>機能</strong>: LLMとの対話インターフェース、ストリーミング応答表示</li>
+<li><strong>コンポーネント</strong>: プロジェクト選択、モデル選択、Programming Type選択（プロジェクト連携）、入力エリア、チャット表示</li>
+<li><strong>改善点</strong>: リアルタイムストリーミング表示、スクロール可能な設定パネル、プロジェクト選択時の自動Programming Type設定、<strong>Markdown表示対応</strong></li>
+</ul>
+<h3 id="myhistory-historytab">MyHistoryコンテンツ (HistoryTab)<a class="headerlink" href="#myhistory-historytab" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>位置</strong>: <code>./ui/history_tab.py</code></li>
+<li><strong>機能</strong>: 過去のチャット履歴管理</li>
+<li><strong>コンポーネント</strong>: 履歴リスト、詳細表示、削除・ダウンロード機能</li>
+<li><strong>改善点</strong>: 自動データ更新、フィルタリング機能強化、実行時刻とモデル名のみ表示（フォントサイズ拡大）、<strong>Markdown表示対応</strong></li>
+</ul>
+<h3 id="projecttab">プロジェクト管理コンテンツ (ProjectTab)<a class="headerlink" href="#projecttab" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>位置</strong>: <code>./ui/project_tab.py</code></li>
+<li><strong>機能</strong>: プロジェクトの作成・管理・編集（Programming Type管理含む）</li>
+<li><strong>コンポーネント</strong>: プロジェクト一覧、新規作成フォーム（Programming Type選択付き）、プロジェクト編集機能</li>
+<li><strong>改善点</strong>: スクロール可能な設定パネル、Programming Type管理、ラベルとフィールドの配置最適化、登録後の自動更新、プロジェクト説明管理</li>
+</ul>
+<h3 id="_4">カスタムウィジェット<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ChatMessage</strong>: <code>./ui/widgets/chat_message.py</code> - チャットメッセージ表示用（<strong>Markdown対応</strong>）</li>
+<li><strong>ProjectCard</strong>: <code>./ui/widgets/project_card.py</code> - プロジェクト情報表示・編集用（Programming Type表示対応）</li>
+<li><strong>ProjectEditDialog</strong>: <code>./ui/widgets/project_edit_dialog.py</code> - プロジェクト編集ダイアログ（Programming Type編集対応、可変サイズ対応）</li>
+<li><strong>FileUploader</strong>: <code>./ui/widgets/file_uploader.py</code> - ファイルアップロード機能</li>
+<li><strong>StreamingChatMessage</strong>: <code>./ui/widgets/streaming_chat_message.py</code> - ストリーミング対応チャットメッセージ表示（<strong>Markdown対応</strong>）</li>
+<li><strong>MarkdownRenderer</strong>: <code>./ui/widgets/markdown_renderer.py</code> - <strong>新規追加</strong>: Markdown表示用ウィジェット</li>
+<li><strong>ActivitySidebar</strong>: <code>./ui/widgets/activity_sidebar.py</code> - <strong>新規追加</strong>: VS Code風アクティビティーサイドバー</li>
+</ul>
+<h2 id="_5">アーキテクチャ<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    ./
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ├── main.py                    # アプリケーションエントリーポイント
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    ├── ui/                        # UIコンポーネント
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    │   ├── main_window.py         # メインウィンドウ（アクティビティーサイドバー対応）
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    │   ├── chat_tab.py           # チャット機能コンテンツ（ストリーミング対応、Programming Type連携）
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    │   ├── history_tab.py        # 履歴管理コンテンツ
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    │   ├── project_tab.py        # プロジェクト管理コンテンツ（Programming Type管理対応）
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    │   ├── styles.py             # UI共通スタイル定義
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    │   └── widgets/              # カスタムウィジェット
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    │       ├── activity_sidebar.py # **新規**: VS Code風アクティビティーサイドバー
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    │       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    │       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    │       ├── markdown_renderer.py # Markdown表示ウィジェット
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    │       ├── project_card.py   # プロジェクトカード（Programming Type表示対応）
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    │       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（Programming Type編集対応）
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    │       └── file_uploader.py  # ファイルアップロード
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    ├── app/                      # 既存のビジネスロジック
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    │   ├── chat.py              # チャット処理（ストリーミング対応）
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    │   ├── myjsondb/            # データベース処理（Programming Type管理対応）
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    │   ├── util/                # ユーティリティ
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    │   └── prompt/              # プロンプト生成
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    └── requirements.txt          # 依存関係（Markdown処理ライブラリ追加）
+</span></code></pre></div>
 
 
 

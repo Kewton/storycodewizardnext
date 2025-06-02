@@ -522,7 +522,49 @@
         <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
-      🏗️ アーキテクチャ
+      🆕 最新機能ハイライト
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🆕 最新機能ハイライト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✨ プロジェクト自動初期化
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎨 アクティビティーサイドバー
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#markdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 Markdown表示対応
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏗️ システム構成
     </span>
   </a>
   
@@ -1352,24 +1394,26 @@
 
 <h1 id="storycodewizard-documentation">StoryCodeWizard Documentation<a class="headerlink" href="#storycodewizard-documentation" title="Permanent link">&para;</a></h1>
 <p><strong>StoryCodeWizard</strong> は、LLMを活用したインテリジェントなコード生成・プロジェクト管理を行うCustomTkinterデスクトップアプリケーションです。</p>
-<p><img alt="StoryCodeWizard" src="assets/logo.png" /></p>
+<p><img alt="StoryCodeWizard Hero" src="https://img.shields.io/badge/StoryCodeWizard-v2.0-blue?style=for-the-badge&amp;logo=python" /></p>
 <h2 id="_1">🚀 主な機能<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <h3 id="llm">💬 LLMチャット機能<a class="headerlink" href="#llm" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>複数LLM対応</strong>: OpenAI GPT、Claude、Gemini</li>
 <li><strong>ストリーミング対応</strong>: リアルタイム応答表示</li>
 <li><strong>Markdown表示</strong>: 豊富な表現力でレスポンス表示</li>
-<li><strong>ファイルアップロード</strong>: JPEG画像の添付対応</li>
+<li><strong>ファイルアップロード</strong>: JPEG/PNG画像の添付対応</li>
 </ul>
 <h3 id="vs-code">🎨 VS Code風ユーザーインターフェース<a class="headerlink" href="#vs-code" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>アクティビティーサイドバー</strong>: 直感的なナビゲーション</li>
 <li><strong>モダンUI</strong>: CustomTkinter採用で美しいデザイン</li>
 <li><strong>ダークテーマ</strong>: 開発者に優しい配色</li>
+<li><strong>レスポンシブレイアウト</strong>: ウィンドウサイズに対応</li>
 </ul>
 <h3 id="_2">📁 プロジェクト管理<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>プロジェクト作成・編集</strong>: Programming Type管理対応</li>
+<li><strong>プロジェクト初期化</strong>: generate_files.pyスクリプトによる自動初期化</li>
 <li><strong>ディレクトリ連携</strong>: ローカルプロジェクトとの統合</li>
 <li><strong>説明管理</strong>: プロジェクトの詳細情報保存</li>
 </ul>
@@ -1378,8 +1422,34 @@
 <li><strong>チャット履歴保存</strong>: プロジェクトごとの履歴管理</li>
 <li><strong>エクスポート機能</strong>: Markdownファイルでダウンロード</li>
 <li><strong>プロジェクト反映</strong>: コード生成結果の自動適用</li>
+<li><strong>4セクション表示</strong>: 構造化された履歴詳細</li>
 </ul>
-<h2 id="_4">🏗️ アーキテクチャ<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_4">🆕 最新機能ハイライト<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">✨ プロジェクト自動初期化<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>プロジェクト作成時に、選択したコーディングエージェントに応じた初期化ファイルを自動実行する機能を追加しました。</p>
+<p><strong>特徴</strong>:
+- 自動初期化提案（プロジェクト作成完了時）
+- 確認ダイアログ（ユーザーの明示的な同意）
+- エラーハンドリング（初期化ファイル不存在やスクリプトエラーに対応）
+- 進捗表示（初期化実行中の状況を適切に表示）</p>
+<h3 id="_6">🎨 アクティビティーサイドバー<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>VS Code風のナビゲーションを採用し、より直感的な操作を実現：</p>
+<ul>
+<li><strong>💬</strong> コード生成リクエスト</li>
+<li><strong>📚</strong> コーディングエージェントとの会話履歴  </li>
+<li><strong>📁</strong> プロジェクト管理</li>
+<li><strong>❓</strong> ヘルプ</li>
+<li><strong>🔄</strong> アプリケーション再起動</li>
+</ul>
+<h3 id="markdown">📝 Markdown表示対応<a class="headerlink" href="#markdown" title="Permanent link">&para;</a></h3>
+<p>LLMからの応答を豊富な表現力で表示：</p>
+<ul>
+<li><strong>リアルタイムレンダリング</strong>: ストリーミング中もMarkdown解析</li>
+<li><strong>シンタックスハイライト</strong>: コードブロックのカラーコーディング</li>
+<li><strong>表示切り替え</strong>: Markdown/Raw Text切り替え可能</li>
+<li><strong>ダークテーマ最適化</strong>: 見やすい配色設定</li>
+</ul>
+<h2 id="_7">🏗️ システム構成<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 
 
 
