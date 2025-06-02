@@ -1,269 +1,68 @@
 # StoryCodeWizard - CustomTkinter Desktop Application
 
-StreamlitからCustomTkinterに変換されたデスクトップチャットアプリケーション
+StoryCodeWizardは、ストーリーベースの要件記述から最高のコード生成を支援するツールです。
+現在のプロジェクトはFastAPIやCustomTkinterやNext.jsを使用して開発されているシステム向けのコードテンプレート生成や改善案を提供します。
 
-## 機能概要
-- LLMとのチャット機能（GPT、Claude、Gemini対応）
-- リアルタイムストリーミング応答表示
-- **Markdown表示対応**（見出し、リスト、コードブロック、強調表示）
-- プロジェクト管理機能（説明付きプロジェクト管理、編集機能、Programming Type管理）
-- チャット履歴の保存・検索・ダウンロード
-- ファイルアップロード対応（JPEG）
-- コード自動生成とプロジェクトへの反映
-- **VS Code風アクティビティーサイドバー**（直感的なナビゲーション）
-- モダンなCustomTkinter UI
-- リアルタイムデータ更新機能
+## 使用方法
+
+## 特徴
+- **複数プロジェクトサポート**: プロジェクトごとに履歴を管理し、特定のプロジェクトに絞ったコード生成を行います。
+- **選択可能なLLM（大規模言語モデル）**:
+  - OpenAI GPTシリーズ
+  - Claude (Anthropic)
+  - Gemini
+- **コード履歴管理**: 過去に生成したコードやプロンプトをいつでも参照履歴からダウンロード可能。
+- **カスタムディレクトリと設定管理**: 各プロジェクトは異なるディレクトリ構造に対応可能。
 
 ## セットアップ手順
 
-### 1. 環境構築
+### 1. ソースコードの取得
+Gitリポジトリをクローンします。
 ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
-    pip install -r requirements.txt
+git clone https://github.com/Kewton/storycodewizardnext
+cd storycodewizardnext
 ```
 
-### 2. APIキー設定
-`secret_keys.py`ファイルを作成し、以下の内容を設定：
+### 2. Python環境のセットアップ
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 3. 機密情報の設定
+以下の内容で`secret_keys.py`を作成します。
 ```python
-    openai_api_key = "<your OpenAI API key>"
-    claude_api_key = "<your Claude API key>"
-    gemini_api_key = "<your Gemini API key>"
+openai_api_key = "<Your OpenAI API Key>"
+claude_api_key = "<Your Claude API Key>"
+gemini_api_key = "<Your Gemini API Key>"
 ```
 
-### 3. データベース初期化
+### 4. データベースの初期化
 ```bash
-    python initdatabase.py
+python initdatabase.py
 ```
 
-### 4. アプリケーション起動
+### 5. アプリケーション起動
 ```bash
-    python main.py
+python main.py
 ```
 
-## UIコンポーネント構成
+## ドキュメントの参照
 
-### メインウィンドウ (MainWindow)
-- **位置**: `./ui/main_window.py`
-- **機能**: アプリケーションのメインコンテナ、**アクティビティーサイドバー管理**
-- **コンポーネント**: ActivitySidebar、メインコンテンツエリア、ウィンドウサイズ管理
-- **改善点**: VS Code風ナビゲーション、最大化されたコンテンツ表示領域
+アプリケーションのAPIや仕様についての詳細な説明は MkDocs で確認可能です。
 
-### アクティビティーサイドバー (ActivitySidebar)
-- **位置**: `./ui/widgets/activity_sidebar.py`
-- **機能**: VS Code風のサイドバーナビゲーション、機能切り替え
-- **コンポーネント**: アイコンボタン、アクティブ状態表示、コンテンツ切り替え
-- **改善点**: 直感的なアイコンベースナビゲーション、視覚的フィードバック
+1. **必要なツールのインストール**
+   ```bash
+   pip install mkdocs mkdocs-material mkdocstrings mkdocstrings-python mkdocs-toc-md
+   ```
 
-### Story2Codeコンテンツ (ChatTab)
-- **位置**: `./ui/chat_tab.py`
-- **機能**: LLMとの対話インターフェース、ストリーミング応答表示
-- **コンポーネント**: プロジェクト選択、モデル選択、Programming Type選択（プロジェクト連携）、入力エリア、チャット表示
-- **改善点**: リアルタイムストリーミング表示、スクロール可能な設定パネル、プロジェクト選択時の自動Programming Type設定、**Markdown表示対応**
+2. **ローカルサーバーでドキュメントを表示**
+   ```bash
+   mkdocs serve
+   ```
 
-### MyHistoryコンテンツ (HistoryTab)
-- **位置**: `./ui/history_tab.py`
-- **機能**: 過去のチャット履歴管理
-- **コンポーネント**: 履歴リスト、詳細表示、削除・ダウンロード機能
-- **改善点**: 自動データ更新、フィルタリング機能強化、実行時刻とモデル名のみ表示（フォントサイズ拡大）、**Markdown表示対応**
-
-### プロジェクト管理コンテンツ (ProjectTab)
-- **位置**: `./ui/project_tab.py`
-- **機能**: プロジェクトの作成・管理・編集（Programming Type管理含む）
-- **コンポーネント**: プロジェクト一覧、新規作成フォーム（Programming Type選択付き）、プロジェクト編集機能
-- **改善点**: スクロール可能な設定パネル、Programming Type管理、ラベルとフィールドの配置最適化、登録後の自動更新、プロジェクト説明管理
-
-### カスタムウィジェット
-- **ChatMessage**: `./ui/widgets/chat_message.py` - チャットメッセージ表示用（**Markdown対応**）
-- **ProjectCard**: `./ui/widgets/project_card.py` - プロジェクト情報表示・編集用（Programming Type表示対応）
-- **ProjectEditDialog**: `./ui/widgets/project_edit_dialog.py` - プロジェクト編集ダイアログ（Programming Type編集対応、可変サイズ対応）
-- **FileUploader**: `./ui/widgets/file_uploader.py` - ファイルアップロード機能
-- **StreamingChatMessage**: `./ui/widgets/streaming_chat_message.py` - ストリーミング対応チャットメッセージ表示（**Markdown対応**）
-- **MarkdownRenderer**: `./ui/widgets/markdown_renderer.py` - **新規追加**: Markdown表示用ウィジェット
-- **ActivitySidebar**: `./ui/widgets/activity_sidebar.py` - **新規追加**: VS Code風アクティビティーサイドバー
-
-## アーキテクチャ
-
-```
-    ./
-    ├── main.py                    # アプリケーションエントリーポイント
-    ├── ui/                        # UIコンポーネント
-    │   ├── main_window.py         # メインウィンドウ（アクティビティーサイドバー対応）
-    │   ├── chat_tab.py           # チャット機能コンテンツ（ストリーミング対応、Programming Type連携）
-    │   ├── history_tab.py        # 履歴管理コンテンツ
-    │   ├── project_tab.py        # プロジェクト管理コンテンツ（Programming Type管理対応）
-    │   ├── styles.py             # UI共通スタイル定義
-    │   └── widgets/              # カスタムウィジェット
-    │       ├── activity_sidebar.py # **新規**: VS Code風アクティビティーサイドバー
-    │       ├── chat_message.py   # チャットメッセージ表示（Markdown対応）
-    │       ├── streaming_chat_message.py # ストリーミングチャットメッセージ表示（Markdown対応）
-    │       ├── markdown_renderer.py # Markdown表示ウィジェット
-    │       ├── project_card.py   # プロジェクトカード（Programming Type表示対応）
-    │       ├── project_edit_dialog.py # プロジェクト編集ダイアログ（Programming Type編集対応）
-    │       └── file_uploader.py  # ファイルアップロード
-    ├── app/                      # 既存のビジネスロジック
-    │   ├── chat.py              # チャット処理（ストリーミング対応）
-    │   ├── myjsondb/            # データベース処理（Programming Type管理対応）
-    │   ├── util/                # ユーティリティ
-    │   └── prompt/              # プロンプト生成
-    └── requirements.txt          # 依存関係（Markdown処理ライブラリ追加）
-```
-
-## 技術仕様
-- **UI Framework**: CustomTkinter 5.2.0+
-- **Python**: 3.8+
-- **Database**: JSONベースローカルDB
-- **LLM API**: OpenAI, Anthropic, Google Gemini（ストリーミング対応）
-- **Markdown処理**: markdown、pygments（シンタックスハイライト）
-- **ナビゲーション**: VS Code風アクティビティーサイドバー
-
-## 新機能: VS Code風アクティビティーサイドバー
-
-### ナビゲーション方式
-- **左側サイドバー**: アイコンベースの機能切り替え
-- **Story2Code**: 💬 アイコンでチャット機能へアクセス
-- **MyHistory**: 📚 アイコンで履歴管理へアクセス
-- **プロジェクト管理**: 📁 アイコンでプロジェクト管理へアクセス
-- **アクティブ状態**: 選択中の機能が視覚的にハイライト表示
-
-### ユーザー体験の向上
-- **最大化されたコンテンツ表示**: タブビューを廃止し、メインエリアを最大活用
-- **直感的なナビゲーション**: VS Codeライクなアイコンベース操作
-- **高速な機能切り替え**: ワンクリックでの機能切り替え
-- **視覚的フィードバック**: アクティブ状態の明確な表示
-
-## 新機能: Markdown表示対応
-
-### サポートする記法
-- **見出し**: # ## ### #### ##### ######
-- **強調**: **太字** *斜体* ~~取り消し線~~
-- **リスト**: 箇条書き（-）、番号付きリスト（1.）
-- **コードブロック**: ```言語名 および `インラインコード`
-- **リンク**: [テキスト](URL)
-- **引用**: > 引用文
-- **水平線**: ---
-- **表**: Markdown表記法
-
-### 実装詳細
-- HTMLレンダリングによる高品質な表示
-- コードブロックのシンタックスハイライト
-- レスポンシブデザイン対応
-- ダークテーマ最適化
-
-### 使用方法
-LLMからの応答は自動的にMarkdown記法として解釈され、適切にレンダリングされます。従来のプレーンテキスト表示も引き続き利用可能です。
-
-## 開発者向け情報
-
-### カスタムテーマ
-CustomTkinterのダークテーマをベースにカスタムカラーパレットを適用：
-- プライマリ: #1f538d (ブルー)
-- セカンダリ: #14375e (ダークブルー)
-- アクセント: #1f538d (ライトブルー)
-- 背景: #212121 (ダークグレー)
-- **サイドバー**: #2d2d2d (ダークグレー、VS Code風)
-
-### レイアウト設計指針
-- **間隔統一**: 全てのコンポーネント間で一貫した間隔を使用
-- **視覚的階層**: ラベル、入力フィールド、ボタンの明確な配置
-- **レスポンシブ対応**: ウィンドウサイズ変更に対応した柔軟なレイアウト
-- **縦スクロール対応**: 設定パネルでの適切なスクロール機能
-- **データ同期**: コンテンツ間でのリアルタイムデータ更新
-- **ストリーミング対応**: LLM応答のリアルタイム表示
-- **Markdown対応**: 豊富な表現力を持つテキスト表示
-- **VS Code風ナビゲーション**: 直感的なサイドバーベース操作
-
-### イベントハンドリング
-- 非同期LLM API呼び出し
-- ストリーミングレスポンス処理
-- リアルタイムUI更新
-- ファイルドラッグ&ドロップ対応
-- 自動データリフレッシュ機能
-- Markdownリアルタイムレンダリング
-- プロジェクト選択時のProgramming Type自動設定
-- **アクティビティーサイドバーナビゲーション**
-
-## プロジェクト管理機能
-
-### プロジェクト設定
-- **プロジェクト名**: 識別用の名前（編集不可）
-- **プロジェクトパス**: ソースコードのディレクトリパス
-- **プロジェクト説明**: プロジェクトの詳細説明
-- **Programming Type**: プロジェクトで使用するプログラミング言語・フレームワーク（Next.js、FastAPI、CustomTkinter等）
-
-### プロジェクト編集機能
-- プロジェクトカードから直接編集可能
-- プロジェクトパス、説明、Programming Typeの編集（名前は編集不可）
-- 可変サイズダイアログ対応
-- リアルタイム更新と全コンテンツ同期
-
-### Programming Type連携機能
-- プロジェクト作成時にProgramming Typeを選択
-- Chat Configurationでプロジェクト選択時に自動的にProgramming Typeを設定
-- プロジェクトごとに最適なプロンプトテンプレートを自動選択
-
-## チャット履歴機能
-
-### 履歴表示形式
-- **実行時刻**: YYYY-MM-DD_HH:MM:SS形式で表示
-- **実行モデル**: 使用されたLLMモデル名
-- **フォント**: 視認性向上のため大きなフォントサイズを使用
-- **レイアウト**: シンプルで見やすい2項目表示
-- **Markdown表示**: 履歴の詳細表示でMarkdown記法対応
-
-## LLMストリーミング機能
-
-### リアルタイム応答表示
-- **ストリーミング対応**: Claude、GPT、Geminiのストリーミング応答を表示
-- **リアルタイム更新**: 応答テキストがリアルタイムで表示される
-- **処理状態表示**: 実行中、完了状態の明確な表示
-- **応答保存**: ストリーミング完了後に履歴として保存
-- **Markdown対応**: ストリーミング中もMarkdown記法をリアルタイム解析・表示
-
-## トラブルシューティング
-
-### よくある問題
-1. **APIキーエラー**: `secret_keys.py`の設定を確認
-2. **データベースエラー**: `python initdatabase.py`を再実行
-3. **UI表示問題**: CustomTkinterの最新版を確認
-4. **レイアウト崩れ**: ウィンドウサイズを調整し、最小サイズ以上で使用
-5. **ストリーミングエラー**: API接続とキー設定を確認
-6. **Markdown表示エラー**: markdown、pygmentsライブラリのインストールを確認
-7. **Programming Type連携エラー**: プロジェクト設定の整合性を確認
-8. **サイドバーナビゲーションエラー**: ウィンドウサイズと表示設定を確認
-
-### ログ出力
-アプリケーションログは標準出力に表示されます。
-
-## 従来のStreamlit版からの変更点
-
-### 主な改善点
-- **ネイティブデスクトップアプリ**: ブラウザ不要で直接実行
-- **レスポンシブUI**: より高速で滑らかな操作感
-- **ストリーミング対応**: リアルタイムLLM応答表示
-- **Markdown表示対応**: 豊富な表現力でリッチなテキスト表示
-- **VS Code風ナビゲーション**: 直感的なアクティビティーサイドバー
-- **最大化されたコンテンツ表示**: タブビューからサイドバーへの移行
-- **カスタマイズ性向上**: テーマ・レイアウトの柔軟な調整
-- **ファイル管理**: ドラッグ&ドロップによる直感的なファイル操作
-- **リアルタイム更新**: データベース変更の即座な反映
-- **プロジェクト管理強化**: Programming Type管理と連携機能
-- **履歴表示改善**: 見やすい実行時刻・モデル名表示
-- **縦スクロール対応**: 全画面表示でも快適な操作性
-
-### 機能移行対応表
-| Streamlit機能 | CustomTkinter対応 | 新アーキテクチャ |
-|--------------|------------------|------------------|
-| st.tabs() | CTkTabview | **ActivitySidebar** |
-| st.selectbox() | CTkComboBox | CTkComboBox |
-| st.text_area() | CTkTextbox | CTkTextbox |
-| st.button() | CTkButton | CTkButton |
-| st.file_uploader() | カスタムFileUploader | カスタムFileUploader |
-| st.dataframe() | Tkinter Listbox + カスタム表示 | Tkinter Listbox + カスタム表示 |
-| st.download_button() | ファイルダイアログ + 保存処理 | ファイルダイアログ + 保存処理 |
-| st.write_stream() | StreamingChatMessage (Markdown対応) | StreamingChatMessage (Markdown対応) |
-| st.markdown() | **新規**: MarkdownRenderer | **新規**: MarkdownRenderer |
-| タブナビゲーション | **新規**: ActivitySidebar | **VS Code風サイドバー** |
+   デフォルトで `http://localhost:8000` で閲覧可能です。
 
 ## ライセンス
 
