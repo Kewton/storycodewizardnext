@@ -1,6 +1,6 @@
 # インストールガイド
 
-StoryCodeWizardのセットアップ手順を説明します。
+StoryCodeWizardのセットアップ手順を詳しく説明します。
 
 ## システム要件
 
@@ -9,6 +9,7 @@ StoryCodeWizardのセットアップ手順を説明します。
 - **OS**: Windows 10+, macOS 10.14+, Linux (Ubuntu 18.04+)
 - **メモリ**: 4GB以上
 - **ストレージ**: 500MB以上の空き容量
+- **インターネット接続**: LLM API呼び出しに必要
 
 ### 推奨環境
 - **Python**: 3.11

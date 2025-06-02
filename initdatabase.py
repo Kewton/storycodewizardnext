@@ -22,7 +22,7 @@ def initdata():
         "chat",
         "systemrole",
         {
-            "プログラミング言語": ["Next.js_Agent", "CustomTkinter_Agent", "FastAPI", "Next.js_2"],
+            "プログラミング言語": ["Next.js_Agent", "FastAPI_Agent", "CustomTkinter_Agent"],
             "Next.js_Agent": {
                 "srcdire": "src",
                 "libraryFileList": [
@@ -41,39 +41,21 @@ def initdata():
                 ],
                 "prompt": "nextjstemplate1"
             },
-            "Next.js_2": {
-                "srcdire": "src",
-                "libraryFileList": [
-                    "eslint.config.mjs",
-                    "next-env.d.ts",
-                    "next.config.ts",
-                    "postcss.config.mjs",
-                    "package.json",
-                    "tsconfig.json"
-                ],
-                "prerequisites": "ディレクトリにてNext.jsのフロントエンドを開発しています。利用者に最高のユーザー体験を提供します。",
-                "system_role": "あなたは優秀なNext.jsのフロントエンドエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
-                "ignorelist": [
-                    "public/",
-                    ".DS_Store",
-                    "*.ico"
-                    ""
-                ],
-                "prompt": "nextjstemplate2"
-            },
-            "FastAPI": {
-                "srcdire": "../test",
+            "FastAPI_Agent": {
+                "srcdire": "",
                 "libraryFileList": [
                     "requirements.txt"
                 ],
-                "prerequisites": "./docs/requiredSpecifications.md に記載された要求仕様書に従ったFastAPIのバックエンドエンドAPIを開発しています。利用者に最高のユーザー体験を提供します。",
+                "prerequisites": "/ ディレクトリにてFastAPIのバックエンドアプリケーションを開発しています。利用者に最高のユーザー体験を提供します。",
                 "system_role": "あなたは優秀なFastAPIのバックエンドエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
                 "ignorelist": [
                     "__pycache__/",
+                    ".venv/",
                     "venv/",
                     "*.db",
                     "*.DS_Store",
-                    "*.log"
+                    "*.log",
+                    ".git/"
                 ],
                 "prompt": "fastAPItemplate"
             },
@@ -91,14 +73,8 @@ def initdata():
                     "*.db",
                     "*.DS_Store",
                     "*.log",
-                    "__pycache__/",
-                    ".venv/",
                     "secret_keys.py",
                     "mydb/",
-                    "myproject/",
-                    "old/",
-                    "escape/",
-                    "output.txt",
                     "temp/",
                     ".git/"
                 ],
