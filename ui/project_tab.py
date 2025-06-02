@@ -455,7 +455,7 @@ class ProjectTab(ctk.CTkFrame):
         self.load_projects()
     
     def load_projects(self):
-        """プロジェクト一覧を読み込み"""
+        """プロジェクト一覧を読み込み（昇順ソート）"""
         # 既存のウィジェットをクリア
         for widget in self.projects_scrollable.winfo_children():
             widget.destroy()
@@ -479,6 +479,9 @@ class ProjectTab(ctk.CTkFrame):
                 sticky="ew"
             )
             return
+        
+        # プロジェクト名で昇順ソート
+        projects.sort()
         
         # プロジェクトカードを作成
         for i, project_name in enumerate(projects):

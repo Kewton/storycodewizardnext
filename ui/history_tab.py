@@ -59,13 +59,13 @@ class HistoryTab(ctk.CTkFrame):
         left_frame.grid_columnconfigure(0, weight=1)
         left_frame.grid_rowconfigure(4, weight=1) # history_list のrowを1つ下げるので、weightをかけるrowも変更
         
-        # タイトル
-        title_label = ctk.CTkLabel(
+        # タイトル（履歴件数表示対応）
+        self.title_label = ctk.CTkLabel(
             left_frame,
             text="コーディングエージェントとの会話履歴",
             font=AppStyles.FONTS['heading']
         )
-        title_label.grid(
+        self.title_label.grid(
             row=0, 
             column=0, 
             padx=AppStyles.SIZES['padding_medium'],
@@ -292,6 +292,7 @@ class HistoryTab(ctk.CTkFrame):
             self.current_history_data = [] # プロジェクトがない場合は履歴もクリア
             self.update_history_list()
             self.clear_detail_display()
+            self.update_title_with_count(0)  # 履歴件数を0で更新
     
     def on_project_changed(self, project_name):
         """プロジェクト変更時のハンドラ"""
@@ -309,6 +310,7 @@ class HistoryTab(ctk.CTkFrame):
             self.current_history_data = []
             self.update_history_list()
             self.clear_detail_display()
+            self.update_title_with_count(0)  # 履歴件数を0で更新
     
     def load_history_data(self):
         """履歴データを読み込み"""
@@ -318,6 +320,7 @@ class HistoryTab(ctk.CTkFrame):
             self.current_history_data = []
             self.update_history_list()
             self.clear_detail_display()
+            self.update_title_with_count(0)  # 履歴件数を0で更新
             return
 
         # プロジェクト説明の表示（プロジェクト名が有効な場合のみ）
@@ -332,6 +335,9 @@ class HistoryTab(ctk.CTkFrame):
         self.current_history_data = format_history_data(project_name)
         self.update_history_list()
         
+        # タイトルに履歴件数を表示
+        self.update_title_with_count(len(self.current_history_data))
+        
         # 最初の項目を選択
         if self.current_history_data:
             self.history_listbox.selection_set(0)
@@ -339,6 +345,11 @@ class HistoryTab(ctk.CTkFrame):
             self.load_detail_display()
         else:
             self.clear_detail_display()
+    
+    def update_title_with_count(self, count):
+        """タイトルに履歴件数を表示"""
+        title_text = f"コーディングエージェントとの会話履歴 ({count}件)"
+        self.title_label.configure(text=title_text)
     
     def update_history_list(self):
         """履歴リストを更新（実行時刻とモデル名のみ表示）"""
