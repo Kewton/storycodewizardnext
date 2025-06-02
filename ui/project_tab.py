@@ -4,6 +4,8 @@ StoryCodeWizard Project Tab
 """
 import customtkinter as ctk
 import os
+import subprocess
+import sys
 from tkinter import filedialog, messagebox
 from ui.styles import AppStyles
 from ui.widgets.project_card import ProjectCard
@@ -295,6 +297,9 @@ class ProjectTab(ctk.CTkFrame):
         )
         
         if success:
+            # プロジェクト作成成功後、初期化スクリプト実行の確認
+            self.prompt_for_initialization(project_name, directory_path, programming_type)
+            
             # 入力欄をクリア
             self.project_name_entry.delete(0, 'end')
             self.directory_entry.delete(0, 'end')
@@ -314,6 +319,100 @@ class ProjectTab(ctk.CTkFrame):
             messagebox.showinfo("Success", message)
         else:
             messagebox.showerror("Error", message)
+    
+    def prompt_for_initialization(self, project_name, directory_path, programming_type):
+        """プロジェクト初期化スクリプト実行の確認ダイアログ"""
+        # 確認メッセージを表示
+        confirmation_message = (
+            f"プロジェクト '{project_name}' の初期化を実行しますか？\n\n"
+            f"実行されるコマンド:\n"
+            f"python generate_files.py ./init/{programming_type}.md -d {directory_path}\n\n"
+            "この操作により、プロジェクトディレクトリに初期ファイルが作成される可能性があります。\n"
+            "続行しますか？"
+        )
+        
+        result = messagebox.askyesno(
+            "プロジェクト初期化の確認",
+            confirmation_message
+        )
+        
+        if result:
+            self.execute_initialization_script(project_name, directory_path, programming_type)
+    
+    def execute_initialization_script(self, project_name, directory_path, programming_type):
+        """プロジェクト初期化スクリプトを実行"""
+        try:
+            # 初期化ファイルのパスを構築
+            init_file_path = f"./init/{programming_type}.md"
+            
+            # 初期化ファイルの存在確認
+            if not os.path.exists(init_file_path):
+                messagebox.showwarning(
+                    "初期化ファイルなし",
+                    f"初期化ファイル '{init_file_path}' が見つかりません。\n"
+                    "プロジェクトは作成されましたが、初期化はスキップされました。"
+                )
+                return
+            
+            # generate_files.pyの存在確認
+            generate_script = "./generate_files.py"
+            if not os.path.exists(generate_script):
+                messagebox.showerror(
+                    "スクリプトエラー",
+                    f"初期化スクリプト '{generate_script}' が見つかりません。"
+                )
+                return
+            
+            # コマンドを構築して実行
+            cmd = [
+                sys.executable, 
+                "generate_files.py", 
+                os.path.abspath(init_file_path), 
+                "-d", 
+                directory_path
+            ]
+            
+            # プログレスダイアログの表示（実装は簡易版）
+            progress_dialog = messagebox.showinfo(
+                "初期化実行中",
+                f"プロジェクト '{project_name}' の初期化を実行中です...\n"
+                "しばらくお待ちください。",
+                type='ok'
+            )
+            
+            # コマンド実行
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                cwd="."
+            )
+            
+            # 実行結果の処理
+            if result.returncode == 0:
+                messagebox.showinfo(
+                    "初期化完了",
+                    f"プロジェクト '{project_name}' の初期化が正常に完了しました。\n\n"
+                    f"出力:\n{result.stdout[:500]}{'...' if len(result.stdout) > 500 else ''}"
+                )
+            else:
+                messagebox.showerror(
+                    "初期化エラー",
+                    f"プロジェクト初期化中にエラーが発生しました。\n\n"
+                    f"エラー内容:\n{result.stderr[:500]}{'...' if len(result.stderr) > 500 else ''}"
+                )
+                
+        except subprocess.TimeoutExpired:
+            messagebox.showerror(
+                "初期化タイムアウト",
+                "初期化処理がタイムアウトしました。\n"
+                "プロジェクトディレクトリを確認してください。"
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "初期化エラー",
+                f"予期しないエラーが発生しました:\n{str(e)}"
+            )
     
     def create_new_project_with_all_data(self, project_name, directory_path, programming_type, description):
         """コーディングエージェント対応のプロジェクト作成"""
