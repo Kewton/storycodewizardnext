@@ -10,20 +10,25 @@ def createPromt(_systemrole_content, _input):
     _libraryFileList = []
     for a in _systemrole_content["libraryFileList"]:
         _libraryFileList.append(_systemrole_content["pjdir"] + "/" + a)
-    _src_root_path = _systemrole_content["pjdir"] + "/" + _systemrole_content["srcdire"]
+    
+    _src_root_path_List = []
+    for a in _systemrole_content["srcdire"]:
+        _src_root_path_List.append(_systemrole_content["pjdir"] + "/" + a)
+
+    # _src_root_path = _systemrole_content["pjdir"] + "/" + _systemrole_content["srcdire"]
     _ignorelist = _systemrole_content["ignorelist"]
 
     if "nextjstemplate1" == _systemrole_content["prompt"]:
-        return nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
+        return nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
     elif "fastAPItemplate" == _systemrole_content["prompt"]:
-        return fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
+        return fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
     elif "CustomTkinter" == _systemrole_content["prompt"]:
-        return CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
+        return CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
     else:
-        return defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist)
+        return defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
 
 
-def defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist):
+def defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist):
     _content = f"""
 # 命令指示書
 - 現在のソースコードと要求に対し前提条件と制約条件を満たす最高の成果物を生成してください。
@@ -46,7 +51,7 @@ def defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
 {fetch_libraryfiles_and_contents(_libraryFileList)}
 
 ### 現在のソースコード
-{fetch_files_and_contents(_src_root_path, _ignorelist)}
+{fetch_files_and_contents(_src_root_path_List, _ignorelist)}
 
     """
     return _content

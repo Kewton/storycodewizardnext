@@ -1,7 +1,7 @@
 from app.util.codeopen import fetch_libraryfiles_and_contents, fetch_files_and_contents
 
 
-def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ignorelist):
+def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist):
     _content = f"""
 # 命令指示書
 - 現在のソースコードと要求に対し前提条件と制約条件を満たす最高の成果物を生成してください。
@@ -115,7 +115,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path, _ign
 {fetch_libraryfiles_and_contents(_libraryFileList)}
 
 # 現在のソースコード
-{fetch_files_and_contents(_src_root_path, _ignorelist)}
+{fetch_files_and_contents(_src_root_path_List, _ignorelist)}
 
     """
     return _content

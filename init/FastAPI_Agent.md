@@ -14,6 +14,7 @@
     ```
 ```
 
+---
 ## ./.gitignore
 ### ./.gitignore
 ```txt
@@ -21,6 +22,7 @@ __pycache__/
 .venv/
 ```
 
+---
 ## ./requirements.txt
 ### ./requirements.txt
 ```txt

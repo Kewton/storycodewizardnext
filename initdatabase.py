@@ -22,9 +22,9 @@ def initdata():
         "chat",
         "systemrole",
         {
-            "プログラミング言語": ["Next.js_Agent", "FastAPI_Agent", "CustomTkinter_Agent"],
+            "プログラミング言語": ["Next.js_Agent", "FastAPI_Agent", "NextJS_FastAPI_Agent", "CustomTkinter_Agent"],
             "Next.js_Agent": {
-                "srcdire": "src",
+                "srcdire": ["src"],
                 "libraryFileList": [
                     "eslint.config.mjs",
                     "next-env.d.ts",
@@ -42,7 +42,7 @@ def initdata():
                 "prompt": "nextjstemplate1"
             },
             "FastAPI_Agent": {
-                "srcdire": "",
+                "srcdire": [""],
                 "libraryFileList": [
                     "requirements.txt"
                 ],
@@ -60,23 +60,26 @@ def initdata():
                 "prompt": "fastAPItemplate"
             },
             "CustomTkinter_Agent": {
-                "srcdire": "",
+                "srcdire": [""],
                 "libraryFileList": [
                     "requirements.txt"
                 ],
                 "prerequisites": "/ ディレクトリにてCustomTkinterのクライアントアプリケーションを開発しています。利用者に最高のユーザー体験を提供します。",
                 "system_role": "あなたは優秀なPythonのCustomTkinterエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
                 "ignorelist": [
+                    ".git/",
                     "__pycache__/",
+                    ".github/",
                     ".venv/",
                     "venv/",
-                    "*.db",
-                    "*.DS_Store",
-                    "*.log",
-                    "secret_keys.py",
+                    "docs/",
+                    "init/",
                     "mydb/",
                     "temp/",
-                    ".git/"
+                    "secret_keys.py",
+                    "*.db",
+                    "*.DS_Store",
+                    "*.log"
                 ],
                 "prompt": "CustomTkinter"
             }

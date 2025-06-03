@@ -82,6 +82,9 @@ class ProjectTab(ctk.CTkFrame):
         # プロジェクト説明入力
         current_row = self.setup_description_input(self.left_scrollable, current_row)
         
+        # ファイル作成オプション
+        current_row = self.setup_file_creation_option(self.left_scrollable, current_row)
+        
         # 作成ボタン
         self.setup_create_button(self.left_scrollable, current_row)
     
@@ -209,6 +212,50 @@ class ProjectTab(ctk.CTkFrame):
         
         return start_row + 2
     
+    def setup_file_creation_option(self, parent, start_row):
+        """ファイル作成オプションをセットアップ"""
+        label = ctk.CTkLabel(parent, text="初期ファイル作成:", font=AppStyles.FONTS['default'])
+        label.grid(
+            row=start_row, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'], 
+            pady=(AppStyles.SIZES['padding_small'], 4), 
+            sticky="w"
+        )
+        
+        # チェックボックスとラベルのフレーム
+        option_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        option_frame.grid(
+            row=start_row + 1, 
+            column=0, 
+            padx=AppStyles.SIZES['padding_medium'],
+            pady=(4, AppStyles.SIZES['padding_small']),
+            sticky="ew"
+        )
+        option_frame.grid_columnconfigure(1, weight=1)
+        
+        # チェックボックス
+        self.create_files_var = ctk.BooleanVar(value=True)  # デフォルトは有効
+        self.create_files_checkbox = ctk.CTkCheckBox(
+            option_frame,
+            text="",
+            variable=self.create_files_var,
+            width=20
+        )
+        self.create_files_checkbox.grid(row=0, column=0, padx=(0, 8), sticky="w")
+        
+        # 説明ラベル
+        description_label = ctk.CTkLabel(
+            option_frame,
+            text="プロジェクト作成時に初期ファイルを自動作成する",
+            font=AppStyles.FONTS['small'],
+            text_color=AppStyles.COLORS['text_secondary'],
+            anchor="w"
+        )
+        description_label.grid(row=0, column=1, sticky="w")
+        
+        return start_row + 2
+    
     def setup_create_button(self, parent, start_row):
         """作成ボタンをセットアップ"""
         self.create_button = ctk.CTkButton(
@@ -291,19 +338,22 @@ class ProjectTab(ctk.CTkFrame):
         directory_path = self.directory_entry.get().strip()
         programming_type = self.programming_type_var.get()
         description = self.description_text.get("1.0", "end-1c").strip()
+        create_files = self.create_files_var.get()
         
         success, message = self.create_new_project_with_all_data(
             project_name, directory_path, programming_type, description
         )
         
         if success:
-            # プロジェクト作成成功後、初期化スクリプト実行の確認
-            self.prompt_for_initialization(project_name, directory_path, programming_type)
+            # プロジェクト作成成功後、初期化スクリプト実行の確認（チェックボックスが有効な場合のみ）
+            if create_files:
+                self.prompt_for_initialization(project_name, directory_path, programming_type)
             
             # 入力欄をクリア
             self.project_name_entry.delete(0, 'end')
             self.directory_entry.delete(0, 'end')
             self.description_text.delete("1.0", "end")
+            self.create_files_var.set(True)  # チェックボックスをデフォルト状態に戻す
             # コーディングエージェントは最初の選択肢にリセット
             languages = getValueByFormnameAndKeyName("chat", "systemrole", "プログラミング言語")
             if languages:
@@ -325,8 +375,10 @@ class ProjectTab(ctk.CTkFrame):
         # 確認メッセージを表示
         confirmation_message = (
             f"プロジェクト '{project_name}' の初期化を実行しますか？\n\n"
-            f"実行されるコマンド:\n"
-            f"python generate_files.py ./init/{programming_type}.md -d {directory_path}\n\n"
+            f"実行される処理:\n"
+            f"• コーディングエージェント: {programming_type}\n"
+            f"• 対象ディレクトリ: {directory_path}\n"
+            f"• 初期化ファイル: ./init/{programming_type}.md\n\n"
             "この操作により、プロジェクトディレクトリに初期ファイルが作成される可能性があります。\n"
             "続行しますか？"
         )
@@ -338,6 +390,12 @@ class ProjectTab(ctk.CTkFrame):
         
         if result:
             self.execute_initialization_script(project_name, directory_path, programming_type)
+        else:
+            messagebox.showinfo(
+                "初期化スキップ",
+                f"プロジェクト '{project_name}' は作成されましたが、初期化はスキップされました。\n"
+                "後で手動で初期化を実行することも可能です。"
+            )
     
     def execute_initialization_script(self, project_name, directory_path, programming_type):
         """プロジェクト初期化スクリプトを実行"""
