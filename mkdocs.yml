@@ -76,19 +76,6 @@ nav:
       - システム構成: architecture/system-overview.md
       - UIコンポーネント: architecture/ui-components.md
       - データベース設計: architecture/database.md
-  - API Reference:
-      - Chat API: api-reference/chat.md
-      - Database API: api-reference/database.md
-      - Utilities: api-reference/utilities.md
-      - UI Widgets: api-reference/ui-widgets.md
-  - Development:
-      - 開発環境セットアップ: development/setup.md
-      - コーディング規約: development/coding-standards.md
-      - テスト: development/testing.md
-      - 新機能追加ガイド: development/adding-features.md
-  - Project Requirements:
-      - 要求仕様書: requirements/specifications.md
-      - 技術仕様: requirements/technical-specs.md
 
 extra:
   social:
