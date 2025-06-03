@@ -82,6 +82,34 @@ def initdata():
                     "*.log"
                 ],
                 "prompt": "CustomTkinter"
+            },
+            "NextJS_FastAPI_Agent": {
+                "srcdire": ["/backend", "/frontend/src"],
+                "libraryFileList": [
+                    "backend/requirements.txt",
+                    "frontend/eslint.config.mjs",
+                    "frontend/next-env.d.ts",
+                    "frontend/next.config.ts",
+                    "frontend/postcss.config.mjs",
+                    "frontend/package.json",
+                    "frontend/tsconfig.json"
+                ],
+                "prerequisites": "/ ディレクトリにてNext.JSでフロントエンドを、FastAPIでバックエンドを開発しています。利用者に最高のユーザー体験を提供します。",
+                "system_role": "あなたは優秀なフルスタックエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
+                "ignorelist": [
+                    ".git/",
+                    "__pycache__/",
+                    ".github/",
+                    ".venv/",
+                    "venv/",
+                    "docs/",
+                    ".env",
+                    "*.db",
+                    "*.DS_Store",
+                    "*.log",
+                    "*.ico",
+                ],
+                "prompt": "nextjsFastApiTemplate"
             }
         }
     )
