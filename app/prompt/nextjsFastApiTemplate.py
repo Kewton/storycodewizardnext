@@ -218,7 +218,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
 # 要求仕様書
 {_input}
 
-# 現在のライブラリ管理ファイル
+# 現在のライブラリ管理ファイル・Dockerfile・docker-compose.yml
 {fetch_libraryfiles_and_contents(_libraryFileList)}
 
 # 現在のソースコード

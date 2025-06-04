@@ -86,6 +86,9 @@ def initdata():
             "NextJS_FastAPI_Agent": {
                 "srcdire": ["/backend", "/frontend/src"],
                 "libraryFileList": [
+                    "backend/Dockerfile",
+                    "frontend/Dockerfile",
+                    "docker-compose.yml",
                     "backend/requirements.txt",
                     "frontend/eslint.config.mjs",
                     "frontend/next-env.d.ts",
