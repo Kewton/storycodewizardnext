@@ -67,6 +67,26 @@ StoryCodeWizardNext は、従来のAIを活用したコード生成ツールの�
    pip install -r requirements.txt
    ```
 
+   **「ModuleNotFoundError: No module named '_tkinter'」** が出力された場合<br>
+   
+   エラーの原因は、PythonがTkinter（_tkinterモジュール）を利用できないためです。これはPythonがTkサポート付きでインストールされていない場合に発生します。
+
+   macOSでは、HomebrewなどでPythonをインストールした場合、Tkサポートが含まれていないことがあります。
+   Pythonの再インストール時にTkサポートを有効にする必要があります。
+   対処手順:
+
+   1. Homebrewでtkをインストールします。
+   1. pyenvを使っている場合は、環境変数を設定してPythonを再インストールします。
+      ```bash
+      brew install tcl-tk
+      env PATH="/opt/homebrew/opt/tcl-tk/bin:$PATH" \
+         LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib" \
+         CPPFLAGS="-I/opt/homebrew/opt/tcl-tk/include" \
+         PKG_CONFIG_PATH="/opt/homebrew/opt/tcl-tk/lib/pkgconfig" \
+         pyenv install 3.12.3
+      ```
+   1. 仮想環境を作り直し、再度依存パッケージをインストールしてください。
+
 3. 機密情報を設定します:<br>
    以下の内容で`secret_keys.py`を作成します。
    ```python
