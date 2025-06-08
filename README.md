@@ -62,30 +62,13 @@ StoryCodeWizardNext は、従来のAIを活用したコード生成ツールの�
 
 2. Python環境のセットアップと必要なライブラリをインストールします:
    ```bash
-   python3 -m venv .venv
+   python -m venv .venv
    source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
    **「ModuleNotFoundError: No module named '_tkinter'」** が出力された場合<br>
-   
-   エラーの原因は、PythonがTkinter（_tkinterモジュール）を利用できないためです。これはPythonがTkサポート付きでインストールされていない場合に発生します。
-
-   macOSでは、HomebrewなどでPythonをインストールした場合、Tkサポートが含まれていないことがあります。
-   Pythonの再インストール時にTkサポートを有効にする必要があります。
-   対処手順:
-
-   1. Homebrewでtkをインストールします。
-   1. pyenvを使っている場合は、環境変数を設定してPythonを再インストールします。
-      ```bash
-      brew install tcl-tk
-      env PATH="/opt/homebrew/opt/tcl-tk/bin:$PATH" \
-         LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib" \
-         CPPFLAGS="-I/opt/homebrew/opt/tcl-tk/include" \
-         PKG_CONFIG_PATH="/opt/homebrew/opt/tcl-tk/lib/pkgconfig" \
-         pyenv install 3.12.3
-      ```
-   1. 仮想環境を作り直し、再度依存パッケージをインストールしてください。
+   > ChatGPT o3に聞いてください
 
 3. 機密情報を設定します:<br>
    以下の内容で`secret_keys.py`を作成します。
@@ -107,20 +90,7 @@ StoryCodeWizardNext は、従来のAIを活用したコード生成ツールの�
    python main.py
    ```
 
-## チュートリアル
-フロントエンドをNext.JSでバックエンドをFastAPIでフルスタックアプリを開発します
-### 1. プロジェクト登録
-<img src="./docs/images/プロジェクト管理.png" alt="プロジェクト管理" width="50%" height="50%">
-
-### 2.コード生成リクエスト
-<img src="./docs/images/コード生成リクエスト.png" alt="コード生成リクエスト" width="50%" height="50%">
-
-### 3.コーディングエージェントとの会話履歴
-<img src="./docs/images/コーディングエージェントとの会話履歴.png" alt="コーディングエージェントとの会話履歴" width="50%" height="50%">
-
-### その他.ヘルプ・ガイド
-<img src="./docs/images/ヘルプ・ガイド.png" alt="ヘルプ・ガイド" width="50%" height="50%">
-
+チュートリアルは[こちら](./docs/tutorial.md)を参照してください。
 
 # ドキュメントの参照
 

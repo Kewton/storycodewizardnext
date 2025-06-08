@@ -31,16 +31,16 @@ CMD ["npm", "start"]
 ```
 
 ---
-## ./.gitignore
-### ./.gitignore
+## ./backend/.gitignore
+### ./backend/.gitignore
 ```txt
 __pycache__/
 .venv/
 ```
 
 ---
-## ./requirements.txt
-### ./requirements.txt
+## ./backend/requirements.txt
+### ./backend/requirements.txt
 ```txt
 git+https://github.com/Kewton/jsonDB
 customtkinter>=5.2.0

@@ -9,6 +9,17 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
 # 前提条件
 - {_prerequisites}
 - フロントエンドを {_prerequisites}/frontend ディレクトリに、バックエンドを {_prerequisites}/backend ディレクトリに配置しています。
+- ディレクトリ構成は下記のようになっています。
+    ```
+    /my-monorepo
+    ├── frontend  (Next.js)
+    ├── backend   (FastAPI)
+    └── doc プロジェクト全体のドキュメント
+        ├── architecture.md
+        ├── setup.md
+        ├── deployment.md
+        └── specification.md
+    ```
 
 ## フロントエンドアプリケーション固有の前提条件
 - node.jsのバージョンはv23.11.0を使用しています。
@@ -96,9 +107,18 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
 - 新規インストールが必要ライブラリは、インストール方法を明確にすること
 - git への commit コメントを出力すること
 
+## ドキュメントの配置
+- 全体のはルートの`docs`に置くこと
+- API仕様はFastAPIの自動生成を使うこと
+- コンポーネント仕様はStorybookとJSDocを使うこと
+
 ## フロントエンドアプリケーション固有の制約条件
+- 出力されるコードはESlintにてエラーが存在しないこと
 - UIの構成要素を言語化し、各コンポーネントとソースファイルの位置付けを明確にすること
 - ライブラリのバージョンの依存関係を考慮し、package.jsonの変更を行うこと
+
+## バックエンドアプリケーション固有の制約条件
+- 出力されるコードはPEP8に準拠すること
 
 # 出力フォーマット
 - 出力結果はmarkdown形式とすること
