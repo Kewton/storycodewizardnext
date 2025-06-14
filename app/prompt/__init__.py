@@ -3,6 +3,8 @@ from app.prompt.nextjstemplate1 import nextjstemplate1
 from app.prompt.fastAPItemplate import fastAPItemplate
 from app.prompt.customTkintertemplate import CustomTkinter
 from app.prompt.nextjsFastApiTemplate import nextjsFastApiTemplate
+from app.prompt.nextjsNestJsTemplate import nextjsNestJsTemplate
+
 
 def createPromt(_systemrole_content, _input):
     _prerequisites = _systemrole_content["pjdir"] + _systemrole_content["prerequisites"]
@@ -26,6 +28,8 @@ def createPromt(_systemrole_content, _input):
         return CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
     elif "nextjsFastApiTemplate" == _systemrole_content["prompt"]:
         return nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
+    elif "nextjsNestJsTemplate" == _systemrole_content["prompt"]:
+        return nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
     else:
         return defaultPrompt(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist)
 

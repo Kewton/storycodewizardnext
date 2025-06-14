@@ -22,7 +22,7 @@ def initdata():
         "chat",
         "systemrole",
         {
-            "プログラミング言語": ["Next.js_Agent", "FastAPI_Agent", "NextJS_FastAPI_Agent", "CustomTkinter_Agent"],
+            "プログラミング言語": ["Next.js_Agent", "FastAPI_Agent", "NextJS_FastAPI_Agent", "CustomTkinter_Agent", "NextJS_NestJS_Agent"],
             "Next.js_Agent": {
                 "srcdire": ["src"],
                 "libraryFileList": [
@@ -113,6 +113,32 @@ def initdata():
                     "*.ico",
                 ],
                 "prompt": "nextjsFastApiTemplate"
+            },
+            "NextJS_NestJS_Agent": {
+                "srcdire": ["/apps/api/src", "/apps/api/test", "/apps/web/app", "/apps/web/components", "/apps/web/public"],
+                "libraryFileList": [
+                    "apps/api/.prettierrc",
+                    "apps/api/eslint.config.mjs",
+                    "apps/api/nest-cli.json",
+                    "apps/api/package.json",
+                    "apps/api/tsconfig.build.json",
+                    "apps/api/tsconfig.json",
+                    "apps/web/eslint.config.js",
+                    "apps/web/next-env.d.ts",
+                    "apps/web/next.config.js",
+                    "apps/web/package.json",
+                    "apps/web/tsconfig.json",
+                    "package.json",
+                    "pnpm-workspace.yaml",
+                    "turbo.json"
+                ],
+                "prerequisites": "/ ディレクトリにてNext.JSでフロントエンドを、NestJSでバックエンドを開発しています。利用者に最高のユーザー体験を提供します。",
+                "system_role": "あなたは優秀なフルスタックエンジニアです。入力された情報を元に最高のコードをアウトプットします。",
+                "ignorelist": [
+                    "*.ico",
+                    "*.woff"
+                ],
+                "prompt": "nextjsNestJsTemplate"
             }
         }
     )

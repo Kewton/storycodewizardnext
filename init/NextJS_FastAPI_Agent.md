@@ -139,3 +139,33 @@ google-genai
 google-generativeai
 beautifulsoup4
 ```
+
+---
+## ./start.sh
+### ./start.sh
+```bash
+#!/bin/bash
+# -- 使い方 --
+## スクリプトに実行権限を付与
+#chmod +x start.sh
+#
+## スクリプトを実行
+#./start.sh
+# ------------
+
+
+# Ctrl+C を受け取ったら、バックグラウンドのプロセスを全て終了する
+trap "kill 0" SIGINT
+
+echo "Starting Next.js and FastAPI servers..."
+
+# フロントエンド (Next.js) をバックグラウンドで起動
+(cd ./frontend && npm run dev) &
+
+# バックエンド (FastAPI) をバックグラウンドで起動
+# 必要に応じて仮想環境を有効化してください (例: source ./backend/.venv/bin/activate)
+(cd ./backend && source .venv/bin/activate && uvicorn app.main:app --reload) &
+
+# 全てのバックグラウンドプロセスの終了を待つ
+wait
+```
