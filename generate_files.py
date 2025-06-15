@@ -1,19 +1,7 @@
-"""
-
-# input.md からファイルを生成するスクリプト
-```bash
-python generate_files.py [input.mdのパス] -d [出力ディレクトリ名]
-
-python generate_files.py ./temp/chat_history_claude-sonnet-4-20250514_2025-05-23_23_43_34_agent.md -d ./temp
-```
-# input.md がカレントディレクトリにあり、出力先をデフォルトの generated_files にする場合は、単に以下のように実行します。
-```bash
-python generate_files.py
-```
-"""
 import os
 import re
 import argparse
+import uuid
 
 def parse_input_md_sections(md_content):
     """
@@ -29,53 +17,80 @@ def parse_input_md_sections(md_content):
               'change_description': str, 変更内容の説明（オプション）。
     """
     files_to_create = []
-    # --- が行頭に来る場合も考慮し、改行を含めてスプリット
-    sections = re.split(r'\n---\n', md_content)
-
-    for section_content in sections:
-        section_content = section_content.strip()
-        if not section_content:
+    
+    # 全体のMarkdownコンテンツを、ファイル定義セクションとそれ以外のセクションに分割
+    # 各セクションは、'## ./' で始まる行か、'---' で始まる行の直前で分割される
+    # FLAGS: re.DOTALL は . が改行にもマッチ, re.MULTILINE は ^$ が各行の始まり/終わりにマッチ
+    all_sections = re.split(r'(?=(?:^## \./|^---))', md_content, flags=re.MULTILINE)
+    
+    for section_block in all_sections:
+        section_block = section_block.strip()
+        if not section_block:
             continue
 
         # セクションの主要なファイルパスを検索 (例: ## ./README.md)
-        filepath_match = re.search(r"^## \./(.+?)$", section_content, re.MULTILINE)
+        filepath_match = re.search(r"^## \./(.+?)$", section_block, re.MULTILINE)
+        
         if not filepath_match:
-            # このセクションは期待される形式のファイル定義ではない
+            # このセクションは '## ./' の形式ではないため、ファイル定義ではないと判断しスキップ
             continue
 
         current_filepath = filepath_match.group(1).strip()
 
         # 変更内容を検索 (オプション) (例: ### 変更内容)
         change_desc = ""
-        # 変更内容は ### 変更内容 から始まり、次の ### ./filepath か ``` の前まで
+        # 変更内容は ### 変更内容 から始まり、次の ### ./filepath かコードブロックの開始の前まで
         change_desc_match = re.search(
-            r"### 変更内容\n(.*?)(?=\n### \./|\n```|$)",
-            section_content,
+            r"### 変更内容\n(.*?)(?=\n(?:### \./|```|$))",
+            section_block,
             re.DOTALL
         )
         if change_desc_match:
             change_desc = change_desc_match.group(1).strip()
 
-        # コンテンツブロックを検索
-        # コンテンツブロックは ### ./<filepath_check> の後に ```...``` で囲まれる
-        # filepath_check が current_filepath と一致することを確認
-        # re.escape を使用して current_filepath 内の特殊文字をエスケープ
-        content_block_regex = re.compile(
-            r"### \./" + re.escape(current_filepath) +
-            r"\s*```(?:[a-zA-Z0-9_.-]+)?\n(.*?)\n```",
-            re.DOTALL | re.MULTILINE
-        )
-        content_match = content_block_regex.search(section_content)
+        # --- コンテンツブロックを検索するロジックを改善 ---
+        content = ""
+        
+        # まず、ファイルパスヘッダー (### ./filepath) の開始位置を探す
+        filepath_header_marker = f"### ./{current_filepath}"
+        filepath_header_pos = section_block.find(filepath_header_marker)
 
-        if content_match:
-            content = content_match.group(1)  # キャプチャされたコンテンツ
+        if filepath_header_pos == -1:
+            print(f"警告: ファイル '{current_filepath}' のコンテンツ開始マーカー '{filepath_header_marker}' が見つかりません。このファイルは作成されません。")
+            continue
+        
+        # ヘッダー以降の文字列 (コンテンツ候補)
+        # ヘッダーの終端からセクションの終わりまで
+        content_candidate = section_block[filepath_header_pos + len(filepath_header_marker):].strip()
+
+        # コードブロックの正規表現をより厳密に定義
+        # `(```[a-zA-Z0-9_.-]*)\n`: 開始タグ (言語指定あり/なし) と改行
+        # `(.*?)`: コンテンツ本体 (非貪欲マッチ)
+        # `\n(```\s*)$`: 閉じタグと、その後は空白文字か行末のみ
+        code_block_regex = re.compile(
+            r"^(```[a-zA-Z0-9_.-]*)\n(.*?)\n(```\s*)$", 
+            re.DOTALL
+        )
+        
+        code_block_match = code_block_regex.search(content_candidate)
+
+        if code_block_match:
+            # 修正: コードブロックの中身 (group(2)) のみをコンテンツとして抽出
+            content = code_block_match.group(2).strip()
+            
+        else:
+            # コードブロックが見つからない場合、警告を出力してスキップ
+            # `## ./` の形式でも、コードブロックがなければファイルは作成しない方針を維持
+            print(f"警告: ファイル '{current_filepath}' のコンテンツブロックが見つからないか、形式が不正です。このファイルは作成されません。")
+            continue # コードブロックが見つからない場合はスキップ
+
+        if current_filepath and content:
             files_to_create.append({
                 "filepath": current_filepath,
                 "content": content,
                 "change_description": change_desc
             })
-        # else:
-            # print(f"警告: ファイル '{current_filepath}' のコンテンツブロックが見つからないか、形式が不正です。")
+        # else: コンテンツが空の場合はすでに警告を出してcontinueしているため、不要
 
     return files_to_create
 
@@ -93,13 +108,11 @@ def create_files_from_parsed_data(parsed_data, base_dir="."):
 
     for file_info in parsed_data:
         relative_filepath = file_info['filepath']
-        # os.path.join は "./" で始まるパスを正しく処理する
         filepath = os.path.join(base_dir, relative_filepath)
         content = file_info['content']
 
-        # 必要に応じてディレクトリを作成
         dir_name = os.path.dirname(filepath)
-        if dir_name:  # dir_nameが空でないことを確認 (base_dirのルートにあるファイルの場合)
+        if dir_name:
             os.makedirs(dir_name, exist_ok=True)
 
         try:
@@ -115,7 +128,7 @@ def main():
     """
     メイン関数。input.md を読み込み、解析し、ファイルを作成します。
     """
-    parser = argparse.ArgumentParser(description="input.md からファイルを生成します。")
+    parser = argparse.ArgumentParser(description="input.md からファイルを生成します。", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         "input_file",
         nargs="?",
@@ -142,7 +155,6 @@ def main():
         print(f"エラー: ファイル '{input_md_path}' の読み込み中にエラーが発生しました: {e}")
         return
 
-    # 出力ディレクトリが存在しない場合は作成
     if not os.path.exists(output_directory):
         os.makedirs(output_directory, exist_ok=True)
         print(f"出力ディレクトリを作成しました: {output_directory}")

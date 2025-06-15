@@ -115,7 +115,7 @@ def initdata():
                 "prompt": "nextjsFastApiTemplate"
             },
             "NextJS_NestJS_Agent": {
-                "srcdire": ["/apps/api/src", "/apps/api/test", "/apps/web/app", "/apps/web/components", "/apps/web/public"],
+                "srcdire": ["/docs", "/apps/api/src", "/apps/api/test", "/apps/web/app", "/apps/web/components", "/apps/web/public"],
                 "libraryFileList": [
                     "apps/api/.prettierrc",
                     "apps/api/eslint.config.mjs",

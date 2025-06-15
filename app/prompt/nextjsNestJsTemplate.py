@@ -74,8 +74,10 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ├── turbo.json         # Turborepoの設定ファイル
     └── docs               # プロジェクト全体のドキュメント
         ├── architecture.md
-        ├── datamodel.md
         ├── apiSpecification.md
+        ├── datamodel.md
+        ├── envlist.md
+        ├── overview.md
         └── uiSpecification.md
     ```
 - ビルド方法、実行方法、テスト自動化方法、静的解析方法は下記スクリプトを実行するものとします
@@ -111,7 +113,8 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 
 # コード生成ルール
 - 要求文書を適切な表現にブラッシュアップすること
-- フロントエンドアプリケーションとバックエンドアプリケーションの間でインターフェースの整合性をとること
+- /docs ディレクトリにあるドキュメントを更新すること
+- フロントエンドアプリケーションとバックエンドアプリケーションの両方で、API仕様を整合性をとること
 - フロントエンドアプリケーションとバックエンドアプリケーションの両方で、テストコードを出力すること
 - アウトプットはmarkdown形式とし、出力フォーマットに従うこと
 - 変更が発生するファイルはファイル内容を全て出力すること
@@ -121,6 +124,19 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 - apiSpecification.md にAPI仕様を記載すること
 - データモデルを datamodel.md に Mermaid で記載すること
 - アーキテクチャを architecture.md に Mermaid で記載すること
+- 環境変数の一覧を envlist.md に記載すること
+- サービスの全体概要を overview.md に marp で記載すること。スライドの構成は以下のようにすること。
+    ```
+    1.  **はじめに**： 私たちは誰で、何を目指しているのか
+    2.  **解決したい課題 (The Problem)**： なぜこのサービスが必要なのか
+    3.  **私たちの解決策 (Our Solution)**： このサービスは何をするものか
+    4.  **ターゲットユーザー**： 誰のためのサービスか
+    5.  **主要な機能**： 具体的に何ができるのか
+    6.  **技術スタックとアーキテクチャ**： どうやって作られているのか
+    7.  **競合とポジショニング**： 市場における我々の立ち位置
+    8.  **今後のロードマップ**： これからどこへ向かうのか
+    9.  **まとめ**
+    ```
 - 削除するファイルがある場合は、削除するファイル名と理由を明確にし、内容が空のファイルを出力すること
 - 新規インストールが必要ライブラリは、インストール方法を明確にすること
 - git への commit コメントを出力すること
