@@ -106,6 +106,7 @@ def create_files_from_parsed_data(parsed_data, base_dir="."):
         print("作成するファイルがありません。")
         return
 
+    print("___")
     for file_info in parsed_data:
         relative_filepath = file_info['filepath']
         filepath = os.path.join(base_dir, relative_filepath)
@@ -118,9 +119,13 @@ def create_files_from_parsed_data(parsed_data, base_dir="."):
         try:
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(content)
-            print(f"ファイルを作成/更新しました: {filepath}")
+            print(f"# {file_info['filepath']}")
+            print("ファイルを作成/更新しました")
+            print(f"{filepath}")
             if file_info.get("change_description"):
-                 print(f"  '{file_info['filepath']}' の変更内容: {file_info['change_description']}")
+                 print(f"## 変更内容")
+                 print(f"{file_info['change_description']}")
+                 print("___")
         except IOError as e:
             print(f"ファイル '{filepath}' の書き込み中にエラーが発生しました: {e}")
 
