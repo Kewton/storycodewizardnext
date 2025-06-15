@@ -49,17 +49,17 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
 - 出力結果はmarkdown形式とすること
 - 出力結果は下記のフォーマットに従うこと
     ```
-    ---
+    ___
     # 要求概要
     ## 要求
     <ブラッシュアップ後の要求文書>
     ## git commit コメント
     <git commit コメント>
-    ---
+    ___
     # 変更
     ## 変更概要
     <変更概要>
-    ---
+    ___
     ## ./README.md
     ### 変更内容
     <変更内容>
@@ -67,7 +67,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```md
     <変更後のREADME.md ・・・README.md内のコードブロックはインデントすること。>
     ```
-    ---
+    ___
     ## ./package.json
     ### 変更内容
     <変更内容>
@@ -75,7 +75,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```json
     <変更後のpackage.json>
     ```
-    ---
+    ___
     ## ./tsconfig.json
     ### 変更内容
     <変更内容>
@@ -83,7 +83,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```json
     <変更後のtsconfig.json>
     ```
-    ---
+    ___
     ## ./src/xxx.tsx
     ### 変更内容
     <変更内容>
@@ -91,7 +91,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```tsx
     <変更後の./src/xxx.tsx>
     ```
-    ---
+    ___
     ## ./src/yyy.tsx
     ### 変更内容
     新規作成
@@ -99,7 +99,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```tsx
     <変更後の./src/xxx.tsx>
     ```
-    ---
+    ___
     ## ./src/zzz.css
     ### 変更内容
     <変更内容>
@@ -107,7 +107,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```css
     <変更後の./src/zzz.css>
     ```
-    ---
+    ___
     ## ./src/fff.tsx
     ### 変更内容
     <削除理由>
@@ -115,7 +115,7 @@ def nextjstemplate1(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```css
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ```
 
 # 要求仕様書

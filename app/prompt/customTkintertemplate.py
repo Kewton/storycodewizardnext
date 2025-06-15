@@ -39,17 +39,17 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
 - 出力結果はmarkdown形式とすること
 - 出力結果は下記のフォーマットに従うこと
     ```
-    ---
+    ___
     # 要求概要
     ## 要求
     <ブラッシュアップ後の要求文書>
     ## git commit コメント
     <git commit コメント>
-    ---
+    ___
     # 変更
     ## 変更概要
     <変更概要>
-    ---
+    ___
     ## ./README.md
     ### 変更内容
     <変更内容>
@@ -57,7 +57,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```md
     <変更後のREADME.md ・・・README.md内のコードブロックはインデントすること。>
     ```
-    ---
+    ___
     ## ./requirements.txt
     ### 変更内容
     <変更内容>
@@ -65,7 +65,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```txt
     <変更後のrequirements.txt>
     ```
-    ---
+    ___
     ## ./main.py
     ### 変更内容
     <変更内容>
@@ -73,7 +73,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```py
     <変更後のmain.py>
     ```
-    ---
+    ___
     ## ./xxx/yyy.py
     ### 変更内容
     <変更内容>
@@ -81,7 +81,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```py
     <変更後の./xxx/yyy.py>
     ```
-    ---
+    ___
     ## ./xxx/zzz.py
     ### 変更内容
     <変更内容>
@@ -89,7 +89,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```py
     <変更後の./xxx/zzz.py>
     ```
-    ---
+    ___
     ## ./aaa/bbb.py
     ### 変更内容
     <変更内容>
@@ -97,7 +97,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```py
     <変更後の./aaa/bbb.py>
     ```
-    ---
+    ___
     ## ./aaa/ccc.py
     ### 変更内容
     <削除理由>
@@ -105,7 +105,7 @@ def CustomTkinter(_prerequisites, _input, _libraryFileList, _src_root_path_List,
     ```py
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ```
 
 # 要求仕様書

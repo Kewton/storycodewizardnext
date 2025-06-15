@@ -20,11 +20,11 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ## 3. 依存関係をインストール
     pnpm install
 
-    ---
+    ___
     # Step2. 不要なアプリケーションを削除する
     rm -rf apps/docs
 
-    ---
+    ___
     # Step3. NestJSアプリケーションを新規作成する
     cd apps
 
@@ -151,7 +151,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 - 出力結果はmarkdown形式とすること
 - 出力結果は下記のフォーマットに従うこと
     ```
-    ---
+    ___
     # 要求概要
     ## 要求
     <ブラッシュアップ後の要求文書>
@@ -159,11 +159,11 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     <git commit コメント>
     ## ソースコードマージ後の実施作業
     <マージ後の実施作業>
-    ---
+    ___
     # 変更
     ## 変更概要
     <変更概要>
-    ---
+    ___
     ## ./apps/api/package.json
     ### 変更内容
     <変更内容>
@@ -171,7 +171,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```json
     <変更後のpackage.json>
     ```
-    ---
+    ___
     ## ./apps/web/tsconfig.json
     ### 変更内容
     <変更内容>
@@ -179,7 +179,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```json
     <変更後のtsconfig.json>
     ```
-    ---
+    ___
     ## ./apps/web/src/xxx.tsx
     ### 変更内容
     <変更内容>
@@ -187,7 +187,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```tsx
     <変更後の./src/xxx.tsx>
     ```
-    ---
+    ___
     ## ./apps/web/src/yyy.tsx
     ### 変更内容
     新規作成
@@ -195,7 +195,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```tsx
     <変更後の./apps/web/src/yyy.tsx>
     ```
-    ---
+    ___
     ## ./apps/web/src/zzz.css
     ### 変更内容
     <変更内容>
@@ -203,7 +203,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```css
     <変更後の./apps/web/src/zzz.css>
     ```
-    ---
+    ___
     ## ./apps/web/src/fff.tsx
     ### 変更内容
     <削除理由>
@@ -211,7 +211,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```tsx
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ## ./docs/specification.md
     ### 変更内容
     <変更理由>
@@ -219,7 +219,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     ```md
     <変更後のdocs。markdown形式でコードブロックを使用する場合は必ずインデントすること>
     ```
-    ---
+    ___
     ```
 
 # 要求仕様書

@@ -162,7 +162,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
 - 出力結果はmarkdown形式とすること
 - 出力結果は下記のフォーマットに従うこと
     ```
-    ---
+    ___
     # 要求概要
     ## 要求
     <ブラッシュアップ後の要求文書>
@@ -170,11 +170,11 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     <git commit コメント>
     ## ソースコードマージ後の実施作業
     <マージ後の実施作業>
-    ---
+    ___
     # 変更
     ## 変更概要
     <変更概要>
-    ---
+    ___
     ## ./frontend/package.json
     ### 変更内容
     <変更内容>
@@ -182,7 +182,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```json
     <変更後のpackage.json>
     ```
-    ---
+    ___
     ## ./frontend/tsconfig.json
     ### 変更内容
     <変更内容>
@@ -190,7 +190,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```json
     <変更後のtsconfig.json>
     ```
-    ---
+    ___
     ## ./frontend/src/xxx.tsx
     ### 変更内容
     <変更内容>
@@ -198,7 +198,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```tsx
     <変更後の./src/xxx.tsx>
     ```
-    ---
+    ___
     ## ./frontend/src/yyy.tsx
     ### 変更内容
     新規作成
@@ -206,7 +206,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```tsx
     <変更後の./frontend/src/yyy.tsx>
     ```
-    ---
+    ___
     ## ./frontend/src/zzz.css
     ### 変更内容
     <変更内容>
@@ -214,7 +214,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```css
     <変更後の./frontend/src/zzz.css>
     ```
-    ---
+    ___
     ## ./frontend/src/fff.tsx
     ### 変更内容
     <削除理由>
@@ -222,7 +222,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```tsx
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ## ./backend/requirements.txt
     ### 変更内容
     <変更内容>
@@ -230,7 +230,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```txt
     <変更後のrequirements.txt>
     ```
-    ---
+    ___
     ## ./backend/app/main.py
     ### 変更内容
     <変更内容>
@@ -238,7 +238,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```py
     <変更後のmain.py>
     ```
-    ---
+    ___
     ## ./backend/xxx/yyy.py
     ### 変更内容
     <変更内容>
@@ -246,7 +246,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```py
     <変更後の./backend/xxx/yyy.py>
     ```
-    ---
+    ___
     ## ./backend/xxx/zzz.py
     ### 変更内容
     <変更内容>
@@ -254,7 +254,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```py
     <変更後の./backend/xxx/zzz.py>
     ```
-    ---
+    ___
     ## ./aaa/bbb.py
     ### 変更内容
     <変更内容>
@@ -262,7 +262,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```py
     <変更後の./aaa/bbb.py>
     ```
-    ---
+    ___
     ## ./backend/aaa/ccc.py
     ### 変更内容
     <削除理由>
@@ -270,7 +270,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```py
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ## ./docs/specification.md
     ### 変更内容
     <変更理由>
@@ -278,7 +278,7 @@ def nextjsFastApiTemplate(_prerequisites, _input, _libraryFileList, _src_root_pa
     ```md
     <変更後のdocs。markdown形式でコードブロックを使用する場合は必ずインデントすること>
     ```
-    ---
+    ___
     ```
 
 # 要求仕様書

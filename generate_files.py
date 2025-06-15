@@ -19,9 +19,9 @@ def parse_input_md_sections(md_content):
     files_to_create = []
     
     # 全体のMarkdownコンテンツを、ファイル定義セクションとそれ以外のセクションに分割
-    # 各セクションは、'## ./' で始まる行か、'---' で始まる行の直前で分割される
+    # 各セクションは、'## ./' で始まる行か、'___' で始まる行の直前で分割される
     # FLAGS: re.DOTALL は . が改行にもマッチ, re.MULTILINE は ^$ が各行の始まり/終わりにマッチ
-    all_sections = re.split(r'(?=(?:^## \./|^---))', md_content, flags=re.MULTILINE)
+    all_sections = re.split(r'(?=(?:^## \./|^___))', md_content, flags=re.MULTILINE)
     
     for section_block in all_sections:
         section_block = section_block.strip()
@@ -48,7 +48,7 @@ def parse_input_md_sections(md_content):
         if change_desc_match:
             change_desc = change_desc_match.group(1).strip()
 
-        # --- コンテンツブロックを検索するロジックを改善 ---
+        # ___ コンテンツブロックを検索するロジックを改善 ___
         content = ""
         
         # まず、ファイルパスヘッダー (### ./filepath) の開始位置を探す

@@ -85,17 +85,17 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
 - 出力結果はmarkdown形式とすること
 - 出力結果は下記のフォーマットに従うこと
     ```
-    ---
+    ___
     # 要求概要
     ## 要求
     <ブラッシュアップ後の要求文書>
     ## git commit コメント
     <git commit コメント>
-    ---
+    ___
     # 変更
     ## 変更概要
     <変更概要>
-    ---
+    ___
     ## ./README.md
     ### 変更内容
     <変更内容>
@@ -103,7 +103,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```md
     <変更後のREADME.md ・・・README.md内のコードブロックはインデントすること。>
     ```
-    ---
+    ___
     ## ./requirements.txt
     ### 変更内容
     <変更内容>
@@ -111,7 +111,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```txt
     <変更後のrequirements.txt>
     ```
-    ---
+    ___
     ## ./main.py
     ### 変更内容
     <変更内容>
@@ -119,7 +119,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```py
     <変更後のmain.py>
     ```
-    ---
+    ___
     ## ./xxx/yyy.py
     ### 変更内容
     <変更内容>
@@ -127,7 +127,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```py
     <変更後の./xxx/yyy.py>
     ```
-    ---
+    ___
     ## ./xxx/zzz.py
     ### 変更内容
     <変更内容>
@@ -135,7 +135,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```py
     <変更後の./xxx/zzz.py>
     ```
-    ---
+    ___
     ## ./aaa/bbb.py
     ### 変更内容
     <変更内容>
@@ -143,7 +143,7 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```py
     <変更後の./aaa/bbb.py>
     ```
-    ---
+    ___
     ## ./aaa/ccc.py
     ### 変更内容
     <削除理由>
@@ -151,18 +151,18 @@ def fastAPItemplate(_prerequisites, _input, _libraryFileList, _src_root_path_Lis
     ```py
     <削除する場合は内容が空のファイルを出力すること>
     ```
-    ---
+    ___
     ```
 
----
+___
 # 要求
 {_input}
 
----
+___
 # 現在のrequirements.txt
 {fetch_libraryfiles_and_contents(_libraryFileList)}
 
----
+___
 # 現在のソースコード
 {fetch_files_and_contents(_src_root_path_List, _ignorelist)}
 
