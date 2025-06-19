@@ -77,8 +77,14 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
         ├── apiSpecification.md
         ├── datamodel.md
         ├── envlist.md
+        ├── epic-features-userStories_1.md
+        ├── epic-features-userStories_2.md
+        ├── ・・・・
+        ├── epic-features-userStories_N.md
+        ├── filelist.md
+        ├── namingConvention.md
         ├── overview.md
-        └── uiSpecification.md
+        └── useCase.md
     ```
 - ビルド方法、実行方法、テスト自動化方法、静的解析方法は下記スクリプトを実行するものとします
     ```bash
@@ -109,7 +115,21 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 
 # 制約条件
 - databaseを使用する場合はSQLiteを採用するものとします
-- 可能な限りテストコードを出力するものとします
+- NestJSのテストは、Jest + Supertest を使用するものとし、可能な限りテストコードを出力するものとします
+- Next.jsのテストは、Jest + React Testing Library を使用するものとし、可能な限りテストコードを出力するものとします
+- 以下のルールに厳密に従って、テストコードを記述するものとします
+    ```
+    1. ファイル名: [テスト対象のファイル名から推測されるテストファイル名] で作成してください。
+    2. AAAパターン: 各テストケース内を // Arrange, // Act, // Assert のコメントで明確に3分割してください。
+    3. ストーリーテリング: describeとitブロックには、テストの意図が明確にわかる、完全な文章を記述してください。
+    4. 変数名の役割: 変数名には mock..., expected..., actual... といった接頭辞を付け、その役割を明確にしてください。
+    5. モックの分離: 依存関係のモックはbeforeEachブロックにまとめてセットアップしてください。
+    6. マジックナンバー/ストリングの排除: テストで使用する固定値は、describeブロックの直下で定数として定義してください。
+    7. 単一責任: 1つのitブロックでは、1つの主要な振る舞いのみをテストしてください。
+    8. JSDoc: describeブロックの直前に、テストスイート全体の目的を説明するJSDocコメントを追加してください。
+    9. [フロントエンドの場合] ユーザー視点: React Testing Libraryを使い、screen.getByRoleなど、ユーザーから見える要素を基準にテストを構築してください。
+    10. [バックエンドの場合] HTTPステータスコード: Supertestを使用し、期待されるHTTPステータスコードをassertしてください。
+    ```
 
 # コード生成ルール
 - 要求文書を適切な表現にブラッシュアップすること
@@ -120,18 +140,26 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 - 変更が発生するファイルはファイル内容を全て出力すること
 - 変更が発生しないファイルは出力しないこと
 - README.mdには変更を加えないこと
-- 外部仕様を uiSpecification.md にユースケース（Use Case）ベースで記載すること
-- apiSpecification.md にAPI仕様を記載すること
-- データモデルを datamodel.md に Mermaid で記載すること
-- アーキテクチャを architecture.md に Mermaid で記載すること
-- 環境変数の一覧を envlist.md に記載すること
+- 設計（ドキュメント生成）->テストコード生成->コード生成の順番で実行すること
+- 設計（ドキュメント生成）は下記の順番で実施すること
+    ```
+    1. epic-features-userStories_N.md をEpic毎に生成し, Feature, User Story を記載すること
+    2. 外部仕様を useCase.md にユースケース（Use Case）ベースで記載すること。なお、User Story とトレース可能なようにすること。
+    3. apiSpecification.md にAPI仕様を記載すること
+    4. データモデルを datamodel.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
+    5. アーキテクチャを architecture.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
+    6. 環境変数の一覧を envlist.md に記載すること
+    7. ディレクトリ構成及びファイル一覧を filelist.md に記載すること
+    ```
+- 命名規則を namingConvention.md に記載すること
+- UIの構成要素を言語化し、各コンポーネントとソースファイルの位置付けを明確にすること
 - サービスの全体概要を overview.md に marp で記載すること。スライドの構成は以下のようにすること。
     ```
     1.  **はじめに**： 私たちは誰で、何を目指しているのか
     2.  **解決したい課題 (The Problem)**： なぜこのサービスが必要なのか
-    3.  **私たちの解決策 (Our Solution)**： このサービスは何をするものか
+    3.  **私たちの解決策 (Our Solution)**： このサービスは何をするものか、Epicで説明
     4.  **ターゲットユーザー**： 誰のためのサービスか
-    5.  **主要な機能**： 具体的に何ができるのか
+    5.  **主要な機能**： 具体的に何ができるのか、Featureで説明
     6.  **技術スタックとアーキテクチャ**： どうやって作られているのか
     7.  **競合とポジショニング**： 市場における我々の立ち位置
     8.  **今後のロードマップ**： これからどこへ向かうのか
@@ -144,7 +172,6 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 - "pnpm dev" で開発サーバーが起動し、正常に動作すること
 - "pnpm test" で全てのテストが成功すること
 - "pnpm build" でビルドが成功すること
-- UIの構成要素を言語化し、各コンポーネントとソースファイルの位置付けを明確にすること
 - ライブラリのバージョンの依存関係を考慮し、package.jsonの変更を行うこと
 
 # 出力フォーマット

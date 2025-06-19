@@ -3,6 +3,8 @@ import google.generativeai as genai  # New import
 from google.generativeai.types import BlockedPromptException
 from openai import OpenAI
 from secret_keys import claude_api_key, gemini_api_key, openai_api_key
+import time
+import random
 
 
 chatgptapi_client = OpenAI(
@@ -96,6 +98,24 @@ def buildInpurtMessages(_messages, encoded_file):
 
 
 def execLlmApi(_selected_model, _messages, encoded_file):
+    """
+    LLM API実行関数（リトライ機能付き）
+    """
+    def _execute_api():
+        return _execLlmApi_internal(_selected_model, _messages, encoded_file)
+    
+    try:
+        return execute_with_retry(_execute_api, max_retries=3)
+    except Exception as e:
+        error_message = f"[{_selected_model}] API呼び出しでエラーが発生しました: {str(e)}"
+        print(error_message)
+        return error_message, "assistant"
+
+
+def _execLlmApi_internal(_selected_model, _messages, encoded_file):
+    """
+    内部的なLLM API実行関数（リトライなし）
+    """
     if isChatGptAPI(_selected_model):
         if isChatGPTImageAPI(_selected_model) and len(encoded_file) > 0:
             processed_messages_non_streaming = []
@@ -203,7 +223,8 @@ def execLlmApi(_selected_model, _messages, encoded_file):
                     }
                 )
 
-            if parts:  # partsが空の場合は追加しない
+            # partsが空の場合は追加しない
+            if parts:
                 gemini_formatted_contents_for_non_streaming.append(
                     {"role": msg["role"], "parts": parts}
                 )
@@ -293,19 +314,47 @@ def execLlmApiStreaming(
     _selected_model, _messages, encoded_file, streaming_callback=None
 ):
     """
-    Streaming-enabled LLM API execution function
+    Streaming-enabled LLM API execution function with retry
 
     Args:
         _selected_model (str): Selected model name
         _messages (list): Message list
         encoded_file (str): Encoded file data
-        streaming_callback (callable): Callback function for receiving streaming chunks
+        streaming_callback (callable): Callback function for receiving chunks
 
     Returns:
         tuple: (Full response content, role)
     """
-    if isChatGPTImageAPI(_selected_model):
-        if len(encoded_file) > 0:
+    def _execute_streaming_api():
+        return _execLlmApiStreaming_internal(
+            _selected_model, _messages, encoded_file, streaming_callback
+        )
+    
+    try:
+        return execute_with_retry(_execute_streaming_api, max_retries=2)
+    except Exception as e:
+        error_str = str(e)
+        error_message = f"[{_selected_model}] ストリーミングAPI呼び出しでエラーが発生しました: {error_str}"
+        
+        # オーバーロードエラーの特別処理
+        if "overloaded" in error_str.lower() or "overload" in error_str.lower():
+            error_message = f"[{_selected_model}] サーバーが過負荷状態です。しばらく待ってから再試行してください。"
+        
+        print(error_message)
+        if streaming_callback:
+            streaming_callback(error_message)
+        
+        return error_message, "assistant"
+
+
+def _execLlmApiStreaming_internal(
+    _selected_model, _messages, encoded_file, streaming_callback=None
+):
+    """
+    Internal streaming LLM API execution function (without retry)
+    """
+    if isChatGptAPI(_selected_model):
+        if isChatGPTImageAPI(_selected_model) and len(encoded_file) > 0:
             processed_messages_streaming = []
             # メッセージ履歴を処理し、最後のユーザーメッセージに画像を追加
             for msg in _messages:
@@ -517,3 +566,53 @@ def execLlmApiStreaming(
         return content, role
     else:
         return "", "assistant"
+
+
+def execute_with_retry(api_call_func, max_retries=3, base_delay=1.0, max_delay=60.0):
+    """
+    指数バックオフ + ジッターでAPIコールをリトライする
+    
+    Args:
+        api_call_func: 実行するAPI関数
+        max_retries: 最大リトライ回数
+        base_delay: 基本待機時間（秒）
+        max_delay: 最大待機時間（秒）
+    
+    Returns:
+        API関数の戻り値
+    """
+    last_exception = None
+    
+    for attempt in range(max_retries + 1):  # 初回 + リトライ回数
+        try:
+            return api_call_func()
+        except Exception as e:
+            last_exception = e
+            error_str = str(e).lower()
+            
+            # リトライ対象のエラーかチェック
+            retryable_errors = [
+                "overloaded", "overload", "rate limit", "timeout", 
+                "server error", "internal error", "service unavailable",
+                "429", "502", "503", "504"
+            ]
+            
+            is_retryable = any(error in error_str for error in retryable_errors)
+            
+            # 最後の試行、またはリトライ対象外のエラーの場合は再発生
+            if attempt == max_retries or not is_retryable:
+                raise e
+            
+            # 指数バックオフ + ジッター計算
+            delay = min(
+                base_delay * (2 ** attempt) + random.uniform(0, 1), 
+                max_delay
+            )
+            
+            print(f"API call failed (attempt {attempt + 1}/{max_retries + 1}): {e}")
+            print(f"Retrying in {delay:.2f} seconds...")
+            time.sleep(delay)
+    
+    # ここには到達しないはずだが、念のため
+    if last_exception:
+        raise last_exception
