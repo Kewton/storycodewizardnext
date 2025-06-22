@@ -3,8 +3,20 @@ from app.util.codeopen import fetch_libraryfiles_and_contents, fetch_files_and_c
 
 def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_path_List, _ignorelist):
     _content = f"""
+# 目次
+1. [命令指示書](#命令指示書)
+2. [前提条件](#前提条件)
+3. [制約条件](#制約条件)
+4. [コード生成ルール](#コード生成ルール)
+5. [出力フォーマット](#出力フォーマット)
+6. [要求概要](#要求概要)
+7. [変更](#変更)
+8. [各種管理ファイル](#各種管理ファイル)
+9. [現在のソースコード](#現在のソースコード)
+___
 # 命令指示書
 - 現在のソースコードと要求に対し前提条件と制約条件を満たす最高の成果物を生成してください。
+- モダンUIを採用しUXにはこだわり、あなたの限界を超えて最高の成果物を生成してください。
 
 # 前提条件
 - {_prerequisites}
@@ -134,26 +146,19 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 # コード生成ルール
 - 要求文書を適切な表現にブラッシュアップすること
 - /docs ディレクトリにあるドキュメントを更新すること
-- フロントエンドアプリケーションとバックエンドアプリケーションの両方で、API仕様を整合性をとること
+- フロントエンドは下記ファイルに記載のESLintルールに対応するもこと
+    - [各種管理ファイル](#各種管理ファイル)の apps/web/eslint.config.js
+- バックエンドは下記ファイルに記載のESLintルールに対応すること
+    - [各種管理ファイル](#各種管理ファイル)の apps/api/eslint.config.mjs
+- フロントエンドアプリケーションとバックエンドアプリケーションの両方で、API仕様の整合性をとること
 - フロントエンドアプリケーションとバックエンドアプリケーションの両方で、テストコードを出力すること
 - アウトプットはmarkdown形式とし、出力フォーマットに従うこと
 - 変更が発生するファイルはファイル内容を全て出力すること
 - 変更が発生しないファイルは出力しないこと
 - README.mdには変更を加えないこと
-- 設計（ドキュメント生成）->テストコード生成->コード生成の順番で実行すること
-- 設計（ドキュメント生成）は下記の順番で実施すること
-    ```
-    1. epic-features-userStories_N.md をEpic毎に生成し, Feature, User Story を記載すること
-    2. 外部仕様を useCase.md にユースケース（Use Case）ベースで記載すること。なお、User Story とトレース可能なようにすること。
-    3. apiSpecification.md にAPI仕様を記載すること
-    4. データモデルを datamodel.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
-    5. アーキテクチャを architecture.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
-    6. 環境変数の一覧を envlist.md に記載すること
-    7. ディレクトリ構成及びファイル一覧を filelist.md に記載すること
-    ```
-- 命名規則を namingConvention.md に記載すること
+- サービスの全体概要 -> 設計（ドキュメント生成）-> テストコード生成 -> コード生成の順番で実行すること
 - UIの構成要素を言語化し、各コンポーネントとソースファイルの位置付けを明確にすること
-- サービスの全体概要を overview.md に marp で記載すること。スライドの構成は以下のようにすること。
+- サービスの全体概要を overview.md に marp で記載すること。なお、ユーザーをターゲットとし、スライドの構成は以下のようにすること。ボリュームが大きい場合は、スライドを分割してもよい。
     ```
     1.  **はじめに**： 私たちは誰で、何を目指しているのか
     2.  **解決したい課題 (The Problem)**： なぜこのサービスが必要なのか
@@ -165,13 +170,20 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
     8.  **今後のロードマップ**： これからどこへ向かうのか
     9.  **まとめ**
     ```
+- 設計（ドキュメント生成）は下記の順番で実施すること。なお、AIエージェントをターゲットに端的に記載すること。
+    ```
+    1. epic-features-userStories_N.md をEpic毎に生成し, Feature, User Story を記載すること
+    2. 外部仕様を useCase.md にユースケース（Use Case）ベースで記載すること。なお、User Story とトレース可能なようにすること。
+    3. apiSpecification.md にAPI仕様を記載すること
+    4. データモデルを datamodel.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
+    5. アーキテクチャを architecture.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
+    6. 環境変数の一覧を envlist.md に記載すること
+    7. ディレクトリ構成及びファイル一覧を filelist.md に記載すること
+    ```
+- 命名規則を namingConvention.md に記載すること
 - 削除するファイルがある場合は、削除するファイル名と理由を明確にし、内容が空のファイルを出力すること
 - 新規インストールが必要ライブラリは、インストール方法を明確にすること
 - git への commit コメントを出力すること
-- "pnpm lint" で静的解析が成功すること
-- "pnpm dev" で開発サーバーが起動し、正常に動作すること
-- "pnpm test" で全てのテストが成功すること
-- "pnpm build" でビルドが成功すること
 - ライブラリのバージョンの依存関係を考慮し、package.jsonの変更を行うこと
 
 # 出力フォーマット
@@ -252,7 +264,7 @@ def nextjsNestJsTemplate(_prerequisites, _input, _libraryFileList, _src_root_pat
 # 要求仕様書
 {_input}
 
-# 現在のライブラリ管理ファイル・Dockerfile・docker-compose.yml
+# 各種管理ファイル
 {fetch_libraryfiles_and_contents(_libraryFileList)}
 
 # 現在のソースコード
