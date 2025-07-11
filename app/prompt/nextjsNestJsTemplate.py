@@ -89,14 +89,9 @@ ___
         ├── apiSpecification.md
         ├── datamodel.md
         ├── envlist.md
-        ├── epic-features-userStories_1.md
-        ├── epic-features-userStories_2.md
-        ├── ・・・・
-        ├── epic-features-userStories_N.md
+        ├── epic-features.md
         ├── filelist.md
-        ├── namingConvention.md
-        ├── overview.md
-        └── useCase.md
+        └── overview.md
     ```
 - ビルド方法、実行方法、テスト自動化方法、静的解析方法は下記スクリプトを実行するものとします
     ```bash
@@ -172,17 +167,26 @@ ___
     ```
 - 設計（ドキュメント生成）は下記の順番で実施すること。なお、AIエージェントをターゲットに端的に記載すること。
     ```
-    1. epic-features-userStories_N.md をEpic毎に生成し, Feature, User Story を記載すること
-    2. 外部仕様を useCase.md にユースケース（Use Case）ベースで記載すること。なお、User Story とトレース可能なようにすること。
+    1. epic-features.md にEpicとFeatureを記載すること
     3. apiSpecification.md にAPI仕様を記載すること
     4. データモデルを datamodel.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
-    5. アーキテクチャを architecture.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。
+    5. アーキテクチャを architecture.md に Mermaid で記載すること。なお、syntax errorが発生しないようにすること。また、下記目次に従って記載すること。
+        1. **アーキテクチャの概要**： システム全体の構成と目的
+        2. **コンポーネント図**： 各コンポーネントの関係性と役割
+        3. **データフロー**： データの流れと処理の流れ
+        4. **外部システムとの連携**： APIや外部サービスとのインタラクション
+        5. **セキュリティと認証**： セキュリティ対策と認証の仕組み
     6. 環境変数の一覧を envlist.md に記載すること
-    7. ディレクトリ構成及びファイル一覧を filelist.md に記載すること
+    7. ディレクトリ構成及びファイル一覧を filelist.md に記載すること。また、ファイル一覧は以下の目次に従って記載すること。
+        1. **アプリケーションディレクトリ**： 各アプリケーションの構成と役割
+        2. **パッケージディレクトリ**： 共通ライブラリや設定ファイルの構成
+        3. **ドキュメントディレクトリ**： プロジェクト全体のドキュメント構成
+        4. **ルートディレクトリ**： プロジェクト全体の設定ファイルと管理ファイル
     ```
-- 命名規則を namingConvention.md に記載すること
 - 削除するファイルがある場合は、削除するファイル名と理由を明確にし、内容が空のファイルを出力すること
 - 新規インストールが必要ライブラリは、インストール方法を明確にすること
+- 設計を元にテストコードを生成すること
+- 設計とテストコードを元にコードを生成すること。なお、epic-features.mdに記載のEpicとFeatureの内容を反映すること
 - git への commit コメントを出力すること
 - ライブラリのバージョンの依存関係を考慮し、package.jsonの変更を行うこと
 
